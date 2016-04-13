@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+    </head>
+
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Reports</p>
+        </div>
+        <div class="table-div">
+            <form action="" method="post" name="Service">
+                <table>
+                    <tr>
+                        <td>
+                            <p align="center"><b><big>Reports</big></b></p>
+                            <table>
+                                <tr >
+
+                                    <td>Provider:
+                                        <select class="select" name="provider_id" id="provider_id" >
+                                            <option value="">Select</option>
+                                            <?php
+                                            foreach ($this->providerList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] .
+                                                "</option>";
+                                            }
+                                            ?>
+
+                                        </select>
+                                    </td>
+                                    <td><input type="submit" name="gen_report" value="generate report"/></td>
+
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                </table>
+            </form>
+
+        </div>
+    </body>
+</html>

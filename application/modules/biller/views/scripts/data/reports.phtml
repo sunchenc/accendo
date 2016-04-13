@@ -1,0 +1,935 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.3.2.js"></script>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery.multiselect.css" />
+<!--                <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/prettify.css" />-->
+
+
+<!--        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>-->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.8.js"></script>
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-ui.min.js"></script>
+<!--        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/prettify.js"></script>-->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.multiselect.js"></script>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+        <script type="text/javascript" language="javascript" >
+            $(document).ready(function(){
+                $("#Time").val("MM/YYYY");
+                document.getElementById('Time').style.color='#CDCDB4';   
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+                   
+            );
+                
+                
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/download/",
+                function(data)
+                {
+                    
+                    if(data!=''&&data!=null)
+                        window.open(data);//这个方法就直接把这个TXT以浏览器的方式打开了 
+                }
+            );
+                
+                //  $("#provider_id").multiselect();
+               // $('#claim_status').multiselect();
+                //$('#insurance_id').multiselect();
+                
+                 $("#cpt_code").multiselect();
+                $("#provider_id").multiselect();
+                $('#claim_status').multiselect();
+                $('#insurance_id').multiselect();
+                $('#anesthesia_id').multiselect();
+                $('#insurance_type').multiselect();
+                $("#bill_status").multiselect();
+                $("#statement_status").multiselect();
+               
+               $("#insurance_id").change(function(){
+                    var insurance_id = $("#insurance_id").val();
+                    $("#insurance_id_array").val(insurance_id);
+                });
+                
+                 $("#anesthesia_id").change(function(){
+                    var anesthesia_id = $("#anesthesia_id").val();
+                    $("#anesthesia_id_array").val(anesthesia_id);
+                });
+                
+                  $("#claim_status").change(function(){
+                    var claim_status = $("#claim_status").val();
+                    $("#claim_status_array").val(claim_status);
+                });
+                 $("#bill_status").change(function(){
+                    var claim_status = $("#bill_status").val();
+                    $("#bill_status_array").val(claim_status);
+                });
+                $("#statement_status").change(function(){
+                    var claim_status = $("#statement_status").val();
+                    $("#statement_status_array").val(claim_status);
+                });
+                  $("#cpt_code").change(function(){
+                      var cptcode = $("#cpt_code").val();
+                      $("#cptcode_array").val(cptcode);
+                  });
+                  $("#insurance_type").change(function(){
+                    var insurance_type = $("#insurance_type").val();
+                    $("#insurance_type_array").val(insurance_type);
+                });
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/userfocusonprovider/",
+                function(data){
+                     var myjson='';
+                    eval("myjson=" + data + ";");
+                    var userfocusonprovider = myjson.userfocusonprovider;
+                    if(userfocusonprovider!=null){
+                        for(var i=0;i<userfocusonprovider.length;i++){
+                            $("#provider_id").multiselect("widget").find(":checkbox").each(function(){
+                                if(this.value==userfocusonprovider[i]['provider_id']){
+                                    this.click();
+                                }   
+                            });
+                        }
+                    }
+                });
+                
+                
+                 $("#provider_id").change(function(){
+ 
+                    $("#renderingprovider_id option").remove();
+                    $("#facility_id option").remove();
+                    $("#referringprovider_id option").remove();
+                    var provider_id=$("#provider_id").val();
+                        $('#provider_id_array').val(provider_id);
+                        $.post("<?php echo $this->baseUrl ?>/biller/claims/multiproviderhas/",{provider_id:provider_id},
+                        function(data){
+                            var myjson='';
+                            eval("myjson=" + data + ";");
+                             $("#renderingprovider_id option").remove();
+                    $("#facility_id option").remove();
+                    $("#referringprovider_id option").remove();
+                            $("#renderingprovider_id").append("<option value=\"\">Select</option>");
+                            for(var i=0;i<myjson.renderingproviderList.length;i++){
+                                $("#renderingprovider_id").append("<option value='"+
+                                    myjson.renderingproviderList[i]['rid']+
+                                    "'>"+myjson.renderingproviderList[i]['last_name']+", "+myjson.renderingproviderList[i]['first_name']+
+                                    "</option>");
+                            }
+                            $("#facility_id").append("<option value=\"\">Select</option>");
+                            for(var i=0;i<myjson.facilityList.length;i++){
+                                $("#facility_id").append("<option value='"+
+                                    myjson.facilityList[i]['fid']+
+                                    "'>"+myjson.facilityList[i]['facility_display']+
+                                    "</option>");
+                            }
+                            $("#referringprovider_id").append("<option value=\"\">Select</option>");
+                            for(var i=0;i<myjson.referringproviderList.length;i++){
+                                $("#referringprovider_id").append("<option value='"+
+                                    myjson.referringproviderList[i]['rid']+
+                                    "'>"+myjson.referringproviderList[i]['last_name']+", "+myjson.referringproviderList[i]['first_name']+
+                                    "</option>");
+                            }
+                        });
+                    
+                    
+                });
+               
+               
+            });
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function Timeclick(){
+                //$("#Time").val("");
+                //var Time=$("#Time").val();
+               // $("#Time").val(Time);
+                if( $("#Time").val()=="MM/YYYY"){
+                     $("#Time").val("");
+                document.getElementById('Time').style.color='#000000';}
+                
+            }
+            function checkprovider()
+            {
+                var provider = document.getElementsByName("provider[]")[0];
+                var provider1 = document.getElementsByName("provider1[]")[0];
+                var renderingprovider1 = document.getElementsByName("renderingprovider1[]")[0];
+                var referringprovider1 = document.getElementsByName("referringprovider1[]")[0];
+                if(provider.checked==true)
+                {
+                    provider1.checked=true;
+                    renderingprovider1.checked=true;
+                    referringprovider1.checked=true;
+                }
+                else
+                {
+                    provider1.checked=false;
+                    renderingprovider1.checked=false;
+                    referringprovider1.checked=false;
+                }
+            }
+        </script>
+         <script type="text/javascript" language="javascript" >
+
+            function mydate(name)
+            {
+                var date=$(name).val();
+                var index=name.substring(name.length-1,name.length);
+                if(date.length==1)
+                {
+                    if(date[0]==0||date[0]==1)
+                    {
+                    }
+                    else
+                    {
+                        $(name).val('');
+                    }
+                }
+                if(date.length==2)
+                {
+                    if(date[0]==0)
+                    {
+                        if(date[1]==1||date[1]==2||date[1]==3||date[1]==4||date[1]==5||date[1]==6||date[1]==7||date[1]==8||date[1]==9)
+                        {
+                            date=date+'/';
+                            $(name).val(date);
+                        }
+                        else
+                            $(name).val(0);
+                    }
+                    else
+                    {
+                        if(date[1]==0||date[1]==1||date[1]==2)
+                        {
+                            date=date+'/';
+                            $(name).val(date);
+                        }
+                        else
+                            $(name).val(1);
+                    }
+                }
+                /*if(date.length==4)
+                {
+                    if((date[0]==0&&date[1]==1)||date[1]==3||date[1]==5||date[1]==7||date[1]==8||(date[0]==1&&date[1]==0)||(date[0]==1&&date[1]==2))
+                    {
+                        if(date[3]==0||date[3]==1||date[3]==2||date[3]==3)
+                        {
+                        }
+                        else
+                        {
+                            date = date.substr(0,3);
+                            $(name).val(date);
+                        }
+                    }
+                    else
+                    {
+                        if(date[1]==4||date[1]==6||date[1]==9||(date[0]==1&&date[1]==1))
+                        {
+                            if(date[3]==0||date[3]==1||date[3]==2||date[3]==3)
+                            {
+                            }
+                            else
+                            {
+                                date = date.substr(0,3);
+                                $(name).val(date);
+                            }
+                        }
+                        else
+                        {
+                            if(date[1]==2)
+                            {
+                                if(date[3]==0||date[3]==1||date[3]==2)
+                                {
+                                }
+                                else
+                                {
+                                    date = date.substr(0,3);
+                                    $(name).val(date);
+                                }
+                            }
+                        }
+                    }
+                }
+                if(date.length==5)
+                {
+                    if((date[0]==0&&date[1]==1)||date[1]==3||date[1]==5||date[1]==7||date[1]==8||(date[0]==1&&date[1]==0)||(date[0]==1&&date[1]==2))
+                    {
+                        if(date[3]==0)
+                        {
+                            if(date[4]==1||date[4]==2||date[4]==3||date[4]==4||date[4]==5||date[4]==6||date[4]==7||date[4]==8||date[4]==9)
+                            {
+                                date=date+'/';
+                                $(name).val(date);
+                            }
+                            else
+                            {
+                                date = date.substr(0,4);
+                                $(name).val(date);
+                            }
+                        }
+                        else
+                        {
+                            if(date[3]==1||date[3]==2)
+                            {
+                                if(date[4]==0||date[4]==1||date[4]==2||date[4]==3||date[4]==4||date[4]==5||date[4]==6||date[4]==7||date[4]==8||date[4]==9)
+                                {
+                                    date=date+'/';
+                                    $(name).val(date);
+                                }
+                                else
+                                {
+                                    date = date.substr(0,4);
+                                    $(name).val(date);
+                                }
+                            }
+                            else
+                            {
+                                if(date[3]==3)
+                                {
+                                    if(date[4]==0||date[4]==1)
+                                    {
+                                        date=date+'/';
+                                        $(name).val(date);
+                                    }
+                                    else
+                                    {
+                                        date = date.substr(0,4);
+                                        $(name).val(date);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(date[1]==4||date[1]==6||date[1]==9||(date[0]==1&&date[1]==1))
+                        {
+                            if(date[3]==0)
+                            {
+                                if(date[4]==1||date[4]==2||date[4]==3||date[4]==4||date[4]==5||date[4]==6||date[4]==7||date[4]==8||date[4]==9)
+                                {
+                                    date=date+'/';
+                                    $(name).val(date);
+                                }
+                                else
+                                {
+                                    date = date.substr(0,4);
+                                    $(name).val(date);
+                                }
+                            }
+                            else
+                            {
+                                if(date[3]==1||date[3]==2)
+                                {
+                                    if(date[4]==0||date[4]==1||date[4]==2||date[4]==3||date[4]==4||date[4]==5||date[4]==6||date[4]==7||date[4]==8||date[4]==9)
+                                    {
+                                        date=date+'/';
+                                        $(name).val(date);
+                                    }
+                                    else
+                                    {
+                                        date = date.substr(0,4);
+                                        $(name).val(date);
+                                    }
+                                }
+                                else
+                                {
+                                    if(date[3]==3)
+                                    {
+                                        if(date[4]==0)
+                                        {
+                                            date=date+'/';
+                                            $(name).val(date);
+                                        }
+                                        else
+                                        {
+                                            date = date.substr(0,4);
+                                            $(name).val(date);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if(date[1]==2)
+                            {
+                                if(date[3]==0)
+                                {
+                                    if(date[4]==1||date[4]==2||date[4]==3||date[4]==4||date[4]==5||date[4]==6||date[4]==7||date[4]==8||date[4]==9)
+                                    {
+                                        date=date+'/';
+                                        $(name).val(date);
+                                    }
+                                    else
+                                    {
+                                        date = date.substr(0,4);
+                                        $(name).val(date);
+                                    }
+                                }
+                                else
+                                {
+                                    if(date[3]==1||date[3]==2)
+                                    {
+                                        if(date[4]==0||date[4]==1||date[4]==2||date[4]==3||date[4]==4||date[4]==5||date[4]==6||date[4]==7||date[4]==8||date[4]==9)
+                                        {
+                                            date=date+'/';
+                                            $(name).val(date);
+                                        }
+                                        else
+                                        {
+                                            date = date.substr(0,4);
+                                            $(name).val(date);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }*/
+                if(date.length==4)
+                {
+                    if(date[3]==2)
+                    {
+                    }
+                    else
+                    {
+                        date = date.substr(0,3);
+                        $(name).val(date);
+                    }
+                }
+                if(date.length==5)
+                {
+                    if(date[4]==0)
+                    {
+                    }
+                    else
+                    {
+                        date = date.substr(0,4);
+                        $(name).val(date);
+                    }
+                }
+                if(date.length==6)
+                {
+                    if(date[5]==0||date[5]==1||date[5]==2||date[5]==3||date[5]==4||date[5]==5||date[5]==6||date[5]==7||date[5]==8||date[5]==9)
+                    {
+                    }
+                    else
+                    {
+                        date = date.substr(0,5);
+                        $(name).val(date);
+                    }
+                }
+                if(date.length==7)
+                {
+                    if(date[5]==0||date[5]==1||date[5]==2||date[5]==3||date[5]==4||date[5]==5||date[5]==6||date[5]==7||date[5]==8||date[5]==9)
+                    {
+                        /*var year=parseInt(date.substr(6,10));
+
+                        if(date[0]==0&&date[1]==2&&date[3]==2&&date[4]==9)
+                        {
+                            if(year%400==0)
+                            {
+                            }
+                            else
+                            {
+                                if((year%4==0)&&(year%100!=0))
+                                {
+                                }
+                                else
+                                {
+                                    date = date.substr(0,9);
+                                    $(name).val(date);
+                                }
+                            }
+                        }
+                        computeminutes(index);*/
+                    }
+                    else
+                    {
+                        date = date.substr(0,5);
+                        $(name).val(date);
+                    }
+                }
+                if(date.length>7)
+                {
+                    date = date.substr(0,7);
+                    $(name).val(date);
+                   // computeminutes(index);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function checkservices()
+            {
+                var services = document.getElementsByName("services[]")[0];
+                if(services.checked==true)
+                {
+                    for(var i=1;i<7;i++)
+                    {
+                        var dos = document.getElementsByName("dos"+i.toString()+"[]")[0];
+                        dos.checked=true;
+                        var minuts = document.getElementsByName("minuts"+i.toString()+"[]")[0];
+                        minuts.checked=true;
+                        var cpt = document.getElementsByName("cpt"+i.toString()+"[]")[0];
+                        cpt.checked=true;
+                        var crosswalk = document.getElementsByName("crosswalk"+i.toString()+"[]")[0];
+                        crosswalk.checked=true;
+                        var units = document.getElementsByName("units"+i.toString()+"[]")[0];
+                        units.checked=true;
+                        var charge = document.getElementsByName("charge"+i.toString()+"[]")[0];
+                        charge.checked=true;
+                    }
+                }
+                else
+                {
+                    for(var i=1;i<7;i++)
+                    {
+                        var dos = document.getElementsByName("dos"+i.toString()+"[]")[0];
+                        dos.checked=false;
+                        var minuts = document.getElementsByName("minuts"+i.toString()+"[]")[0];
+                        minuts.checked=false;
+                        var cpt = document.getElementsByName("cpt"+i.toString()+"[]")[0];
+                        cpt.checked=false;
+                        var crosswalk = document.getElementsByName("crosswalk"+i.toString()+"[]")[0];
+                        crosswalk.checked=false;
+                        var units = document.getElementsByName("units"+i.toString()+"[]")[0];
+                        units.checked=false;
+                        var charge = document.getElementsByName("charge"+i.toString()+"[]")[0];
+                        charge.checked=false;
+                    }
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function checkclaimdetails()
+            {
+                var claimdetails = document.getElementsByName("claimdetails[]")[0];
+                var billcreated = document.getElementsByName("billcreated[]")[0];
+                var billed = document.getElementsByName("billed[]")[0];
+                var lastbilled = document.getElementsByName("lastbilled[]")[0];
+                var closed = document.getElementsByName("closed[]")[0];
+                if(claimdetails.checked==true)
+                {
+                    billcreated.checked=true;
+                    billed.checked=true;
+                    lastbilled.checked=true;
+                    closed.checked=true;
+                }
+                else
+                {
+                    billcreated.checked=false;
+                    billed.checked=false;
+                    lastbilled.checked=false;
+                    closed.checked=false;
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function checkpayments()
+            {
+                var payments = document.getElementsByName("payments[]")[0];
+                if(payments.checked==true)
+                {
+                    for(var i=1;i<10;i++)
+                    {
+                        var amount = document.getElementsByName("amount"+i.toString()+"[]")[0];
+                        amount.checked=true;
+                        var date = document.getElementsByName("date"+i.toString()+"[]")[0];
+                        date.checked=true;
+                        var notes = document.getElementsByName("notes"+i.toString()+"[]")[0];
+                        notes.checked=true;
+                    }
+                }
+                else
+                {
+                    for(var i=1;i<10;i++)
+                    {
+                        var amount = document.getElementsByName("amount"+i.toString()+"[]")[0];
+                        amount.checked=false;
+                        var date = document.getElementsByName("date"+i.toString()+"[]")[0];
+                        date.checked=false;
+                        var notes = document.getElementsByName("notes"+i.toString()+"[]")[0];
+                        notes.checked=false;
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Reports</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="">
+                <table>
+                    <tr>
+                        <th align="center" colspan="14" style="background:#eeeeee">
+                            <p align="center"><b>Summary Report</b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                    <th style= "width:10% ">Provider</th>
+                    <td style= "width:15% ">
+                        <select class="select" name="provider_id1" id="provider_id1" style= "width:100% ">
+                            <option value="0">Select</option>
+                            <?php
+                            foreach ($this->providerList as $row) {
+                                echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] .
+                                "</option>";
+                            }
+                            ?>
+                        </select>
+                    </td>
+                    <!--th style= "width:10% ">Year</th>
+                    <td style= "width:15% ">
+                        <select class="select" name="year" id="year" style= "width:100% ">
+                           
+                            <?php
+                                for($i=0;$i<10;$i++){
+                                    $year_ui=$this->year - $i;
+                                   echo "<option value='" .$year_ui . "'>" .$year_ui.
+                                "</option>";
+                                    
+                                }
+                            ?>
+                        </select>
+                    </td>
+                      <th style= "width:10% ">Month</th>
+                     <td style= "width:15% ">
+                        <select class="select" name="month" id="month" style= "width:100% ">
+                            <?php
+                                for($i=0;$i<10;$i++){
+                                    $mouth_ui=($this->mouth +12- $i)%12;
+                                    if($mouth_ui==0){
+                                        $mouth_ui=12;
+                                    }
+                                   echo "<option value='" .$mouth_ui . "'>" .$mouth_ui.
+                                "</option>";
+                                    
+                                }
+                            ?>
+                        </select>
+                    </td-->
+                    <th style= "width:10% "align="left">Report Ending Month</th><td style= "width:15% "><input type="text" name="Time" id="Time" style= "width:98% "  onclick="javascript:Timeclick()" onkeyup="javascript:mydate('#Time') "/></td>
+                    </tr>
+                   
+                    <tr >
+                        <td colspan="14"><input type="submit" name="submit" value="Generate Summary Report"/></td>
+                    </tr>
+                      </table>
+                    <table>
+                    <tr>
+                        <th width="25%" align="left" style="background:#eeeeee">Summary Report</th>
+                        <td width="40%" style="background:#eeeeee">
+                            <select class="select" name="reportsummary_dir" id="reportsummary_dir"  style="width: 100%" >
+                                <option value="-1">Select</option>
+                                <?php
+                                $reportsummaryList=$this->reportsummaryList;
+                                $i=0;
+                                foreach ($reportsummaryList as  $row) {
+    
+                                    $i++;
+                                    echo "<option value='" .$row['path']. "'>" .$i.") ". $row['display'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                            
+                        </td>
+                        <th width="35%" size="100" style="background:#eeeeee;text-align: center"><input type="submit" name="submit" value="Open Summary Report"/></th>                     
+                    </tr>
+                    </table>
+                <table>
+                    <tr>
+                        <th align="center" colspan="14" style="background:#eeeeee">
+                            <p align="center"><b>Custom Report</b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th align="center" colspan="14" >
+                            <p align="left">Select claims to include in report</p>
+                        </th>
+                    </tr>
+
+                    <!-- ****************rearrange the sort***************** -->
+                    <tr>
+                        <th style= "width:10% "align="left">Last Name</th><td style= "width:15% "><input type="text" name="last_name" id="last_name" style= "width:98% "/></td>
+                        <th style= "width:10% "align="left">First Name</th><td style= "width:15% "><input type="text" name="first_name" id="first_name" style= "width:98% "/></td>
+                        <th  style= "width:10% ">MRN</th><td style= "width:15% "><input type="text" name="account_number" id="account_number" style= "width:98% "/></td>
+                        <th style= "width:10% " align="left">Phone Number</th>
+                        <td style="width:15%">
+                            <!--<select name="phone_number" id="phone_number" multiple="multiple" style= "width:16.5%">
+                                <option value='002'>002</option>
+                                <option value='003'>003</option>
+                            </select>-->
+                            <input type='text' name='phone_num' id='phone_num' style='width:98%' onkeyup="javascript:phone('#phone_num')" />
+                        </td>
+                                <!--                                <option value="">All</option>
+                                                                <option value="open">Open</option>                            
+                                                                <option value="closed">Closed</option>
+                                                                <option value="inactive">Inactive</option>
+                                                                <option value="open_ready_primary_bill">Open–not billed</option>
+                                                                <option value="open_billed_primary">Open-billed</option>
+                                                                <option value="open_rebilled">Open–rebilled</option>
+                                                                <option value="open_payment_issued_not_received">Open-payment issued not received</option>
+                                                                <option value="open_payment_issued_not_received_check_requested">Open-payment issued not received check requested</option>
+                                                                <option value="open_follow_up_payment_below_expected">Open-follow up payment below expected</option>
+                                                                <option value="open_follow_up_pending_appeal">Open-follow up pending appeal</option>
+                                                                <option value="open_follow_up_pending_appeal_results">Open-follow up pending appeal results</option>
+                                                                <option value="open_follow_up_other">Open-follow up other</option>
+                                                                <option value="open_ready_delayed_primary_bill">Open-delayed bill generation</option>
+                                                                <option value="open_pending">Open-pending</option>
+                                                                <option value="open_reprocessing">Open-reprocessing</option>
+                                                                <option value="open_investigation_continuing">Open-investigation continuing</option>
+                                                                <option value="open_ready_secondary_bill">Open-secondary insurance not billed</option>
+                                                                <option value="open_billed_secondary">Open-secondary insurance billed</option>
+                                                                <option value="inactive">Inactive</option>
+                                                                <option value="inactive-future service">Inactive-future service</option>
+                                                                <option value="closed_payment_as_expected">Closed-payment as expected</option>
+                                                                <option value="closed_payment_below_expected_due_to_no_precert">Closed–payment below expected due to no pre-cert</option>
+                                                                <option value="closed_appeal_turned_down">Closed–appeal turned down</option>
+                                                                <option value="closed_denied_fund_exhausted">Closed-denied-fund exhausted</option>
+                                                                <option value="closed_denied_no_policy_in_force">Closed-denied no policy in force</option>
+                                                                <option value="closed_denied_no_precert">Closed-denied no precert</option>
+                                                                <option value="closed_denied_independent_medical_exam">Closed-denied Independent Medical Exam</option>
+                                                                <option value="closed_denied_physician_advisory_review">Closed-denied Physician Advisory Review</option>
+                                                                <option value="closed_denied_decision_point_review">Closed-denied Decision Point Review</option>
+                                                                <option value="closed_denied_medical_director_review">Closed-denied Medical Director Review</option>
+                                                                <option value="closed_denied_other">Closed-denied other</option>
+                                <?php
+                                foreach ($this->claimstatusList as $row) {
+                                    echo "<option value='" . $row['claim_status'] . "'>" . $row['claim_status_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select></td>  -->                     
+                    </tr>
+
+                    <tr>
+                        <th style= "width:10% ">Provider</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="provider_id" id="provider_id"  multiple="multiple" style= "width:16.5% ">
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+
+                        <th style= "width:10% ">Rendering Provider</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="renderingprovider_id" id="renderingprovider_id" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->renderingproviderList as $row) {
+                                    echo "<option value='" . $row['rid'] . "'>" . $row['last_name'] . ' ,' . $row['first_name'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+
+                        <th style= "width:10% ">Referring Provider</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="referringprovider_id" id="referringprovider_id" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->referringproviderList as $row) {
+                                    echo "<option value='" . $row['rid'] . "'>" . $row['last_name'] . ' ,' . $row['first_name'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+
+                        <th style= "width:10% ">Facility</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="facility_id" id="facility_id" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->facilityList as $row) {
+                                    echo "<option value='" . $row['fid'] . "'>" . $row['facility_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>                       
+                    </tr>
+
+                    <tr>
+                           <th style= "width:10% ">Claim Status</th>
+                        <td style= "width:15% "><select name="claim_status" id="claim_status" multiple="multiple" style= "width:16.5%">
+       <!--                        <option value="all" style="display:none">All</option>-->
+                                <option value="open">Open</option>                            
+                                <option value="closed">Closed</option>
+                                <option value="inactive">Inactive</option>
+                                        <?php
+                                foreach ($this->claimstatusList as $row) {
+                                    echo "<option value='" . $row['claim_status'] . "'>" . $row['claim_status_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>  
+                             <th style= "width:10% ">Bill Status</th>
+                        <td style= "width:15% "><select name="bill_status" id="bill_status" multiple="multiple" style= "width:16.5%">
+       <!--                        <option value="all" style="display:none">All</option>-->
+                                
+                                        <?php
+                                foreach ($this->billstatusList as $row) {
+                                    echo "<option value='" . $row['bill_status'] . "'>" . $row['bill_status_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+                        <th style= "width:10% ">Statement Status</th>
+                        <td style= "width:15% "><select name="statement_status" id="statement_status" multiple="multiple" style= "width:16.5%">
+       <!--                        <option value="all" style="display:none">All</option>-->
+                                
+                                        <?php
+                                foreach ($this->statementstatusList as $row) {
+                                    echo "<option value='" . $row['statement_status'] . "'>" . $row['statement_status_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+                        <th style= "width:10% "align="left">Last Days</th>
+                        <td style= "width:15% "><input type="text" name="last_days" id="last_days"  style= "width:98% "/></td>
+                        </tr>
+                        <tr>
+                        <th style= "width:10% ">Insurance</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="insurance_id" id="insurance_id" multiple="multiple" style= "width:16.5% ">
+                                <?php
+                                foreach ($this->insuranceList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                             <select class="select" name="insurance_type" id="insurance_type" multiple="multiple" style= "width:16.5% ">
+                                 <option value='primary'>Primary</option>
+                                 <option value='secondary'>Secondary</option>
+                                 <option value='tertiary'>Tertiary</option>
+                                 <option value='other'>Other</option>
+                            </select>
+                        </td>
+                        
+                        <th style= "width:10% ">CPT Code</th>
+                        <td style= "width:15% ">
+                            <select class='select' name='cpt_code' id ='cpt_code' multiple='multiple' style='width:16.5%'>
+                                <?php
+                                    foreach($this->cptcodelist as $cptcode){
+                                        echo "<option value = " . $cptcode['CPT_code'] . ">" . $cptcode['CPT_code'] . "</option>";
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <th style= "width:10% ">Anesthesia Code</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="anesthesia_id" id="anesthesia_id" multiple="multiple" style= "width:16.5%;">
+                                <?php
+                                foreach ($this->anesthesiaList as $row) {
+                                    echo "<option value='" . $row['anesthesia_id'] . "'>" . $row['anesthesia_id'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+                    
+                        <th style= "width:10% "align="left">Charge (min)</th><td style= "width:15% "><input type="text" name="min_charge" id="min_charge" style= "width:98% "/></td>    
+                     </tr>
+                     <tr>
+                        <th style= "width:10% "align="left">Charge (max)</th><td style= "width:15% "><input type="text" name="max_charge" id="max_charge" style= "width:98% "/></td>
+                        <th style= "width:10% "align="left">Paid (min)</th><td style= "width:15% "><input type="text" name="min_paid" id="min_charge" style= "width:98% "/></td> 
+                        <th style= "width:10% "align="left">Paid (max)</th><td style= "width:15% "><input type="text" name="max_paid" id="max_charge" style= "width:98% "/></td>
+                  </tr>
+                    <tr>
+                        <th style= "width:10% "align="left" style= "width:6% ">Start Date</th><td style= "width:15% "><input type="text" name="start_date" id="start_date" onkeyup="javascript:date('#start_date')" style= "width:98% "/></td>
+                    
+                        <th style= "width:10% "align="left">End Date</th><td style= "width:15% "><input type="text" name="end_date" id="end_date" onkeyup="javascript:date('#end_date')" style= "width:98% "/></td>
+
+                    </tr>
+
+
+                    <!-- ****************rearrange the sort***************** -->
+
+
+
+
+
+                    <tr>
+                        <th align="center" colspan="14" >
+                            <p align="left">Select data to include in report</p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Patient </th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="demographics[]" id="demographics" onclick="javascript:checkprovider()"/></td>
+                        <th>Provider</th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="provider[]" id="provider" onclick="javascript:checkprovider()"/></td>
+                        <th>Services</th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="services[]" id="services" onclick="javascript:checkservices()"/></td>
+                        <th>Claim </th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="claimdetails[]" id="claimdetails" onclick="javascript:checkclaimdetails()"/></td>
+                    </tr>
+                     <tr>
+                        <th>Extended Patient </th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="Extended_demographics[]" id="Extended_demographics" onclick="javascript:checkprovider()"/></td>
+                        <th>Extended Provider</th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="Extended_provider[]" id="Extended_provider" onclick="javascript:checkprovider()"/></td>
+                        <th>Extended Services</th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="Extended_services[]" id="Extended_services" onclick="javascript:checkservices()"/></td>
+                        <th>Extended Claim </th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="Extended_claimdetails[]" id="Extended_claimdetails" onclick="javascript:checkclaimdetails()"/></td>
+                    </tr>
+                    <tr>
+                        <th>Payments</th><td style="text-align:left" ><input style="vertical-align:middle;" type="checkbox" name="payments[]" id="payments" onclick="javascript:checkpayments()"/></td>
+                    </tr>
+                    <tr >
+                        <td colspan="8"><input type="submit" name="submit" value="Generate   Custom   Report"/></td>
+                    </tr>
+                    <input type="text" name="provider_id_array" id="provider_id_array" style= "display: none "/>
+                    <input type="text" name="insurance_id_array" id="insurance_id_array" style= "display: none "/>
+                    <input type="text" name="anesthesia_id_array" id="anesthesia_id_array" style= "display: none "/>
+                    <input type="text" name="claim_status_array" id="claim_status_array" style= "display: none "/>
+                    <input type="text" name="cptcode_array" id="cptcode_array" style= "display: none "/>
+                    <input type="text" name="insurance_type_array" id="insurance_type_array" style= "display: none "/>
+                     <input type="text" name="bill_status_array" id="bill_status_array" style= "display: none "/>
+                     <input type="text" name="statement_status_array" id="statement_status_array" style= "display: none "/>
+                </table>
+                 <table>
+                    
+                    <tr>
+                        <th width="25%" align="left" style="background:#eeeeee">Custom Report</th>
+                        <td width="40%" style="background:#eeeeee">
+                            <select class="select" name="reportcustom_dir" id="reportcustom_dir"  style="width: 100%" >
+                                <option value="-1">Select</option>
+                                <?php
+                                $reportcustomList=$this->reportcustomList;
+                                $i=0;
+                                foreach ($reportcustomList as  $row) {
+    
+                                    $i++;
+                                    echo "<option value='" .$row['path']. "'>" .$i.") ". $row['display'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                            
+                        </td>
+                        <th width="35%" size="100" style="background:#eeeeee;text-align: center"><input type="submit" name="submit" value="Open Custom Report"/></th>                     
+                    </tr>
+                    </table>
+            </form>
+        </div>
+    </body>
+</html>

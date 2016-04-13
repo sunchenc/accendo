@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>admin-Accendo</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+	<style type="text/css">
+	  body {
+	      color: #000;
+	      background: #f1f1f1 url(images/br.gif) repeat-y right top;
+	  }
+	</style>
+<script language="JavaScript" type="text/javascript">
+  function show(){
+      if (top.document.getElementById("menu").cols=='7,*')
+      {
+          top.document.getElementById("menu").cols='180,*';
+          document.getElementById("showside").className='hidden';
+      }
+      else
+      {
+          top.document.getElementById("menu").cols='7,*';
+          document.getElementById("showside").className='show';
+      }
+  }
+  </SCRIPT>
+	<base target="mainFrame">
+</head>
+
+<body>
+<div id="menu">
+    <p><a href="#" onclick="javascript:ShowAll(7)" title="open all" target="leftFrame">open all</a> | <a href="#" onclick="javascript:HideAll(7)" title="close all" target="leftFrame">close all</a></p>
+    <ul id="a">
+      <li class="a"><a href="#" onclick="javascript:ShowHideDiv('b1')" class="a" title="click to open/close" target="leftFrame">Company</a>
+	      <ul id="b1" class="b">
+	        <li><a href="<?php echo $this->baseUrl ?>/billingcompany/company/updatecompany/" title="update profile">update company information</a></li>
+			<li><a href="<?php echo $this->baseUrl ?>/billingcompany/company/password/" title="change password">change password</a></li>
+	      </ul>
+	  </li>
+	  <li class="a"><a href="#" onclick="javascript:ShowHideDiv('b2')" class="a" title="click to open/close" target="leftFrame"> Biller</a>
+	      <ul id="b2" class="b" style="display:none;">
+	        <li><a href="<?php echo $this->baseUrl ?>/billingcompany/biller/addbiller/" title="create biller">create biller</a></li>
+                <li><a href="<?php echo $this->baseUrl ?>/billingcompany/biller/managebiller/" title="manage biller">manage biller</a></li>
+	      </ul>
+	  </li>
+
+
+
+    </ul>
+</div>
+<a href="javascript:void(0)" id="showside" class="hidden" onclick="javascript:show();" title=""><span>show/hide left frame</span></a>
+</body>
+</html>
+<script language="JavaScript" type="text/javascript">
+<!--
+function ShowHideDiv(ulId)
+{
+  var id = document.getElementById(ulId);
+
+  if (id.style.display == "none")
+  {
+    eval("id.style.display = 'block';");
+  }
+  else
+  {
+    eval("id.style.display = 'none';");
+  }
+}
+function ShowAll(num)
+{
+    for (i=1; i<num; i++) {
+			document.getElementById("b"+i).style.display= "block";
+		}
+}
+function HideAll(num)
+{
+    for (i=1; i<num; i++) {
+			document.getElementById("b"+i).style.display= "none";
+		}
+}
+//-->
+</script>

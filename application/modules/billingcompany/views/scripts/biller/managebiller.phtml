@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" >
+            function del_confirm(id){
+                if(confirm("delete?")){
+                    location.href="<?php echo $this->baseUrl ?>/billingcompany/biller/deletebiller/id/"+id;
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a href="<?php echo $this->baseUrl ?>/billingcompany/index/main/" title="">First page</a> &gt;  manage biller</p>
+        </div>
+        <div class="table-div">
+            <form method="post" name="adduser">
+                <table>
+                    <tr>
+                        <th class="title" colspan="3"><i>list of users which are biller</i></th>
+                    </tr>
+                    <tr>
+                        <th>user name</th>
+                        <th>register time</th>
+                        <th>operation</th>
+                    </tr>
+                    <?php foreach ($this->users as $user) : ?>
+                        <tr>
+                            <td><?php echo $this->escape($user->user_name); ?></td>
+                            <td><?php echo $this->escape($user->register_time); ?></td>
+                            <td>
+                                <a    onclick="del_confirm(<? echo $user->id; ?>)">Delete</a>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </table>
+
+                <br/>select page:&nbsp;&nbsp;
+
+                <?php
+                        for ($i = 1; $i <= $this->pageCount; $i++) {
+                            echo "<a href=\"$this->baseUrl/billingcompany/biller/managebiller/pageno/$i\">$i</a>";
+                            echo "&nbsp;&nbsp;&nbsp;&nbsp;";
+                        }
+                ?>
+
+
+
+            </form>
+
+        </div>
+    </body>
+</html>

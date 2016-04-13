@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $("#save").attr("disabled", true);
+          
+            $("#options_id").change(function(){
+                 //$("#city").val("caijun1");
+                if($("#options_id").val()==""){
+                    $("#save").attr("disabled", true);
+                   // $("#city").val("caijun");
+                    
+                }else{
+                    $("#save").removeAttr("disabled");
+                }
+            });
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            ); 
+        });
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function zipcode(name)
+            {
+                var zip=$(name).val();
+                var zip=$(name).val();
+//                var phone_number=$(name).val();
+                 var SSNlenght=zip.length;
+                var temp=zip.charAt(SSNlenght-1);
+                if(temp=='1'||temp=='2'||temp=='3'||temp=='4'||temp=='5'||temp=='6'||temp=='7'||temp=='8'||temp=='9'||temp=='0'){
+//                    alert(1)
+                }else{
+//                    alert(3);
+
+                       zip=zip.substr(0,SSNlenght-1);
+                      
+//                      
+//                   
+                }
+                if(zip.length==5)
+                {
+                   
+                }
+                if(zip.length==6)
+                {
+                    zip = zip.substr(0,5)+'-'+zip.substr(5,5);
+                   // $(name).val(zip);
+                }
+                if(zip.length>10)
+                {
+                    zip = zip.substr(0,10);
+                    //$(name).val(zip);
+                }
+                if(zip.length==10||zip.length==5){
+                    
+                    var index=0;
+                    for(index=0;index<zip.length;index++){
+                       var cur=zip.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==5){
+                                   if(cur!='-'){
+                                        zip=zip.substr(0,index)+zip.substr(index+1,zip.length-index-1);
+                                         $(name).val(zip);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        //$(name).val(SSN);
+                                        return;
+                                        
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        zip=zip.substr(0,index)+zip.substr(index+1,zip.length-index-1);
+                                        $(name).val(zip);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        
+                                        return;
+                                        
+                                }
+//                              
+                       }
+                    }
+                     
+                }
+                 $(name).val(zip);
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function zip2citystate(index)
+            {
+                var zip=$("#"+index+"zip").val();
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#"+index+"city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#"+index+"state").val(myjson.state);
+                    }
+                );
+                }
+            }
+            function zipupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    //alert(time);
+                    if(len_time<11&&len_time!=0&&len_time!=5)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+            function myischanged(){
+                // alert(1);
+                    var id=0;
+    
+                    document.getElementById('ischanged').style.display="";
+                    $.get("<?php echo $this->baseUrl ?>/biller/claims/needsave/",
+                    function(date){
+                    });
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+                function showoptionfield(){
+//                    alert("start");
+                    var option = $("#tags_select").val();
+//                    alert(option);
+                    var type_id = "#"+option+"_type";
+//                    alert(type_id);
+                    var type = $(type_id).val();
+//                    alert(type);
+                    var option_value = $("#"+option).val();
+                    if(type == 'binary'){
+//                      alert("a checkbox");
+//                      alert(option_value);
+                      $("#tags_input").css("display","none");
+                      $("#tags_checkbox").css("display","");
+                      if(option_value == "yes"){
+//                          alert(option_value);
+                         document.getElementById("tags_checkbox").checked = true;
+                      }else{
+//                         alert(option_value);
+                         document.getElementById("tags_checkbox").checked = false;
+                      }
+                     }else if(type == 'other'){
+//                      alert("an input field");
+//                      alert(option_value);
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","");
+                      $("#tags_input").val(option_value);
+                     }
+                     if(option == "-1"){
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","none");
+                     }
+                }
+            </script>
+            <script type="text/javascript" language="javascript" >
+                function setvalue(type){
+                    var option = $("#tags_select").val();
+                    if(type == "checkbox"){
+//                        alert("should be checkbox");
+//                        var value = $("#tags_checkbox").val();
+//                        alert(value);
+                        if(document.getElementById("tags_checkbox").checked){
+                            $("#"+option).val("yes");
+//                            alert($("#"+option).val());
+                        }else{
+                            $("#"+option).val("no");
+//                            alert($("#"+option).val());
+                        }
+//                        alert($("#"+option).val());
+                    }else if(type == "input"){
+//                        alert("should be inputfield");
+                        var value = $("#tags_input").val();
+//                        alert(value);
+                        $("#"+option).val(value);  
+//                        alert($("#"+option).val());
+                    }
+                }
+            </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt;New Provider</p>
+        </div>
+        <div class="table-div" >
+            <form method="post"  action="" onsubmit="javascript:return check();">
+                <table>
+                    <tr>
+                        <th align="center" colspan="6" style="background:#eeeeee">
+                            <p align="center"><b>Provider Information</b></p>
+                        </th>
+                    </tr>
+                    <tr >
+                        <th align="left">Provider Name<font color="#FF0000">*</font></th>
+                        <td><input size="55" type="text" name="provider_name" id="provider_name"/></td>
+<!--                        <th align="left">Campany Name</th>
+                        <td>
+                            <select class="select" name="billingcompany_id" id="billingcompany_id" style= "width:100% " disabled="true">
+                                <?php
+                                foreach ($this->billingcompanyList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->billingcompany_name . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>-->
+                        <th align="left">Option Name<font color="#FF0000">*</font></th>
+                        <td>
+                            <select class="select" name="options_id" id="options_id" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->optionsList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->option_name . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left">Phone Number<font color="#FF0000">*</font></th><td><input type="text" size="55" name="phone_number" id="phone_number" /></td>
+                    </tr>
+                    <tr>
+                        
+                        <th  align="left">Fax Number<font color="#FF0000">*</font></th><td><input type="text" size="55" name="fax_number" id="fax_number" /></td>
+                        <th align="left">Second Phone Number</th><td><input type="text" size="55" name="secondary_phone_number" id="secondary_phone_number" /></td>
+                        <th align="left">Email Address<font color="#FF0000">*</font></th><td><input type="text" size="55" name="email_address" id="email_address" /></td>
+                    </tr>
+                    <tr>
+                        
+                        <th align="left">Tax ID Number<font color="#FF0000">*</font></th><td><input type="text" size="55" name="tax_ID_number" id="tax_ID_number" /></td>
+                        <th align="left">Street Address<font color="#FF0000">*</font></th><td><input size="55" type="text" name="street_address" id="street_address"/></td>
+                        <th align="left">Zip<font color="#FF0000">*</font></th><td><input type="text" size="55" name="zip" id="zip" onkeyup="javascript:zipcode('#zip')" onblur="javascript:zipupformat('#zip');javascript:zip2citystate('')" onchange="javascript:myischanged()"/></td>
+                    </tr>
+                    <tr>
+                        
+                        <th  align="left">City<font color="#FF0000">*</font></th><td><input type="text" size="55" name="city" id="city" /></td>
+                        <th align="left">State<font color="#FF0000">*</font></th><td><input type="text" size="55" name="state" id="state" /></td>
+                        <th align="left">Short Name</th><td><input type="text" size="55" name="short_name" id="short_name" /></td> 
+                    </tr>
+                    <tr>
+                        
+                        <th align="left">ID1</th><td><input type="text" size="55" name="id1" id="id1" /></td>
+                        <th align="left">ID2</th><td><input type="text" size="55" name="id2" id="id2" /></td>
+                        <th align="left">Taxonomy Code</th><td><input type="text" size="55" name="taxonomy_code" id="taxonomy_code" /></td> 
+                    </tr>
+                    <tr>
+                        <th align="center" colspan="6" style="background:#eeeeee">
+                            <p align="center"><b>Billing Provider Information</b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th align="left">Provider Name<font color="#FF0000">*</font></th><td><input type="text" size="55" name="billing_provider_name" id="billing_provider_name" /></td>
+                        <th  align="left">NPI</th><td><input type="text" size="55" name="billing_provider_NPI" id="billing_provider_NPI" /></td>
+                        <th align="left">Street Address<font color="#FF0000">*</font></th><td><input type="text" size="55" name="billing_street_address" id="billing_street_address" /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Zip<font color="#FF0000">*</font></th><td><input type="text" size="55" name="billing_zip" id="billing_zip" onkeyup="javascript:zipcode('#billing_zip')" onblur="javascript:zipupformat('#billing_zip');javascript:zip2citystate('billing_')" onchange="javascript:myischanged()"/></td>
+                        <th  align="left">City<font color="#FF0000">*</font></th><td><input type="text" size="55" name="billing_city" id="billing_city" /></td>
+                        <th align="left">State<font color="#FF0000">*</font></th><td><input type="text" size="55" name="billing_state" id="billing_state" /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Phone Number<font color="#FF0000">*</font></th><td><input type="text" size="55" name="billing_phone_number" id="billing_phone_number" /></td>
+                        <th  align="left">Fax<font color="#FF0000">*</font></th><td><input type="text" size="55" name="billing_fax" id="billing_fax" /></td>
+                        <th align="left">Email Address</th><td><input type="text" size="55" name="billing_email" id="billing_email" /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Tags</th><td>
+ 
+                            <!--<input type="text" name="tags" id="tags" size="38"  />-->
+                        <select class="select" name="tags_select" id="tags_select"  style="width: 49%" onchange="javascript:showoptionfield();" >
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->tagList as $row) {
+                                    echo "<option value='" . $row['tag_name'] . "'>" . $row['tag_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        <?php
+                                foreach ($this->tagList as $row) {
+                                    if($row['tag_type'] == "binary"){
+                                        echo "<input type='text' style='display:none' id='" . $row['tag_name'] . "_type' value='".$row['tag_type']."'>";
+//                                        echo "<input type='checkbox' style='display:none' id='" . $row['tag_name'] . "'value='no'>";
+                                    }else if($row['tag_type'] == "other"){
+                                        echo "<input type='text' style='display:none' id='" . $row['tag_name'] . "_type' value='".$row['tag_type']."'>";
+//                                        echo "<input type='text' style='display:none' style='display:none' id='" . $row['tag_name'] . "'>";
+                                    }
+                                }
+                        ?>
+                            <input type ="checkbox"  style="display:none" name="tags_checkbox" id="tags_checkbox" onchange="javascript:setvalue('checkbox');">
+                            <input type ="text"  style="display:none" name="tags_input" id="tags_input" size="24" onchange="javascript:setvalue('input');">
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                     <th></th><td style="display:none">
+                    <?php
+                                foreach ($this->tagList as $row) {
+                                        echo "<input type='text' name='". $row['tag_name']. "' id='" . $row['tag_name'] . "'>";
+                                }
+                        ?>
+                         </td>
+                     </tr>
+                    <tr>
+                        <th>Notes</th><td colspan="5" ><textarea rows="4" style= "width:100%" name="notes" id="notes" ></textarea></td>
+                    </tr>
+                    <tr>
+                        <td width="15%"><input type="submit" name="next" value="Save" id="save" /></td>
+                        <td></td><td></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.8.js"></script>
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+        <script type="text/javascript" language="javascript">
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                    function(data)
+                    {
+                        if(data!='no'&&data!=null) {
+                            var a=document.getElementById("relogin");
+                            a.click(); 
+                        }
+                    }
+                );
+            };
+            
+        </script>
+        <script type="text/javascript" language="javascript">
+            function checkProvider(){
+                var provider_name = $("#provider_name").val();
+                alert(provider_name);
+                if(provider_name!="" && provider_name!=null & provider_name!="no exist provider"){
+                    return true;
+                }else{
+                    return false;
+                }
+                
+            }
+            
+        </script>
+        <script type="text/javascript" language="javascript">
+            function jump(index){
+                $("#jump_index").val(index);
+                //alert(index);
+                document.getElementById('jump_submit').click();
+            }
+            function expand(item,index){
+                var content = item.innerHTML;
+                if(content=="+"){
+                    $("#eob_table_"+index).css("display","");
+                    item.innerHTML = "-";
+                }else{
+                    $("#eob_table_"+index).css("display","none");
+                    item.innerHTML = "+";
+                }
+            }
+            function result_expand(item,index){
+                var content = item.innerHTML;
+                if(content=="+"){
+                    $("#result_eob_table_"+index).css("display","");
+                    item.innerHTML = "-";
+                }else{
+                    $("#result_eob_table_"+index).css("display","none");
+                    item.innerHTML = "+";
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none;" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Automated ERA 835 Processing</p>
+        </div>
+        <div class="table-div">
+            <form enctype="multipart/form-data" method="post" name="batchlist">
+                <table>
+                    <tr>
+                        <th align="center" colspan="14" style="background:#eeeeee">
+                            <p align="center"><b><big>Automated ERA 835 Processing</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center" colspan="3">ERA 835 EDI Data File:</td>
+                        <td style="text-align: center" colspan="4"><input type="file" name="eraFile" id="eraFile" /></td>
+                        <td style="text-align: center" colspan="3">EOB File:</td>
+                        <td style="text-align: center" colspan="4"><input type="file" name="eobFile" id="eobFile" /></td>
+                    </tr>
+                </table>
+                <?php
+                    if($this->transfer_state == "Posted"){
+                        echo '<input type="submit" name="submit" value="Looked Up" disabled="disabled" />&nbsp;&nbsp;&nbsp';
+                    }else{
+                        echo '<input type="submit" name="submit" value="Look Up" />&nbsp;&nbsp;&nbsp';
+                    }
+                ?>
+                <!--<input type="submit" name="submit" id="lookUpButton" value="Look Up" />-->
+            </form>
+                <br />
+                <br />
+            <form enctype="multipart/form-data" method="post" name="batchlist" >
+                <table>
+                    <tr>
+                        <th align="center" colspan="12" style="background:#eeeeee">
+                            <p align="center"><b><big>Look Up Results</big></b></p>
+                        </th>
+                    </tr>
+                    <?php
+                        if($this->transfer_state == "LookUp" || $this->transfer_state == "Posted"){
+                            echo "<tr>";
+                            echo "<td style='text-align:center' colspan='2'> Provider:</td>";
+                            echo "<td id='provider_name' style='text-align:center' colspan='2'>" . $this->provider_name . "</td>";
+                            echo "<td style='text-align:center' colspan='2'> Insurance:</td>";
+                            echo "<td style='text-align:center' colspan='2'>" . $this->insurance_name . "</td>";
+                        }
+                    ?>
+                    <tr>
+                        <th style="background:#eeeeee;width:4%;text-align: center"></th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Name</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">DOB</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">MRN</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">DOS</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">CS</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Total Charge</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Posting Amount</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Allowed Amount</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Amount Paid</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Balance Due</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Lookup Status</th>
+                    </tr>
+                    <?php
+                        $transfer_state = $this->transfer_state;
+                        $i=1;
+                        if($this->transfer_state == "LookUp" || $this->transfer_state == "Posted"){
+                            $results = $this->payments;
+                            foreach($results as $result){
+                                echo "<tr>";
+                                if($i%2 == 1){
+                                    //echo "<th style=\"width:4%;text-align:center\">" . $i . ": </th>";
+                                    if(isset($result["service_lines"])){
+                                        echo "<th style=\"width:4%;text-align:center\"><button style='width:30px;' type='button' onclick='expand(this,".$i.")'>+</button></th>"; 
+                                    }else{
+                                        echo "<th style=\"width:4%;text-align:center\"><button disabled='disabled' style='width:30px;' type='button' onclick='expand(this,".$i.")'>+</button></th>"; 
+                                    }
+                                    echo "<th style=\"width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['postingAmount'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['allowed_amount'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['amount_paid_bf'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['balance_due_bf'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                }else{
+                                    //echo "<th style=\"background:#eeeeee;width:4%;text-align:center\">" . $i . ": </th>";
+                                    if(isset($result["service_lines"])){
+                                        echo "<th style=\"background:#eeeeee;width:4%;text-align:center\"><button style='width:30px;' type='button' onclick='expand(this,".$i.")'>+</button></th>"; 
+                                    }else{
+                                        echo "<th style=\"background:#eeeeee;width:4%;text-align:center\"><button disabled='disabled' style='width:30px;' type='button' onclick='expand(this,".$i.")'>+</button></th>"; 
+                                    }
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['postingAmount'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['allowed_amount'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['amount_paid_bf'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['balance_due_bf'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                }
+                                echo "</tr>";
+                                if(isset($result["service_lines"])){
+                                    echo "<tr style='display:none;text-align:center' id='eob_table_".$i."'>";
+                                    echo "<td colspan='12' style='padding-left: 50px;'>";
+                                    echo "<table style='text-align:center'>";
+                                    echo "<tr><th style=\"text-align:center;font-weight: 300;\">CPT</th><th style=\"text-align:center;font-weight: 300;\">Charge</th><th style=\"text-align:center;font-weight: 300;\">Expected</th><th style=\"text-align:center;font-weight: 300;\">Not Allowed</th><th style=\"text-align:center;font-weight: 300;\">Co-Insurance</th><th style=\"text-align:center;font-weight: 300;\">Deductible</th><th style=\"text-align:center;font-weight: 300;\">Reduction</th><th style=\"text-align:center;font-weight: 300;\">Ad Reason</th><th style=\"text-align:center;font-weight: 300;\">Payment</th></tr>";
+                                    $count_s = count($result["service_lines"]);
+                                    for($index_s = 0; $index_s<$count_s;$index_s++){
+                                        echo "<tr>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["eob_datas"][$index_s]["cpt_code"]."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["eob_datas"][$index_s]["charge"]."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["eob_datas"][$index_s]["ep"]."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['not_allowed_amount']."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['co_insurance']."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['deductible']."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['reduction']."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['adjustment_reason']."</td>";
+                                        echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['payment']."</td>";
+                                        echo "</tr>";
+                                    }
+                                    echo "</table>";
+                                    echo "</td>";
+                                    echo "</tr>";
+                                }
+                                $i++;
+                            }
+                            $total = $this->total;
+                            echo "<th style=\"text-align:center\">Total:</th>";
+                            echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" value=\"".$total."\"/></td>";
+                        }else{
+                            echo "<th style=\"text-align:center\">Total:</th>";
+                            echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" /></td>";
+                        }
+                    ?>
+                </table>
+                <?php
+                    if($this->transfer_state == "Posted"){
+                        echo '<input type="submit" name="submit" value="Posted" disabled="disabled" />&nbsp;&nbsp;&nbsp';
+                    }else{
+                        echo '<input type="submit" name="submit" value="Post" />&nbsp;&nbsp;&nbsp';
+                    }
+                ?>
+                <!--<input type="submit" name="submit" id="postButton" value="Post"/>&nbsp;&nbsp;&nbsp;&nbsp;-->
+                <input type="submit" name="submit" id="checkButton" value="Check EDI 835 Batch Log" />
+                <br />
+                <br />
+                <table id="post_result_table">
+                    <tr>
+                        <th  colspan="12" style="background:#eeeeee;text-align: center"><b><big>Post Results</b></big></th>
+                    </tr>
+                    <tr>
+                        <th style="background:#eeeeee;width:4%;text-align: center"></th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Name</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">DOB</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">MRN</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">DOS</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">CS</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Total Charge</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Posted Amount</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Allowed Amount</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Amount Paid</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Balance Due</th>
+                        <th style="background:#eeeeee;width:8%;text-align: center">Status</th>
+                    </tr>
+                    <?php
+                        //$state = $this->state;
+                        if($this->transfer_state == "Posted"){
+                            $results = $this->post_results;
+                            $count = count($results);
+                            $i=1;
+                            if($count>0){
+                                foreach($results as $result){
+                                    echo "<tr>";
+                                    if($i%2 == 1){
+                                        if(isset($result["service_lines"])&&$result['status']=="Success"){
+                                            echo "<th style=\"width:4%;text-align:center\"><button style='width:30px;' type='button' onclick='result_expand(this,".$i.")'>+</button></th>"; 
+                                        }else{
+                                            echo "<th style=\"width:4%;text-align:center\"><button disabled='disabled' style='width:30px;' type='button' onclick='result_expand(this,".$i.")'>+</button></th>"; 
+                                        }
+                                        //echo "<th style=\"width:4%;text-align:center\">" . $i . ": </th>";
+                                        echo "<th style=\"width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['posted_amount'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['allowed_amount'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['amount_paid'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['balance_due'] . "</th>";
+                                        echo "<th style=\"width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                    }else{
+                                        if(isset($result["service_lines"])&&$result['status']=="Success"){
+                                            echo "<th style=\"background:#eeeeee;width:4%;text-align:center\"><button style='width:30px;' type='button' onclick='result_expand(this,".$i.")'>+</button></th>"; 
+                                        }else{
+                                            echo "<th style=\"background:#eeeeee;width:4%;text-align:center\"><button disabled='disabled' style='width:30px;' type='button' onclick='result_expand(this,".$i.")'>+</button></th>"; 
+                                        }
+                                        //echo "<th style=\"background:#eeeeee;width:4%;text-align:center\">" . $i . ": </th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['posted_amount'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['allowed_amount'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['amount_paid'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['balance_due'] . "</th>";
+                                        echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                    }
+                                    echo "</tr>";
+                                    if(isset($result["service_lines"])){
+                                        echo "<tr style='display:none;text-align:center' id='result_eob_table_".$i."'>";
+                                        echo "<td colspan='12' style='padding-left: 50px;'>";
+                                        echo "<table style='text-align:center'>";
+                                        echo "<tr><th style=\"text-align:center;font-weight: 300;\">CPT</th><th style=\"text-align:center;font-weight: 300;\">Charge</th><th style=\"text-align:center;font-weight: 300;\">Expected</th><th style=\"text-align:center;font-weight: 300;\">Not Allowed</th><th style=\"text-align:center;font-weight: 300;\">Co-Insurance</th><th style=\"text-align:center;font-weight: 300;\">Deductible</th><th style=\"text-align:center;font-weight: 300;\">Reduction</th><th style=\"text-align:center;font-weight: 300;\">Ad Reason</th><th style=\"text-align:center;font-weight: 300;\">Payment</th></tr>";
+                                        $count_s = count($result["service_lines"]);
+                                        for($index_s = 0; $index_s<$count_s;$index_s++){
+                                            echo "<tr>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["eob_datas"][$index_s]["cpt_code"]."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["eob_datas"][$index_s]["charge"]."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["eob_datas"][$index_s]["ep"]."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['not_allowed_amount']."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['co_insurance']."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['deductible']."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['reduction']."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['adjustment_reason']."</td>";
+                                            echo "<td style=\"text-align:center;font-weight: 300;\">".$result["service_lines"][$index_s]['payment']."</td>";
+                                            echo "</tr>";
+                                        }
+                                        echo "</table>";
+                                        echo "</td>";
+                                        echo "</tr>";
+                                    }
+                                    $i++;
+                                }
+                            }
+                        }
+                    ?>
+                    <tr>
+                        <?php
+                            //$state = $this->state;
+                            if($this->transfer_state == "Posted"){
+                                $total = $this->total;
+                                echo "<th style=\"text-align:center\">Total:</th>";
+                                echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" value=\"".$total."\"/></td>";
+                            }else{
+                                echo "<th style=\"text-align:center\">Total:</th>";
+                                echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" /></td>";
+                            }
+                        ?>
+                    </tr>
+                </table>
+                <td style="display:none"><input style="display:none" type="text" name="jump_index" id="jump_index" /></td>
+                <td style="display:none"><input id="jump_submit" style="display:none" type="submit" name="submit"  value="JUMP"/></td>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,1842 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link href="<?php echo $this->baseUrl ?>/colorselector/lib/bootstrap-3.0.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/navigation.css" />
+        <link rel="stylesheet" href="<?php echo $this->baseUrl ?>/styles/jquery.megamenu.css" type="text/css" media="screen" />
+        
+        
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/datepicker.js"></script>
+        <!-- <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.3.2.js"></script> -->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+                <!--Add drop down for mid section-->
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery-1.4.2.min.js" type="text/javascript"></script>
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery.megamenu.js" type="text/javascript"></script>
+        <!--Add drop down for mid section-->  
+        
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        
+        <script type="text/javascript" language="javascript" >
+            var interactionlogId=0;
+            var maskSSN = '';
+            //role control(biller can not see the eye icon)  by haoqiang
+//            $(function(){
+//                var role="";
+//                if(role=='biller'){
+//                    $("#close").hide();
+//                }
+//            });
+            $(document).ready(function(){
+                //                add by Pandazhao 
+                //                if the role is guset, the user can only read;
+
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                var newclaimflag=( "<?php echo $this->new_claim_flag ?>"==1);
+                if(newclaimflag){
+                    $("#saveclaim").attr("disabled",true);
+                    $("#saveclaim").css("background","url('<?php echo $this->baseUrl ?>/images/tab_bg_3.png')");
+                }
+                else
+                {
+                    $("#saveclaim").removeAttr("disabled");
+                    
+                    $("#claim1").attr("readonly","readonly");
+                   
+                    var textObjclaim1= document.getElementById("claim1") ;
+                    textObjclaim1.style.background="#EBEBEB";
+
+                }
+                $("#account_number").attr("readonly","readonly");
+                var textObjaccount_number= document.getElementById("account_number") ;
+                textObjaccount_number.style.background="#EBEBEB";
+                var role = "<?php echo $this->role ?>";
+                if(role=='guest'){
+                    var inputList = document.getElementsByTagName("input");
+//                    var selectList = document.getElementsByTagName("select");
+//                    var textList = document.getElementsByTagName("textarea");
+//                    for(var i=0;i<textList.length;i++){
+//                        textList[i].disabled = "true";
+//                    }
+                    for(var i = 0;i<inputList.length;i++){
+                        if(inputList[i].type=='submit'&&(inputList[i].value=='Finish Claim'||inputList[i].value=='Save Claim')){
+                            inputList[i].disabled="true";
+                            inputList[i].style.background="url(<?php echo $this->baseUrl ?>/images/tab_bg_2.png)";
+                        }
+//                        else{
+//                            if(inputList[i].type!='submit')
+//                                inputList[i].disabled="true";
+//                        }
+                    }
+//                    for(var i = 0;i<selectList.length;i++){
+//                        selectList[i].disabled="true";
+//                    }
+                }
+                
+                
+                
+                
+                if("<?php echo $this->nullcheck ?>")
+                {
+                    $("#<?php echo $this->nullcheck ?>").css("border","4px solid red");
+                    $("#<?php echo $this->nullcheck ?>").focus();
+                }
+                var document_dir_avaiable=( "<?php echo $this->cur_service_info['docbtn_vavaiable'] ?>"==1);
+                if(document_dir_avaiable)
+                    $("#upload").removeAttr("disabled");
+                else
+                    $("#upload").attr("disabled","disabled");
+                $.get("<?php echo $this->baseUrl ?>/biller/claims/patientinput/",function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    refreshaccessbutton();
+                    if(myjson.id!=null)
+                        $("#id").val(myjson.id);
+                    if(myjson.new_patient_flag == 1){
+                        var biller = $("#billername").val();
+                        var time= showtime();
+                        var real_time =realtime();
+                        var log =biller + ': New Patient Created';
+                        addlog(time,real_time,log);
+                        
+                        //如果是新的patient，眼睛不要显示，一直可以编辑，且后台不要加密
+                        $("#SSN").removeAttr("readonly");
+                        $("#SSN").css("background-color","#fff");
+                        
+                        $("#new_patient_flag").val('1');
+                    }else {
+                        var role="<?php echo $this->role ?>";
+                        if(role!='biller'){
+                             $("#close").show();
+                        }
+                        $("#new_patient_flag").val('0');
+                    }
+                    /***********Add Patient Alert Info************/
+                    if(myjson.patient_alert_info!=null && myjson.patient_alert_info!="")
+                    {
+                         /*
+                         var PatientAlertCheckBox = document.getElementById("patient_alert_checkbox");
+                         var PatientAlertDisplay = document.getElementById("alert_info_display");
+                         var PatientAlertInput = document.getElementById("alert_info_input");
+                         PatientAlertCheckBox.checked = true;
+                         PatientAlertDisplay.style.display ="";
+                         PatientAlertInput.style.display =""; 
+                         */
+                         $("#patient_alert_info").val(myjson.patient_alert_info);
+                         $("#last_patient_alert_info").val(myjson.patient_alert_info);
+                    }
+                    /***********Add Patient Alert Info************/
+                    
+                    
+                    /***********Add inquiry_last_name************/
+                    if(myjson.inquiry_last_name!=null){
+                        $("#last_name").val(myjson.inquiry_last_name);
+                        $("#last_last_name").val(myjson.inquiry_last_name);
+                    }
+                    /***********Add inquiry_last_name************/
+                     
+                    if(myjson.last_name!=null){
+                        $("#last_name").val(myjson.last_name);
+                        $("#last_last_name").val(myjson.last_name);
+                    }
+                    if(myjson.first_name!=null){
+                        $("#first_name").val(myjson.first_name);
+                        $("#last_first_name").val(myjson.first_name);
+                    }
+                    if(myjson.sex!=null){
+                        $("#sex").val(myjson.sex);
+                        $("#last_sex").val(myjson.sex);
+                    }
+                    if(myjson.SSN!=null && myjson.SSN!=""){
+                        maskSSN = myjson.SSN;
+                        $("#SSN").val(myjson.SSN);
+                        $("#last_SSN").val(myjson.SSN);
+                    }else{
+                        //如果
+                        $("#SSN").removeAttr("readonly");
+                        $("#SSN").css("background-color","#fff");
+                        $("#close").hide();
+                    }
+                        
+                    if(myjson.DOB!=null){
+                        $("#DOB").val(myjson.DOB);
+                        $("#last_DOB").val(myjson.DOB);
+                    }
+                    if(myjson.street_address!=null){
+                        $("#street_address").val(myjson.street_address);
+                        $("#last_street_address").val(myjson.street_address);
+                    }
+                    if(myjson.zip!=null){
+                        $("#zip").val(myjson.zip);
+                        $("#last_zip").val(myjson.zip);
+                    }
+                    if(myjson.state!=null){
+                        $("#state").val(myjson.state);
+                        $("#last_state").val(myjson.state);
+                    }
+                    if(myjson.city!=null){
+                        $("#city").val(myjson.city);
+                        $("#last_city").val(myjson.city);
+                    }
+                    if(myjson.phone_number!=null){
+                        $("#phone_number").val(myjson.phone_number);
+                        $("#last_phone_number").val(myjson.phone_number);
+                    }
+                    if(myjson.needsave==1){
+                    
+                       document.getElementById('ischanged').style.display="";
+                    }else{
+                       document.getElementById('ischanged').style.display="none";
+                    }
+                    if(myjson.second_phone_number!=null){
+                        $("#second_phone_number").val(myjson.second_phone_number);
+                        $("#last_second_phone_number").val(myjson.second_phone_number);
+                    }
+                    if(myjson.account_number!=null){
+                        $("#account_number").val(myjson.account_number);
+                        $("#last_account_number").val(myjson.account_number);
+                    }
+                    if(myjson.status!=null){
+                        $("#status").val(myjson.status);
+                        $("#last_status").val(myjson.status);
+                    }
+                    if(myjson.relationship_to_insured!=null){
+                        $("#relationship_to_insured").val(myjson.relationship_to_insured);
+                        $("#last_relationship_to_insured").val(myjson.relationship_to_insured);
+                    }
+                    if(myjson.insurance_card_image!=null){
+                        $("#insurance_card_image").val(myjson.insurance_card_image);
+                        $("#last_insurance_card_image").val(myjson.insurance_card_image);
+                    }
+                    if(myjson.notes!=null){
+                        $("#notes").val(myjson.notes);
+                        $("#last_notes").val(myjson.notes);
+                    }
+                    if(myjson.statement_type1!=null){
+                        $("#statement_type1").val(myjson.statement_type1);
+                        $("#last_statement_type1").val(myjson.statement_type1);
+                    }
+                    if(myjson.statement_type2!=null){
+                        $("#statement_type2").val(myjson.statement_type2);
+                        $("#last_statement_type2").val(myjson.statement_type2);
+                    }
+                    if(myjson.date1!=null){
+                        $("#date1").val(myjson.date1);
+                        $("#last_date1").val(myjson.date1);
+                    }
+                    if(myjson.date2!=null){
+                        $("#date2").val(myjson.date2);
+                        $("#last_date2").val(myjson.date2);
+                    }
+                    if(myjson.trigger1!=null){
+                        $("#trigger1").val(myjson.trigger1);                        
+                        $("#last_trigger1").val(myjson.trigger1);
+                    }
+                    if(myjson.trigger2!=null){
+                        $("#trigger2").val(myjson.trigger2);
+                        $("#last_trigger2").val(myjson.trigger2);
+                    }
+                    if(myjson.remark1!=null){
+                        $("#remark1").val(myjson.remark1);
+                        $("#last_remark1").val(myjson.remark1);
+                    }
+                    if(myjson.remark2!=null){
+                        $("#remark2").val(myjson.remark2);
+                        $("#last_remark2").val(myjson.remark2);
+                    }
+                    if(myjson.claim1!=null){
+                        $("#claim1").val(myjson.claim1);
+                        $("#last_claim1").val(myjson.claim1);
+                    }
+                    if(myjson.claim2!=null){
+                        $("#claim2").val(myjson.claim2);
+                        $("#last_claim2").val(myjson.claim2);
+                    }
+                    if(myjson.statement_id2!=null&&myjson.statement_id2!="")
+                    {
+                        $("#statement_id2").val(myjson.statement_id2);
+                        $("#last_statement_id2").val(myjson.statement_id2);
+                        for(var i=1;i<3;i++)
+                        {
+                            var tablename="mytable"+i.toString();
+                            document.getElementById(tablename).style.display="";
+                        }
+                    }
+                    if(myjson.patientlogs!=null&&myjson.patientlogs!=''){
+                        for(var i = 0;i<myjson.patientlogs.length;i++){            
+                            addtable5();
+                            //alert(newclaimflag);
+                            var date_and_time = myjson. patientlogs[i].date_and_time;
+                            var date_and_time_show = date_and_time.toString().slice(0,-3);
+                            $("#date_and_time_"+(i+1)+"").val(date_and_time_show);
+                            $("#date_and_time_real_"+(i+1)+"").val(myjson. patientlogs[i].date_and_time);
+                            $("#log_"+(i+1)+"").val(myjson. patientlogs[i].log);
+                            
+                            if(!newclaimflag&&myjson.patientlogs[i].notsave!=1){
+                                $("#date_and_time_"+(i+1)+"").attr('readonly','readonly');
+                                var date_and_time= document.getElementById("date_and_time_"+(i+1)+"") ;
+                                date_and_time.style.background="#EBEBEB";
+                                
+                                $("#date_and_time_real_"+(i+1)+"").attr('readonly','readonly');
+                                var date_and_time_real= document.getElementById("date_and_time_real_"+(i+1)+"") ;
+                                date_and_time_real.style.background="#EBEBEB";
+                                
+                                 $("#log_"+(i+1)+"").attr('readonly','readonly');
+                                var log= document.getElementById("log_"+(i+1)+"") ;
+                                log.style.background="#EBEBEB";
+                            }
+                            if(role=='guest'){
+                                $("#date_and_time_"+(i+1)+"").attr('disabled','disabled');
+                                $("#log_"+(i+1)+"").attr('disabled','disabled');
+                            }
+                        }
+                    }else{
+                        if(myjson.new_patient_flag != 1){
+                        addtable5();
+                        if(role=='guest'){
+                        
+                                $("#date_and_time_1").attr('disabled','disabled');
+                                $("#log_1").attr('disabled','disabled');
+                            }
+                        }
+                    }
+                    var condition=myjson.condition_related_to;
+                    for (i=0;i<3;i++)
+                    {
+                        var tmp = document.getElementsByName("condition_related_to[]")[i];
+                        if(condition[i]=="1")
+                        {
+                            tmp.checked=true;
+                        }       
+                    }
+                });
+            }
+        );
+        </script>
+        <script type="text/javascript" language="javascript">
+    function myischanged(){
+       // alert(1);
+       var id=0;
+    
+        document.getElementById('ischanged').style.display="";
+       $.get("<?php echo $this->baseUrl ?>/biller/claims/needsave/",
+             function(date){
+       });
+    }
+</script>
+        <script type="text/javascript" language="javascript" >
+            function refreshaccessbutton()
+            {
+                $.get("<?php echo $this->baseUrl ?>/biller/claims/accessbuttonstatus/pageno/1",function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var td1 = $("#document_access td");
+                    if(td1.length>1)
+                        document.getElementById("document_access").deleteCell(1);
+                    var str='<td colspan="7">';
+                    for(var i=0;i<myjson.one_off_paths.length;i++){
+                        var filename=myjson.one_off_paths[i];
+                        str=str+mk_buttonadd_str(filename,"<?php echo $this->baseUrl ?>",'');
+                    }
+                    str+='</td>';
+                    $("#document_access").append(str);
+                });
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                var length=phone_number.length;
+                if(length==0||length==1||length==2||length==5||length==6||length==7||length==9||length==10||length==11||length==12){
+                    var charat=phone_number.charAt(length-1) ;
+                    if(charat<'0'||charat>'9'){
+                        phone_number=phone_number.substr(0,length-1);
+                        $(name).val(phone_number);
+                    }
+                    //alert(charat);
+                }
+                if(phone_number.length==1)
+                if(phone_number.length==1){
+                    if(phone_number=='0'||phone_number=='1'){
+                        phone_number='';
+                    }
+                 $(name).val(phone_number);
+                }
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+                 if(phone_number.length==13){
+                    //alert(phone_number);
+                    var index=0;
+                    for(index=0;index<phone_number.length;index++){
+                       var cur=phone_number.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==0){
+                                   if(cur!='('){
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,time.length-index-1);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        $(name).val(phone_number);
+                                         return;
+                                   }
+                               }else if(index==4){
+                                   if(cur!=')'){
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,time.length-index-1);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        $(name).val(phone_number);
+                                         return;
+                                   }
+                               } else if(index==8){
+                                   if(cur!='-'){
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,time.length-index-1);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        $(name).val(phone_number);
+                                         return;
+                                   }
+                               }
+                               else{
+                                        //alert(cur);
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,phone_number.length-index-1);
+                                        $(name).val(phone_number);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+    
+                                         return;
+                                }
+                              
+                       }
+                    }
+                     
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+       function dateformat(name){
+                  var time=$(name).val();
+                  if(time.length<10&&time.length!=0){
+                    var inputList = document.getElementsByTagName("input");
+                    for(var i = 0;i<inputList.length;i++){
+                        if(inputList[i].type=='submit'){
+                            inputList[i].disabled="true";
+                            inputList[i].style.background="url(<?php echo $this->baseUrl ?>/images/tab_bg_2.png)";
+                        } 
+                        
+                    }
+                  }else{
+                   var inputList = document.getElementsByTagName("input");
+                    for(var i = 0;i<inputList.length;i++){
+                        if(inputList[i].type=='submit'){
+                            inputList[i].removeAttribute("disabled");
+                            //inputList[i].enable="true";
+                            inputList[i].style.background="url(<?php echo $this->baseUrl ?>/images/tab_bg.png)";
+                        } 
+                        
+                    }
+                  
+                  }
+             }
+        function date1902(name)
+        {
+                 date(name);
+                 var time=$(name).val();
+                 if(time.length==10)
+                {
+                    var year=parseInt(time.substr(6,10));
+                    if(year>2037){
+                         newyear=time.substr(0,6);
+                          $(name).val(newyear);
+                     }
+                    if(year<1902){
+                         newyear=time.substr(0,6);
+                          $(name).val(newyear);
+                     }
+                        
+                     
+                        
+                }
+              //  dateformat(name);
+           }
+            function dateupformat(name){
+                   //  dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    // alert(time);
+                    if(len_time<10&&len_time!=0)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+              function setCaretPosition(ctrl, pos){//设置光标位置函数
+                    if(ctrl.setSelectionRange)
+                    {
+                            ctrl.focus();
+                            ctrl.setSelectionRange(pos,pos);
+                    }
+                    else if (ctrl.createTextRange) {
+                            var range = ctrl.createTextRange();
+                            range.collapse(true);
+                            range.moveEnd('character', pos);
+                            range.moveStart('character', pos);
+                            range.select();
+                    }
+            }
+             function dateofDOB(name)
+             {
+                 date(name);
+                 var time=$(name).val();
+                 if(time.length==10){
+                    
+                    var index=0;
+                    for(index=0;index<time.length;index++){
+                       var cur=time.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==2||index==5){
+                                   if(cur!='/'){
+                                        time=time.substr(0,index)+time.substr(index+1,time.length-index-1);
+                                        $(name).val(time);
+                                         return;
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        time=time.substr(0,index)+time.substr(index+1,time.length-index-1);
+                                        $(name).val(time);
+                                        tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+    
+                                         return;
+                                }
+                              
+                       }
+                    }
+                     
+                }
+                 //$(name).val("nowtime");
+                 var myDate = new Date();
+                // var nowtime=myDate.toLocaleDateString();
+                 if(time.length==10)
+                {
+                    MM=time.substr(0,2);
+                    DD=time.substr(3,2);
+                    YY=time.substr(6,4);
+                    YY_NOW=myDate.getFullYear(); 
+                    MM_NOW=myDate.getMonth()+1;
+                    DD_NOW=myDate.getDate();
+                    if(MM_NOW<10){
+                        MM_NOW='0'+MM_NOW;
+                    }
+                    if(DD_NOW<10){
+                        DD_NOW='0'+DD_NOW;
+                    }
+                    nownomal=MM_NOW+'/'+DD_NOW+'/'+YY_NOW;
+                    CurGetTime=new Date(YY,MM,DD);
+                    NowGetTime=new Date(YY_NOW,MM_NOW,DD_NOW);
+                    if(CurGetTime>NowGetTime){
+                       // $(name).val(nownomal);
+                        $(name).val();
+                    }
+                    
+                    MM_Start=MM_NOW;
+                    DD_Start=DD_NOW;
+                    YY_Start=parseInt(YY_NOW)-110;
+                    nownomal=MM_NOW+'/'+DD_NOW+'/'+YY_NOW;
+                    startnomal=MM_Start+'/'+DD_Start+'/'+YY_Start;
+                    StartGetTime=new Date(YY_Start,MM_Start,DD_Start);
+                    NowGetTime=new Date(YY_NOW,MM_NOW,DD_NOW);
+                    if(StartGetTime>CurGetTime){
+                       $(name).val(startnomal);
+                    }
+                    if(NowGetTime<CurGetTime){
+                         $(name).val(nownomal);
+                    }
+                }
+               // dateformat(name);
+             }
+        </script>
+        <script type="text/javascript" language="javascript" >
+             function zipupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    //alert(time);
+                    if(len_time<11&&len_time!=0&&len_time!=5)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+            function SSNupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    //alert(time);
+                    if(len_time<11&&len_time!=0)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+            function phoneupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    //alert(time);
+                    if(len_time<13&&len_time!=0)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                            $("#Insurance").attr("disabled",true);
+                            $("#Service").attr("disabled",true);
+                            $("#Claim").attr("disabled",true);
+                            $("#Documents").attr("disabled",true);
+                            $("#Next").attr("disabled",true);
+
+//                            $("#claim1").attr("readonly","readonly");
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                            $("#Insurance").removeAttr("disabled");
+                            $("#Service").removeAttr("disabled");
+                            $("#Claim").removeAttr("disabled");
+                            $("#Documents").removeAttr("disabled");
+                            $("#Next").removeAttr("disabled");
+
+
+                    }
+             }
+            function ssn(name)
+            {
+                var SSN=$(name).val();
+                var SSNlenght=SSN.length;
+                var temp=SSN.charAt(SSNlenght-1);
+                if(temp=='1'||temp=='2'||temp=='3'||temp=='4'||temp=='5'||temp=='6'||temp=='7'||temp=='8'||temp=='9'||temp=='0'){
+//                    alert(1)
+                }else{
+//                    alert(3);
+
+                       SSN=SSN.substr(0,SSNlenght-1);
+                      
+//                      
+//                   
+                }
+                if(SSN.length==3)
+                {
+                    SSN=SSN+'-';
+                   
+                }
+                if(SSN.length==6)
+                {
+                    SSN=SSN+'-';
+//                    $(name).val(SSN);
+                }
+                if(SSN.length>11)
+                {
+                    SSN = SSN.substr(0,11);
+//                    $(name).val(SSN);
+                }
+                
+               if(SSN.length==11){
+                    
+                    var index=0;
+                    for(index=0;index<SSN.length;index++){
+                       var cur=SSN.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==3||index==6){
+                                   if(cur!='-'){
+                                        SSN=SSN.substr(0,index)+SSN.substr(index+1,SSN.length-index-1);
+                                         $(name).val(SSN);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        //$(name).val(SSN);
+                                        return;
+                                        
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        SSN=SSN.substr(0,index)+SSN.substr(index+1,SSN.length-index-1);
+                                        $(name).val(SSN);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        
+                                        return;
+                                        
+                                }
+//                              
+                       }
+                    }
+                     
+                }
+                 $(name).val(SSN);
+                 
+            }
+        </script>
+
+        <script type="text/javascript" language="javascript" >
+            function zipcode(name)
+            {
+                var zip=$(name).val();
+                var zip=$(name).val();
+//                var phone_number=$(name).val();
+                 var SSNlenght=zip.length;
+                var temp=zip.charAt(SSNlenght-1);
+                if(temp=='1'||temp=='2'||temp=='3'||temp=='4'||temp=='5'||temp=='6'||temp=='7'||temp=='8'||temp=='9'||temp=='0'){
+//                    alert(1)
+                }else{
+//                    alert(3);
+
+                       zip=zip.substr(0,SSNlenght-1);
+                      
+//                      
+//                   
+                }
+                if(zip.length==5)
+                {
+                   
+                }
+                if(zip.length==6)
+                {
+                    zip = zip.substr(0,5)+'-'+zip.substr(5,5);
+                   // $(name).val(zip);
+                }
+                if(zip.length>10)
+                {
+                    zip = zip.substr(0,10);
+                    //$(name).val(zip);
+                }
+                if(zip.length==10||zip.length==5){
+                    
+                    var index=0;
+                    for(index=0;index<zip.length;index++){
+                       var cur=zip.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==5){
+                                   if(cur!='-'){
+                                        zip=zip.substr(0,index)+zip.substr(index+1,zip.length-index-1);
+                                         $(name).val(zip);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        //$(name).val(SSN);
+                                        return;
+                                        
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        zip=zip.substr(0,index)+zip.substr(index+1,zip.length-index-1);
+                                        $(name).val(zip);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        
+                                        return;
+                                        
+                                }
+//                              
+                       }
+                    }
+                     
+                }
+                 $(name).val(zip);
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function zip2citystate()
+            {
+                var zip=$("#zip").val();
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#state").val(myjson.state);
+                    }
+                );
+                }
+                var new_patient = $("#new_patient_flag").val();
+                if(new_patient == '0'){
+                    var time = showtime();
+                    var real_time = realtime();
+                    var last_zip = $("#last_zip").val();
+                    var cur_zip = $("#zip").val();
+                    if(last_zip != cur_zip){
+                        var biller = $("#billername").val();
+                        $("#last_zip").val(cur_zip);
+                        if(last_zip == '' || last_zip == null){
+                            var log = biller + ": Added Zip Code " + cur_zip ;
+                        }else if (cur_zip == '' || cur_zip == null){
+                            var log = biller + ": Removed Zip Code " + last_zip ;
+                        }else{
+                            var log = biller + ": Changed Zip Code from " + last_zip + " to " + cur_zip ;
+                        }
+                        addlog(time,real_time,log);
+                    }
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function differmrn()
+            {
+                changePatient('account_number');
+                var mrn=$("#account_number").val();
+                if(mrn.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/differmrn/",{mrn:mrn},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.count>0)
+                        {
+                            alert('The MRN Already Exist!');
+                        }
+                    }
+                );
+                }
+            }
+        </script>
+        <script language="javascript" type="text/javascript">
+            function remark()
+            {
+                var statement=$("#statement_type1").val();
+                var trigger=$("#trigger1").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/remark/",{statement:statement,trigger:trigger},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    $("#claim1").val(myjson.claim);
+                    $("#remark1").val(myjson.remark);
+                }
+            );
+            }
+        </script>
+
+        <script language="javascript" type="text/javascript">
+            function deletestatement()
+            {
+                var statement=$("#statement_type2").val();
+                if(statement==0){
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/deletependingstatement/",{statement:statement},
+                    function(){
+                        $("#claim2").val('');
+                        $("#remark2").val('');
+                        $("#trigger2").val('');
+                        $('#statement_id2').val('');
+                        $('#encounter_id2').val('');
+                        for(var i=1;i<3;i++)
+                        {
+                            var tablename="mytable"+i.toString();
+                            document.getElementById(tablename).style.display="none";
+                        }
+                    }
+                );
+                }
+               
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function check(){
+                var role = "<?php echo $this->role ?>";
+                if(role=="guest"){
+                    var selectList = document.getElementsByTagName("select");
+                    var inputList = document.getElementsByTagName("input");
+                    var textList = document.getElementsByTagName("textarea");
+                    for(var i=0;i<textList.length;i++){
+                        textList[i].disabled = false;
+                    }
+                    for(var i = 0;i<inputList.length;i++){
+                        //                    if(inputList[i].type=='checkbox'||inputList[i].type=='radio'||inputList[i].type=='button')
+                        inputList[i].disabled=false;
+                    }
+                    for(var i =0;i<selectList.length;i++){
+                        selectList[i].disabled=false;
+                    }
+                }
+            }
+    
+        </script>
+        <script type="text/javascript" language="javascript" >
+            
+            function addtable5(){
+                interactionlogId = interactionlogId +1;
+                var count5 = document.getElementById("count5");
+                var interactionlogTd = document.getElementById("interactionlogTd");
+                var interactionlogDiv = document.getElementById("interactionlogDiv");
+                var interactionlogTable = document.getElementById("interactionlogTable");
+                count5.value = interactionlogId;
+                
+                if(interactionlogId==1){
+                    interactionlogTd.style.display ="";
+                    interactionlogDiv.style.display = "";
+                    interactionlogDiv.style.height ="25px";
+                }
+                if(interactionlogId ==2){
+                    interactionlogDiv.style.height = "50px";
+                }
+                if(interactionlogId == 3){
+                    interactionlogDiv.style.height = "75px";
+                }
+                var newTr= interactionlogTable.insertRow(0);
+                newTr.id="tr"+interactionlogId+"";
+                var newth1 = document.createElement("TH");
+                var newtd1 = document.createElement("TD");
+                var newth2 = document.createElement("TH");
+                if(navigator.userAgent.indexOf("MSIE")!=-1){
+                    newth1.style.width="122px";
+                    newth1.colspan=1;
+                    newth2.style.width="124px";
+                }else{
+                    newth1.style.width="13.8%";
+                    newtd1.style.width="11%";
+                    //newth1.colspan=1;
+                    newth2.style.width="14%";
+                }
+                newth1.innerHTML ="Date And Time";
+                newth2.innerHTML ="Log";
+                newTr.appendChild(newth1,0);
+                newTr.appendChild(newtd1,1);
+                newTr.appendChild(newth2,2);
+                var newtd2 = newTr.insertCell(3);
+                if(navigator.userAgent.indexOf("MSIE")!=-1){
+                    newtd2.style.width="999px";
+                }else{
+                    newtd2.style.width="70%";
+                    newtd2.colspan = 5;
+                }
+                var newtd3 = document.createElement("TD");
+                newtd3.style.display="none";
+                newTr.appendChild(newtd3,4);
+                //newtd1.style.width="130px";
+                //newtd3.style.width="14%";
+                newtd1.innerHTML ="<input type=\"text\" name=\"date_and_time_"+interactionlogId+"\" id=\"date_and_time_"+interactionlogId+"\" onkeyup=\"javascript:dateandtime(\'#date_and_time_"+interactionlogId+"\')\" onfocus=\"javascript:dateandtimefocus("+interactionlogId+")\"/>";
+                newtd2.innerHTML ="<input type=\"text\" name=\"log_"+interactionlogId+"\" id=\"log_"+interactionlogId+"\" style=\"width:99%\"/>";               
+                newtd3.innerHTML ="<input type=\"text\" name=\"date_and_time_real_"+interactionlogId+"\" id=\"date_and_time_real_"+interactionlogId+"\">";
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function deletetable5   (){
+                var interactionlogTd = document.getElementById("interactionlogTd");
+                var interactionlogDiv = document.getElementById("interactionlogDiv");
+                var count5 = document.getElementById("count5");
+                if(interactionlogId>1){
+                    
+                    var theDeleTr = document.getElementById("tr"+interactionlogId+"");
+                    
+                    theDeleTr.parentNode.removeChild(theDeleTr);
+                    --interactionlogId;
+                    paymentreceived3(interactionlogId);
+                    count5.value = interactionlogId;
+                 
+                    if(interactionlogId ==1){
+                        interactionlogDiv.style.height ="25px";
+                    }
+                    if(interactionlogId == 2){
+                        interactionlogDiv.style.height = "50px";
+                    }
+                    if(interactionlogId == 3){
+                        interactionlogDiv.style.height ="75px";
+                    }
+                }
+              
+            } 
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function dateandtimefocus(index)
+            {
+                var hiddendatename="#hidden_date_and_time_"+index.toString();
+                var datename="#date_and_time_"+index.toString();
+                var realdate = "#date_and_time_real_" + index.toString();
+                var billername="#log_"+index.toString();
+                if($(datename).val()==null||$(datename).val()==''||$(datename).val()=="")
+                {
+                    var myDate = new Date();
+                    var myTime = showtime();
+                    $(datename).val(myTime);
+//                  $(datename).val((myDate.getMonth()+1)+'/'+myDate.getDate()+'/'+myDate.getFullYear()+' '+myDate.getHours()+':'+myDate.getMinutes());
+                    $(billername).val($("#billername").val()+': ');
+                    var hiddentime = hiddenshowtime();
+                    $(hiddendatename).val(hiddentime);
+                    var real_time = realtime();
+                    //var realtime = '1234';
+                    $(realdate).val(real_time);
+                }
+                myischanged();
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function realtime(){
+            var today=new Date();
+            var year=today.getFullYear();
+            var month=today.getMonth()+1;
+            var day=today.getDate();
+            var hours = today.getHours();
+            var minutes = today.getMinutes();
+            var seconds = today.getSeconds();
+            var timeValue = (month<10?"0":"")+month+"/"+(day<10?"0":"")+day+"/"+year + " " + (hours<10?"0":"")+hours +":" + (minutes<10?"0":"")+minutes+":"+(seconds<10?"0":"")+seconds; 
+            return timeValue;
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function showtime(){
+            var today=new Date();
+            var year=today.getFullYear();
+            var month=today.getMonth()+1;
+            var day=today.getDate();
+            var hours = today.getHours();
+            var minutes = today.getMinutes();
+            var seconds = today.getSeconds();
+            var timeValue = (month<10?"0":"")+month+"/"+(day<10?"0":"")+day+"/"+year + " " + (hours<10?"0":"")+hours +":" + (minutes<10?"0":"")+minutes ; 
+            return timeValue;
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function hiddenshowtime(){
+            var today=new Date();
+            var year=today.getFullYear();
+            var month=today.getMonth()+1;
+            var day=today.getDate();
+            var hours = today.getHours();
+            var minutes = today.getMinutes();
+            var seconds = today.getSeconds();
+            var timeValue = (month<10?"0":"")+month+"/"+(day<10?"0":"")+day+"/"+year + " " + (hours<10?"0":"")+hours +":" + (minutes<10?"0":"")+minutes+":"+seconds; 
+            return timeValue;
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function addlog(time,realtime,log)
+            {
+                addtable5();
+                $('#date_and_time_'+interactionlogId).val(time);
+                $('#date_and_time_real_'+interactionlogId).val(realtime);
+                $('#log_'+interactionlogId).val(log);
+                var hiddentime = hiddenshowtime();
+                $('#hidden_date_and_time_'+interactionlogId).val(hiddentime);
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function ischangeable(type){
+                var attr = document.getElementById('SSN').readOnly;
+//                alert(attr);
+                if(attr){
+//                    alert('aaa  false');
+                    return false;
+                }else{
+//                    alert('bbb true');
+                    changePatient(type);
+                }
+            }
+            function changePatient(type){
+                var new_patient = $("#new_patient_flag").val();
+                if(new_patient == '0'){
+                    var biller=$("#billername").val();
+                    var time = showtime(); 
+                    var real_time = realtime();
+                    if(type == 'last_name'){
+                        var last_last_name = $('#last_last_name').val();
+                        var cur_last_name = $('#last_name').val();
+                        if( last_last_name != cur_last_name){
+                            $('#last_last_name').val(cur_last_name);
+                            var log = biller + ': Changed Last Name from ' + last_last_name + ' to ' + cur_last_name;
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    if(type == 'first_name'){
+                        var last_first_name = $('#last_first_name').val();
+                        var cur_first_name = $('#first_name').val();
+                        if( last_first_name != cur_first_name){ 
+                            $('#last_first_name').val(cur_first_name);
+                            var log = biller + ': Changed First Name from ' + last_first_name + ' to ' + cur_first_name;
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    if(type == 'sex'){
+                        var last_sex = $('#last_sex').val();
+                        var cur_sex = $('#sex').val();
+                        if(last_sex != cur_sex){
+                            $('#last_sex').val(cur_sex);
+                            if(last_sex == 'f'){
+                                last_sex = 'female';
+                            }else if(last_sex == 'm'){
+                                last_sex = 'male';
+                            }else{
+                                last_sex = "not select";
+                            }
+                            if(cur_sex == 'f'){
+                                cur_sex = 'female';
+                            }else if(cur_sex == 'm'){
+                                cur_sex = 'male';
+                            }else{
+                                cur_sex = "not select";
+                            }
+                            var log = biller + ': Changed Sex from ' + last_sex + ' to ' + cur_sex;
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    if(type == 'dob'){
+                        var last_dob = $('#last_DOB').val();
+                        var cur_dob = $('#DOB').val();
+                        if( last_dob != cur_dob){ 
+                            $('#last_DOB').val(cur_dob);
+                            var log = biller + ': Changed Date of Birth from ' + last_dob + ' to ' + cur_dob;
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    if(type =='street_address'){
+                        var last_street_address = $('#last_street_address').val();
+                        var cur_street_address= $('#street_address').val();
+                        if( last_street_address != cur_street_address){ 
+                            $('#last_street_address').val(cur_street_address);
+                            if( last_street_address =='' || last_street_address == null){
+                                var log = biller + ': Added Street Address ' + cur_street_address;
+                            } else if(cur_street_address =='' || cur_street_address ==null){
+                                var log = biller + ': Removed Street Address ' + last_street_address;
+                            }else{
+                                var log = biller + ': Changed Street Address from ' + last_street_address + ' to ' + cur_street_address;
+                            }
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    if(type == 'city'){
+                        var last_city = $('#last_city').val();
+                        var cur_city= $('#city').val();
+                        if( last_city != cur_city){ 
+                            $('#last_city').val(cur_city);
+                            if(last_city ==''|| last_city ==null){
+                                var log = biller + ': Added City '  + cur_city;
+                            }else if(cur_city == '' || cur_city == null){
+                                var log = biller + ': Removed City '  + last_city;
+                            }else{
+                                var log = biller + ': Changed City from ' + last_city + ' to ' + cur_city;
+                            }
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    //SSN 单独提取进行判断
+                       if(type == 'SSN'){
+                        var last_ssn = $('#last_SSN').val();//from json
+                        var last_real_SSN = $('#last_real_SSN').val();// from ajax
+                        
+                        var cur_ssn= $('#SSN').val();
+                        
+//                        alert('cur_ssn:'+cur_ssn);
+//                        alert('last_real_SSN:'+last_real_SSN);
+                        
+                        if(last_real_SSN != cur_ssn){
+                            $('#last_real_SSN').val(cur_ssn);
+                            if(last_ssn==''|| last_ssn==null){
+                                var log  = biller+":Added SSN";
+                            }else if(cur_ssn==''||cur_ssn==null){
+                                var log = biller+":Removed SSN";
+                            }else{
+                                var log = biller+':Changed SSN';
+                            }
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    
+                    
+//                    if(type=='remark1'||type == 'notes' || type == 'claim1' ||　type == 'patient_alert_info' || type == 'state' || type == 'SSN' || type == 'account_number' || type == 'phone_number' || type == 'second_phone_number' || type =='relationship_to_insured' || type =='status'){
+                    if(type=='remark1'||type == 'notes' || type == 'claim1' ||　type == 'patient_alert_info' || type == 'state' || type == 'account_number' || type == 'phone_number' || type == 'second_phone_number' || type =='relationship_to_insured' || type =='status'){
+//                        var trans = {"remark1":"Remark","notes":"Notes","state":"State","patient_alert_info":"Alert Infomation","claim1":"Claim","SSN":"SSN","phone_number":"Phone Number","account_number":"MRN","second_phone_number":"Second Number", "relationship_to_insured":"Relationship to Insured","status":"Patient Status"};
+                        var trans = {"remark1":"Remark","notes":"Notes","state":"State","patient_alert_info":"Alert Infomation","claim1":"Claim","phone_number":"Phone Number","account_number":"MRN","second_phone_number":"Second Number", "relationship_to_insured":"Relationship to Insured","status":"Patient Status"};
+                        var last_name = '#last_' + type;
+                        var cur_name = '#'+type;
+                        var last = $(last_name).val();
+                        var cur = $(cur_name).val();
+                        if(last != cur){
+                            $(last_name).val(cur);
+                            if(last==''||last==null){
+//                                if(type=="SSN"){
+//                                    var last_ssn = last.slice(-4);
+//                                    var cur_ssn = cur.slice(-4);
+//                                    if(last_ssn!=cur_ssn){
+//                                        var log = biller + ': Added ' + trans[type]  + ' ' +"***-**-"+ cur_ssn;
+//                                    }
+//                                }else{
+                                    var log = biller + ': Added ' + trans[type]  + ' ' + cur;
+//                                }
+                                
+                            }else if(cur == '' || cur == null){
+//                                 if(type=="SSN"){
+////                                    var last_ssn = trim(last).slice(-4);
+//                                    var cur_ssn = cur.slice(-4);
+//                                    if(cur == '' || cur == null){
+//                                        var log = biller + ': Removed ' + trans[type]  + ' ' + last;
+//                                    }
+//                                }else{
+                                     var log = biller + ': Removed ' + trans[type]  + ' ' + last;
+//                                }
+                               
+                            }else{
+//                                if(type=="SSN"){
+//                                    var last_ssn = last.slice(-4);
+////                                    alert(last_ssn);
+//                                    var cur_ssn = cur.slice(-4);
+////                                    alert(cur_ssn);
+//                                    if(last_ssn!=cur_ssn){
+//                                        var log = biller + ': Changed ' + trans[type]  + ' form ' + last + ' to ' + "***-**-"+cur_ssn;
+//                                    }
+//                                }else{
+                                var log = biller + ': Changed ' + trans[type]  + ' form ' + last + ' to ' + cur;
+//                                }
+                            }
+                            addlog(time, real_time, log);
+                        }
+                    }
+                    if(type == 'condition_related_to_1'){
+                        var tmp = document.getElementsByName("condition_related_to[]")[0];
+                        if( tmp.checked == true){
+                            log = biller + ': Changed Condition Related To EMPLOYMENT from unchecked to chencked';
+                        }else
+                        {
+                            log = biller + ': Changed Condition Related To EMPLOYMENT from checked to unchencked';
+                        }
+                        addlog(time,real_time,log);
+                    }
+                    if(type == 'condition_related_to_2'){
+                        var tmp = document.getElementsByName("condition_related_to[]")[1];
+                        if( tmp.checked == true){
+                            log = biller + ': Changed Condition Related To AUTO from unchecked to chencked';
+                        }else
+                        {
+                            log = biller + ': Changed Condition Related To AUTO from checked to unchencked';
+                        }
+                        addlog(time,real_time,log);
+                    }
+                    if(type == 'condition_related_to_3'){
+                        var tmp = document.getElementsByName("condition_related_to[]")[2];
+                        if( tmp.checked == true){
+                            log = biller + ': Changed Condition Related To OTHER from unchecked to chencked';
+                        }else
+                        {
+                            log = biller + ': Changed Condition Related To OTHER from checked to unchencked';
+                        }
+                        addlog(time,real_time,log);
+                    }
+                    if(type == 'statement_type1'){
+
+                        var last_state = $('#last_statement_type1').val();
+                        var cur_state= $('#statement_type1').val();
+                        if(last_state != cur_state){
+                            $('#last_statement_type1').val(cur_state);
+                            //alert(last_state + cur_state);
+                            last = parseInt(last_state);
+                            cur = parseInt(cur_state);
+                            //alert(last + cur);
+                            var states = new Array();
+                            states[0] = 'unselected';
+                            states[1] = 'StatementI';
+                            states[2] = 'StatementII';
+                            states[3] = 'StatementIII';
+                            states[4] = 'Self Pay';
+                            states[5] = 'Installment';
+                            if(last == 0 || last =='0'){
+                                var log = biller + ': Added Statement '+ states[cur];
+                            }else if (cur==0||cur=='0'){
+                                var log = biller + ': Removed Statement '+ states[last];
+                            }else{
+                                var log = biller + ': Changed Statement form ' + states[last] + ' to ' + states[cur];
+                            }
+                            addlog(time,real_time,log);
+                        }
+                    }
+                    if(type == 'trigger1' ){
+                        var last_tri = $('#last_trigger1').val();
+                        var cur_tri= $('#trigger1').val();
+                        if(last_tri != cur_tri){
+                            $('#last_trigger1').val(cur_tri);
+                            //alert(last_state + cur_state);
+                            if(last_tri == '' || last_tri == null){
+                                last_tri = '0';
+                            }
+                            if(cur_tri == '' || cur_tri == null){
+                                cur_tri = '0';
+                            }
+                            last = parseInt(last_tri);
+                            cur = parseInt(cur_tri);
+                            //alert(last + cur);
+                            var states = new Array();
+                            states[0] = 'unselected';
+                            states[1] = 'Payment sent to patient';
+                            states[2] = 'Co-insurance';
+                            states[3] = 'Deductible';
+                            states[4] = 'Self pay';
+                            states[5] = 'Installment';
+                            if(last == 0 || last =='0'){
+                                var log = biller + ': Added Trigger '+ states[cur];
+                            }else if (cur==0||cur=='0'){
+                                var log = biller + ': Removed Trigger '+ states[last];
+                            }else{
+                                var log = biller + ': Changed Trigger form ' + states[last] + ' to ' + states[cur];
+                            }
+                            addlog(time,real_time,log);
+                        }
+                    }
+                }
+            }
+        </script>
+        
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div class="table-div" >
+            <form method="post" action="" onsubmit="javascript:return check();">
+                <table >
+                    <tr class="navigation">
+                        <td colspan="8" style="background:#ffffff">
+                            <a href="#"><span> <input type="submit" name="submit" id="Previous"value="Previous"style="background:url(<?php echo $this->baseUrl ?>/images/tab_bg_2.png)" disabled="disabled"/></span></a>
+                            <a href="#"><span> <input type="submit"name="submit"id="Patient"value="Patient" style="background:url(<?php echo $this->baseUrl ?>/images/tab_bg_3.png)"/></span></a>
+                            <a href="#"><span> <input type="submit" name="submit"id="Insurance"value="Insurance" /></span></a>
+                            <a href="#"><span> <input type="submit"name="submit"id="Service"value="Service" /></span></a>
+                            <a href="#"><span> <input type="submit" name="submit"id="Claim"value="Claim" style="width:60px"/></span></a>
+                            <a href="#"><span> <input  style="width:100px" type="submit"name="submit"id="Documents"value="Documents" /></span></a>
+                            <a href="#"><span> <input type="submit"name="submit"id="Next"value="Next" /></span></a>
+
+                                             <!-- Fix the mid UI By Yu Lang-->           
+                            <span style="margin:0 0 0 30px"> 
+                             <div id="current">                                      
+                            <ul class="megamenu">
+                                 <li ><a href="javascript:void(0)" ><font color="FF0000" size="1px"><?php echo $this->cur_service_info['patient_name'] ?></font></a>&nbsp;<!--    </li>
+                                 <li>
+                                     <a href="javascript:void(0)" style="color:#FF0000;">=</a>-->
+                                     <div style="width: 840px; left:3px;">
+                                         <!-- <h3>Dropdown Example</h3> -->
+                                         <table border="1" cellpadding="0" cellspacing="0" id="tabular-content">
+                                             <tr>
+                                                <!-- <th style="width: 15px">Number</th> -->
+                                                 <th style="text-align:center">DOS</th>
+                                                 <th style="width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Charge</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Paid</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">%</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Due</th>
+                                                 <th style="width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Insurance</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Provider</th>
+                                                 <th style="width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Rendering Provider</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Referring Provider</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Facility</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Last</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Claim Status</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Bill Status</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Statement Status</th>
+                                                  <!--<th style="width: 100px">DOS</th> -->
+                                             </tr>
+                                             
+                                             <?php
+                                             $tmp_baseUrl = $this->baseUrl;
+                                             $tmp_claim_id = $this->cur_service_info['claim_id'];                                             
+                                             foreach($this->tmpList as $row)
+                                             {
+                                                
+                                                if( $row['claim_id'] == $tmp_claim_id )
+                                                {
+                                                    $rendering_provdier_name = $row['ren_last_name']. ', '. $row['ren_first_name'];
+                                                    $referring_provider_name = $row['ref_last_name'].', '.$row['ref_first_name'];
+                                                    
+                                                    echo "<tr><td style= 'background-color: rgb(150,230,230);'>";                                                  
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=patient \">";
+                                                    echo $row['dos']."</a></td>";
+                                                     echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                     echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['amount_paid']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['balance_due']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['insurance_display']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo substr($rendering_provdier_name,0,15)."</td>" ;
+                                                    echo "<td style= 'width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($referring_provider_name,0,15)."</td>";
+                                                     echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['facility_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['last']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['claim_status'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['bill_status'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['statement_status'],0,30)."</a></td>";
+                                                    echo "<tr>";
+                                                }
+                                                else
+                                                {
+                                                    $rendering_provdier_name = $row['ren_last_name']. ', '. $row['ren_first_name'];
+                                                    $referring_provider_name = $row['ref_last_name'].', '.$row['ref_first_name'];
+                                                    
+                                                    echo "<tr><td>";
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=patient \">";
+                                                    echo $row['dos']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['amount_paid']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['balance_due']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['insurance_display']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($rendering_provdier_name,0,15)."</td>" ;
+                                                    echo "<td style= 'width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($referring_provider_name,0,15)."</td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['facility_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['last']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['claim_status'],0,30)."</a></td>";;
+                                                    echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['bill_status'],0,30)."</a></td>";;
+                                                    echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['status_status'],0,30)."</a>";;
+                                                    echo "</td><tr>";
+                                                }
+                                             }
+                                             ?>
+                                         </table>
+                                     </div>
+                                 </li>
+                                 
+                                     |&nbsp;<?php echo $this->cur_service_info['gender'] ?>&nbsp;
+                                     |&nbsp;<?php echo $this->cur_service_info['DOB'] ?>&nbsp;
+                                     |&nbsp;<?php echo $this->cur_service_info['MRN'] ?>&nbsp;
+                                     |&nbsp;<?php echo $this->cur_service_info['DOS'] ?>&nbsp;
+                                     |&nbsp$<?php echo $this->cur_service_info['total_charge'] ?>&nbsp;
+                                
+                                    <br/><li>&nbsp;&nbsp;<?php echo $this->cur_service_info['secondary_cpt_code_1'] ?>&nbsp;
+                                    |&nbsp;<?php echo $this->cur_service_info['provider_short_name'] ?>&nbsp;
+                                    |&nbsp;<?php echo $this->cur_service_info['renderingprovider_name'] ?>&nbsp;
+                                    |&nbsp;<?php echo $this->cur_service_info['referingprovider_name'] ?>&nbsp;
+                                    |&nbsp;<li><a href="javascript:void(0)"><font color = "FF0000" size ="1px"><?php echo $this->cur_service_info['insurance_display'] ?></font></a>
+                                    <div style="width: 840px; left:3px;">
+                                         <!-- <h3>Dropdown Example</h3> -->
+                                         <table border="1" cellpadding="0" cellspacing="0" id="tabular-content">
+                                             <tr>
+                                                <!-- <th style="width: 15px">Number</th> -->
+<!--                                                 <th style="width: 30%;text-align:center">Name</th>-->
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Patient Name</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">DOB</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">MRN</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">DOS</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Charge</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Due</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">%</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Paid</th>
+                                                
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Insurance</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Provider</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Rendering Provider</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Referring Provider</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Facility</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Last</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Issue</th>
+                                                 
+                                                  <!--<th style="width: 100px">DOS</th> -->
+                                             </tr>
+                                             
+                                             <?php
+                                             $tmp_baseUrl = $this->baseUrl;
+                                             $tmp_claim_id = $this->cur_service_info['claim_id'];  
+                                             
+                                             foreach($this->taiList as $row)
+                                             {
+                                                
+                                                if( $row['claim_id'] == $tmp_claim_id )
+                                                {
+                                                    $rendering_provdier_name = substr($row['renderingprovider'],0,15) ;
+                                                    $referring_provider_name = substr($row['referringprovider'],0,15);
+                                                    
+                                                    echo "<tr><td style= 'width: 32%;background-color: rgb(150,230,230);'>";                                                  
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=patient \">";
+                                                    echo substr($row['name'],0,20)."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo  date('m/d/Y', strtotime($row['DOB']))."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['MRN']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo date('m/d/Y', strtotime($row['DOS'])) ."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['due']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['amount_paid']."</td>" ;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['payer'],0,15) ."</td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['renderingprovider'],0,15) ."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['referringprovider'],0,15) ."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['facility_short_name'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['last'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['display'],0,30)."</a></td>";
+                                                    echo "<tr>";
+                                                }
+                                                else
+                                                {
+                                                     $rendering_provdier_name = substr($row['renderingprovider'],0,15) ;
+                                                    $referring_provider_name = substr($row['referringprovider'],0,15);
+                                                    
+                                                    echo "<tr><td style= 'width: 32%'>";
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=patient \">";
+                                                    echo  substr($row['name'],0,20)."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo date('m/d/Y', strtotime($row['DOB']))."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['MRN']."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo date('m/d/Y', strtotime($row['DOS'])) ."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['due']."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo  $row['amount_paid']."</td>" ;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo  substr($row['payer'],0,15) ."</td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['renderingprovider'],0,15) ."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['referringprovider'],0,15)."</a></td>";;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['facility_short_name'],0,30)."</a></td>";;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['last'],0,30)."</a>";;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['display'],0,30)."</a>";;
+                                                    echo "</td><tr>";
+                                                }
+                                             }
+                                             ?>
+                                         </table>
+                                    </div>|&nbsp;
+                                    </li><li><?php echo $this->cur_service_info['insured_ID_number'] ?></li>
+                                  </li> </ul>                                                                                                   
+                           </div>
+                           </span>
+                            <!-- Fix the mid UI By Yu Lang-->
+
+                            <a href="#"><span style="float:right;margin:2px 0px 0 0"> <input type="submit"name="submit"value="Finish Claim" style="width:80px"/></span></a>
+                            <a href="#"><span style="float:right;margin:2px 0px 0 0"> <input type="submit"name="submit"value="Save Claim" id="saveclaim" style="width:80px"/></span></a>
+                            <a name="ischanged" id="ischanged"  style='color:red;display: none' ><span style="float:right;margin:-25px 5px 0 0;font-size: 50px;font-family:Times New Roman">.</span></a>
+                        </td>
+                    </tr>
+                    <tr >
+
+                        <th  width="15%" style="text-align:right">Last Name</th><td ><input type="text" name="last_name" id="last_name" onblur="javascript:changePatient('last_name')"onchange="javascript:myischanged()"  /></td>
+                        <th  width="15%" style="text-align:right">First Name</th><td ><input type="text" name="first_name" id="first_name" onblur="javascript:changePatient('first_name')" onchange="javascript:myischanged()" /></td>
+                        <th  width="15%" style="text-align:right">Date of Birth</th><td ><input type="text" class="DOB" name="DOB" id="DOB" onkeyup="javascript:dateofDOB('#DOB')" onblur="javascript:changePatient('dob');javascript:dateupformat('#DOB')"  onchange="javascript:myischanged()" /></td>
+                        <th  width="15%" style="text-align:right">Sex</th>
+                        <td ><select name="sex" id="sex" style="width:100%" onchange="javascript:changePatient('sex');myischanged()">
+                                <option value="">Select</option>
+                                <option value="m">Male</option>
+                                <option value="f">Female</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th  style="text-align:right">Street Address</th><td><input type="text" name="street_address"  id="street_address" onblur="javascript:changePatient('street_address')" onchange="javascript:myischanged()" /></td>
+                        <th style="text-align:right">Zip code</th><td><input type="text" name="zip" id="zip"   onkeyup="javascript:zipcode('#zip')" onblur="javascript:zipupformat('#zip');javascript:zip2citystate()" onchange="javascript:myischanged()" /></td>
+                        <th style="text-align:right">City</th><td><input type="text" name="city"  id="city"  onblur="javascript:changePatient('city')" onchange="javascript:myischanged()" /></td>
+                        <th style="text-align:right">State</th><td><input type="text" name="state"  id="state" onblur="javascript:changePatient('state')" onchange="javascript:myischanged()" /></td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:right"><img src="<?php echo $this->baseUrl ?>/images/close.png" id="close" style="margin-bottom:3px;display:none"/><img src="<?php echo $this->baseUrl ?>/images/open.png" id="open" style="display:none;height:21px;margin-bottom:3px"/>SSN</th><td><input type="text" name="SSN" class="input_s1"  id="SSN" readonly="readonly" style="background-color:#EBEBEB" onkeyup="javascript:ssn('#SSN')" onblur="javascript:SSNupformat('#SSN');javascript:ischangeable('SSN')" onchange="javascript:myischanged()" /></td>
+                        <th  style="text-align:right">Phone Number</th><td><input type="text" name="phone_number"  id="phone_number" onkeyup="javascript:phone('#phone_number')" onblur="javascript:phoneupformat('#phone_number');javascript:changePatient('phone_number')" onchange="javascript:myischanged()" /></td>
+                        <th style="text-align:right">Second Number</th><td><input type="text" name="second_phone_number" id="second_phone_number"    onkeyup="javascript:phone('#second_phone_number')" onblur="javascript:phoneupformat('#second_phone_number');javascript:changePatient('second_phone_number')" onchange="javascript:myischanged()" /></td>
+                        <th style="text-align:right">MRN</th><td><input type="text" name="account_number" id="account_number"    onkeyup="this.value=this.value.replace(/\D/g,'')" onchange="javascript:myischanged()"  /></td>
+                        <script>
+                            $(function () {
+                                $("#close").click(function () {
+                                    
+                                    $.get("<?php echo $this->baseUrl ?>/biller/claims/showrealssn/", function (data) {
+                                        var myjson='';
+                                        eval("myjson=" + data + ";");
+                                        
+//                                        alert(myjson.ssn);
+                                        var value = myjson.ssn.substring(0,11);
+//                                        alert(value);
+//                                        alert(value.length);
+                                       
+                                        $("#SSN").val(value);
+//                                        var ssnvalue = $("#SSN").val();
+//                                        alert(ssnvalue.length);
+                                        
+                                        $("#last_real_SSN").val(value);
+                                        $("#close").hide();
+                                        $("#open").show();
+                                        $("#SSN").removeAttr("readonly");
+                                        $("#SSN").css("background-color","#fff");
+                                    });
+                                });
+                            });
+                        </script>
+                    </tr>
+                    <tr>
+                        <th  style="text-align:right">Patient Status</th>
+                        <td><select name="status" id="status" style="width:100%" onchange="javascript:changePatient('status');myischanged()">
+                                <option value="">Select</option>
+                                <option value="married">Married</option>
+                                <option value="other">Other</option>
+                                <option value="single">Single</option>
+                            </select>
+                        </td>
+                        <th style="text-align:right">Relationship to Insured</th>
+                        <td><select name="relationship_to_insured" id="relationship_to_insured" style="width:100%" onchange="javascript:changePatient('relationship_to_insured');myischanged()">
+                                <?php
+                                foreach ($this->relationshipList as $row) {
+                                    echo "<option value='" . $row['relationship'] . "'>" . $row['relationship'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th style="text-align:right">Condition Related To</th>
+                        <td colspan="3">
+                            <font size="1" >&nbsp EMPLOYMENT</font><input  type="checkbox" name="condition_related_to[]" id="condition_related_to" value="employment" onchange = "javascript:changePatient('condition_related_to_1');myischanged()"/>&nbsp&nbsp
+                            <font size="1" >AUTO ACCIDENT</font><input type="checkbox" name="condition_related_to[]" id="condition_related_to" value="auto" onchange = "javascript:changePatient('condition_related_to_2');myischanged()" />&nbsp&nbsp
+                            <font size="1" >OTHER ACCIDENT</font><input type="checkbox" name="condition_related_to[]" id="condition_related_to"value="other" onchange = "javascript:changePatient('condition_related_to_3');myischanged()"/>
+                        </td>
+                    </tr>
+                    
+                    <!-- Add fields for the patient alert information 2012-12-06 -->
+                    <tr>
+                        <!--
+                         <th  style="text-align:right">Patient Alert</th>                      
+                         <td><input type="checkbox" name="patient_alert_checkbox" id="patient_alert_checkbox" onclick="javascript:alertCheck()" /></td>
+                        -->
+                         <th  id ="alert_info_display" style="text-align:right">Alert Information</th>
+                         <td  colspan="7" id ="alert_info_input" style="text-align:right"><input type="text" name="alert" id="patient_alert_info" style="width:99.5%" onblur="javascript:changePatient('patient_alert_info')"  onchange="javascript:myischanged()"/></td>
+                         
+                    <tr>
+                    <!-- Add fields for the patient alert information 2012-12-06 -->
+                    
+                    <tr>
+                        <th colspan="8" >&nbsp</th>
+                    </tr>
+                    <tr>
+                        <th colspan="8"  style="background:#eeeeee;text-align: center">Statements</th>
+                    </tr>
+                    <tr>
+                        <th  style="text-align:right">Statement</th>
+                        <td><select name="statement_type1" id="statement_type1" onblur="javascript:remark()" style="width:100%" onchange = "javascript:changePatient('statement_type1');myischanged()">
+                                <option value="0">Select</option>
+                                <option value="1">Statement I</option>
+                                <option value="2">Statement II</option>
+                                <option value="3">Statement III</option>
+                                <option value="5">Installment</option>
+                            </select>
+                        </td>
+                        <th colspan="1">Date </th><td ><input type="text"  name="date1" id="date1" readonly= "true " onkeyup="javascript:date('#date1')" onchange="javascript:myischanged()"/></td>
+                        <th  style="text-align:right">Trigger</th>
+                        <td><select name="trigger1" id="trigger1" onchange="javascript:remark();myischanged()" style="width:100%" onblur = "javascript:changePatient('trigger1')"  />
+                                <option value="">Select</option>
+                                <option value="1">Payment sent to patient</option>
+                                <option value="2">Co-insurance</option>
+                                <option value="3">Deductible</option>
+                                <option value="4">Self pay</option>
+                            </select>
+                        </td>
+                        <th colspan="1">Claim </th><td ><input type="text" name="claim1" id="claim1" onblur = "javascript:changePatient('claim1')"  onchange="javascript:myischanged()"/></td>
+                    </tr>
+                    <tr>
+                        <th >Remark</th><td colspan="7" ><input type="text" name="remark1" id="remark1" style="width:99.5%" onblur = "javascript:changePatient('remark1')"  onchange="javascript:myischanged()"/><input type="text" name="encounter_id1" id="encounter_id1" style= "display:none "/><input type="text" name="statement_id1" id="statement_id1" style= "display:none "/></td>
+                    </tr>
+                    <tr  id="mytable1" style="display:none">
+                        <th  style="background:#eeeeee;text-align:right">Statement</th>
+                        <td><select name="statement_type2" id="statement_type2" style="width:100%"  onchange="javascript:myischanged()">
+                                <option value="0">Select</option>
+                                <option value="1">Statement I</option>
+                                <option value="2">Statement II</option>
+                                <option value="3">Statement III</option>
+                                <option value="5">Installment</option>
+                            </select>
+                        </td>
+                        <th colspan="1" style="background:#eeeeee">Date </th><td style="background:#eeeeee"><input type="text" name="date2" id="date2" readonly= "true " onkeyup="javascript:date('#date2')"  onchange="javascript:myischanged()"/></td>
+                        <th  style="text-align:right">Trigger</th>
+                        <td><select name="trigger2" id="trigger2" disabled="true" style="width:100%"  onchange="javascript:myischanged()" >
+                                <option value="">Select</option>
+                                <option value="1">Payment sent to patient</option>
+                                <option value="2">Co-insurance</option>
+                                <option value="3">Deductible</option>
+                                <option value="4">Self pay</option>
+                                <option value="15">T15</option>
+                                <option value="25">T25</option>
+                                <option value="35">T35</option>
+                                <option value="45">T45</option>
+                                <option value="16">T16</option>
+                                <option value="26">T26</option>
+                                <option value="36">T36</option>
+                                <option value="46">T46</option>
+                            </select>
+                        </td>
+                        <th colspan="1" style="background:#eeeeee">Claim </th><td style="background:#eeeeee"><input type="text" name="claim2" readonly= "true " id="claim2" /></td>
+                    </tr>
+                    <tr id="mytable2" style="display:none">
+                        <th style="background:#eeeeee">Remark</th><td colspan="7" style="background:#eeeeee"><input type="text" name="remark2" id="remark2" style="width:99.5%"/><input type="text" name="encounter_id2" id="encounter_id2" style= "display:none "/><input type="text" name="statement_id2" id="statement_id2" style= "display:none "/></td>
+                    </tr>
+                    <tr>
+                        <th colspan="8"  style="background:#eeeeee;text-align: center">Patient Ledger</th>
+                    </tr>
+                    <tr>
+                        <th colspan="1" style="text-align:center">Date</th>
+                        <th colspan="4" style="text-align:center">Description</th>
+                        <th colspan="1" style="text-align:center">Amount</th>
+                        <th colspan="1" style="text-align:center">Balance</th>
+                        <th colspan="1" style="text-align:center">Notes</th>
+                    </tr>
+                    <?php
+                    $count = 1;
+                    foreach ($this->ledgerList as $row) {
+                        if ($row['date'] != null) {
+                            if ($count % 2 == 0) {
+                                echo "<tr><td style=\"font-weight:normal\">" . $row['date'] . "</td>" . "<td style=\"font-weight:normal\" colspan=\"4\">" . $row['description'] . "</td>" . "<td style=\"font-weight:normal\">" . $row['amount'] . "</td>" . "<td style=\"font-weight:normal\">" . $row['balance'] . "</td>";
+                                echo "<td style=\"font-weight:normal\" colspan=\"1\">" . $row['notes'] . "</td>";
+                                $count = $count + 1;
+                            } else {
+                                echo "<tr><td style=\"background:#eeeeee;font-weight:normal\">" . $row['date'] . "</td>" . "<td style=\"background:#eeeeee;font-weight:normal\" colspan=\"4\">" . $row['description'] . "</td>" . "<td style=\"background:#eeeeee;font-weight:normal\">" . $row['amount'] . "</td>" . "<td style=\"background:#eeeeee;font-weight:normal\">" . $row['balance'] . "</td>";
+                                echo "<td style=\"background:#eeeeee;font-weight:normal\" colspan=\"1\">" . $row['notes'] . "</td>";
+                                $count = $count + 1;
+                            }
+                        }
+                    }
+                    ?>
+                    <tr>
+                        <th colspan="8" >&nbsp</th>
+                    </tr>
+                    <tr>
+                        <th colspan="7"  style="background:#eeeeee;text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Patient Logs</th>
+                        <td style="text-align:right;background:#eeeeee;"><input type="button"  value="ADD" id="" onclick="javascript:addtable5()"/><!--<input type="button"  value="LESS" id="" onclick="javascript:deletetable5()"/>--></td>
+                    </tr>
+
+
+                    <input type ="text" style="display:none" id="count5" name="count5"></input>
+                    <td id="interactionlogTd" colspan="8" style="display:none">
+                        <div id="interactionlogDiv" style="display:none;overflow: scroll;overflow-x: hidden;height: 60px">
+                            <table id="interactionlogTable">
+                            </table>
+                        </div>
+                    </td> 
+                    <tr>
+                        <th style="text-align:right">Notes</th><td colspan="7"><textarea style= "width:100%" rows="4"  name="notes" id="notes" onblur="javascript:changePatient('notes')" onchange="javascript:myischanged()" ></textarea></td>
+                    </tr>
+                    <tr>
+                        <td align="right" colspan="1"><input type="text" name="id"  id="id"size="20" style= "display:none "/></td>
+                        <td align="right" colspan="7"><input type="text" name="statement_trigger"  id="statement_trigger" style= "display:none "/></td>
+                    </tr>
+                    <!--
+                    <tr id="document_access">
+                                              <td align="right"><input  type="button" name="upload" id="upload"value="Document Input" onclick= "javascript:window.open( '<?php echo $this->baseUrl ?>/biller/claims/upload/pageno/1 ','upload',
+                                        'height=220,width=500,status=no,toolbar=no,menubar=no,location=no,scrollbars=no') "/></td>
+                    </tr>
+                    -->
+                </table>
+                <table>
+                   
+                    <th></th><td style="display:none"><input type="text" name="new_patient_flag" id="new_patient_flag" /> </td>
+                    <th></th><td style="display:none"><input type="text" name="billername" id="billername" value=<?php echo $this->user_name; ?> /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_last_name" id="last_last_name" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_first_name" id="last_first_name" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_sex" id="last_sex" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_SSN" id="last_SSN" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_real_SSN" id="last_real_SSN" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_statement_type1" id="last_statement_type1" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_notes" id="last_notes" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_insurance_card_image" id="last_insurance_card_image" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_relationship_to_insured" id="last_relationship_to_insured" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_status" id="last_status" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_account_number" id="last_account_number" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_second_phone_number" id="last_second_phone_number" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_phone_number" id="last_phone_number" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_city" id="last_city" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_state" id="last_state" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_zip" id="last_zip" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_street_address" id="last_street_address" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_DOB" id="last_DOB" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_statement_type2" id="last_statement_type2" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_date1" id="last_date1" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_date2" id="last_date2" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_trigger1" id="last_trigger1" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_trigger2" id="last_trigger2" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_remark1" id="last_remark1" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_remark2" id="last_remark2" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_claim1" id="last_claim1" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_claim2" id="last_claim2" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_statement_id2" id="last_statement_id2" /></td>
+                    <th></th><td style="display:none"><input type="text" name="last_patient_alert_info" id="last_patient_alert_info" /></td>
+                    
+                    
+                </table>
+            </form>
+        </div>
+        
+        <script type="text/javascript">
+      jQuery(function(){       
+            jQuery(".megamenu").megamenu();
+      });
+ </script>
+        
+    </body>
+</html>

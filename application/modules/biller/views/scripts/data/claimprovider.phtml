@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+        });
+        
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var provider_id=$("#provider_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/providerinfo/",{provider_id:provider_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    
+                    $("#provider_id").val(myjson.id);
+                    $("#fax_number").val(myjson.fax_number);
+                    $("#billingcompany_id").val(myjson.billingcompany_id);
+                    $("#options_id").val(myjson.options_id);
+                    $("#street_address").val(myjson.street_address);
+                    $("#zip").val(myjson.zip);
+                    $("#state").val(myjson.state);
+                    $("#city").val(myjson.city);
+                    $("#phone_number").val(myjson.phone_number);
+                    $("#secondary_phone_number").val(myjson.secondary_phone_number);
+                    $("#email_address").val(myjson.email_address);
+                    $("#tax_ID_number").val(myjson.tax_ID_number);
+                    $("#billing_provider_name").val(myjson.billing_provider_name);
+                    $("#billing_provider_NPI").val(myjson.billing_provider_NPI);
+                    $("#billing_street_address").val(myjson.billing_street_address);
+                    $("#billing_city").val(myjson.billing_city);
+                    $("#billing_state").val(myjson.billing_state);
+                    $("#billing_zip").val(myjson.billing_zip);
+                    $("#billing_email").val(myjson.billing_email);
+                    $("#billing_phone_number").val(myjson.billing_phone_number);
+                    $("#billing_fax").val(myjson.billing_fax);
+                    $("#notes").val(myjson.notes);
+                    $("#payer_id option").remove();
+                    $("#payer_id").append("<option value=''>select</option>");
+                    for(var i=0;i<myjson.innetworkpayersList.length;i++){
+                        $("#payer_id").append("<option value='"+
+                            myjson.innetworkpayersList[i]['insurance_id']+
+                            "'>"+myjson.innetworkpayersList[i]['insurance_display']+
+                            "</option>");
+                    }
+                    $(".doc_line").remove();
+                    for(var i=0;i<myjson.provider_doc_list.length;i++)
+                    {   if (i%2 == 0){
+                            $("#doc_table").append("<tr class='doc_line' id='provider_doc_" + i + "' style = 'background:#FF0000'>" +
+                                    "<td width='33%' style='text-align: center' >" + "<a href = \"/accendo/public/" + myjson.provider_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.provider_doc_list[i]['date'] + "</a></td>" +
+                                    "<td width='33%' style='text-align: center'>" + myjson.provider_doc_list[i]['desc'] + "</td>" +
+                                    "<td width='34%' style='text-align: center'>" + myjson.provider_doc_list[i]['user'] + "</td>" +
+                                    "</tr>");
+                        }else{
+                            $("#doc_table").append("<tr class='doc_line' id='provider_doc_" + i + "' style = 'background:#FF0000'>" +
+                                    "<td width='33%' style='background:#eeeeee;text-align: center' >" + "<a href = \"/accendo/public/" + myjson.provider_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.provider_doc_list[i]['date'] + "</a></td>" +
+                                    "<td width='33%' style='background:#eeeeee;text-align: center'>" + myjson.provider_doc_list[i]['desc'] + "</td>" +
+                                    "<td width='34%' style='background:#eeeeee;text-align: center'>" + myjson.provider_doc_list[i]['user'] + "</td>" +
+                                    "</tr>");
+                        }
+                    }
+                });
+            }
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function rate()
+            {
+                var provider_id=$("#provider_id").val();
+                var payer_id=$("#payer_id").val();
+                if(payer_id!='')
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/rates/",{provider_id:provider_id,payer_id:payer_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        $("#rates").val(myjson.rates);
+                    });
+                }
+                else
+                {
+                    $("#rates").val('');
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Claim Management</a> &gt; Provider</p>
+        </div>
+        <div class="table-div" >
+            <form method="post"  action="" onsubmit="javascript:return check();">
+                <table>
+                    <tr>
+                        <th align="center" colspan="6" style="background:#eeeeee">
+                            <p align="center"><b>Provider Information</b></p>
+                        </th>
+                    </tr>
+                    <tr >
+                        <th align="left">Provider Name</th>
+                        <td>
+                            <select class="select" name="provider_id" id="provider_id" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->provider_name . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+<!--                        <th align="left" style="display: none">Campany Name</th>
+                        <td>
+                            <select class="select" name="billingcompany_id" id="billingcompany_id" style= "width:100%;display:none " disabled="true">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->billingcompanyList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->billingcompany_name . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>-->
+                        <th align="left">Option Name</th>
+                        <td>
+                            <select class="select" name="options_id" id="options_id" style= "width:100% " disabled="true">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->optionsList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->option_name . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left">Phone Number</th><td><input type="text" style= "width:99%" name="phone_number" id="phone_number" readonly= "true "/></td>
+                        <th align="left">Second Phone Number</th><td><input type="text" style= "width:99%" name="secondary_phone_number" id="secondary_phone_number" readonly= "true "/></td>
+                        <th  align="left">Fax Number</th><td><input type="text" style= "width:99%" name="fax_number" id="fax_number" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Email Address</th><td><input type="text" style= "width:99%" name="email_address" id="email_address" readonly= "true "/></td>                      
+                        <th align="left">Tax ID Number</th><td><input type="text" style= "width:99%" name="tax_ID_number" id="tax_ID_number" readonly= "true "/></td>
+                        <th align="left">Street Address</th><td><input style= "width:99%" type="text" name="street_address" id="street_address" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">City</th><td><input type="text" style= "width:99%" name="city" id="city" readonly= "true "/></td>
+                        <th align="left">State</th><td><input type="text" style= "width:99%" name="state" id="state" readonly= "true "/></td>
+                        <th align="left">Zip</th><td><input type="text" style= "width:99%" name="zip" id="zip" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th align="center" colspan="6" style="background:#eeeeee">
+                            <p align="center"><b>Billing Provider Information</b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th align="left">Provider Name</th><td><input type="text" style= "width:99%" name="billing_provider_name" id="billing_provider_name" readonly= "true "/></td>
+                        <th  align="left">NPI</th><td><input type="text" style= "width:99%" name="billing_provider_NPI" id="billing_provider_NPI" readonly= "true "/></td>
+                        <th align="left">Phone Number</th><td><input type="text" style= "width:99%" name="billing_phone_number" id="billing_phone_number" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">Fax</th><td><input type="text" style= "width:99%" name="billing_fax" id="billing_fax" readonly= "true "/></td>
+                        <th align="left">Email Address</th><td><input type="text" style= "width:99%" name="billing_email" id="billing_email" readonly= "true "/></td>
+                        <th align="left">Street Address</th><td><input type="text" style= "width:99%" name="billing_street_address" id="billing_street_address" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">City</th><td><input type="text" style= "width:99%" name="billing_city" id="billing_city" readonly= "true "/></td>
+                        <th align="left">State</th><td><input type="text" style= "width:99%" name="billing_state" id="billing_state" readonly= "true "/></td>
+                        <th align="left">Zip</th><td><input type="text" style= "width:99%" name="billing_zip" id="billing_zip" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th align="left" style="background:#eeeeee">Innetwork Payers</th>
+                        <td>
+                            <select class="select" name="payer_id" id="payer_id"  onchange="javascript:rate()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->payerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['insurance_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left" style="background:#eeeeee">Rates</th><td><input type="text" style= "width:99%" name="rates" id="rates" /></td>
+                        <th></th><th></th>
+                    </tr>
+                    <tr>
+                        <th>Notes</th><td colspan="5" ><textarea rows="4" style= "width:100%" name="notes" id="notes" readonly= "true "></textarea></td>
+                    </tr>
+                </table>
+                <br></br>
+                <br></br>  
+                <table id="doc_table">
+                    <tr>
+                        <th colspan="3"><p  style="text-align: center;font-size: 16px;">Documents</p></th>
+                    </tr>
+                    <tr>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Data and Time</th>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Description</th>
+                        <th width="34%" style="background:#eeeeee;text-align: center">User</th>
+                    </tr>
+                    
+                </table>
+                                    
+                    
+
+            </form>
+        </div>
+    </body>
+</html>

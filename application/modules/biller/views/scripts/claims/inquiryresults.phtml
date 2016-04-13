@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+             $(document).ready(function()
+            {    
+                 $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+                );
+            });
+            function getVal(index){
+                var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                var patient_id=td1[(index-1)*22+20].innerHTML;
+                var encounter_id=td1[(index-1)*22+21].innerHTML;
+                $("#patient_id").val(patient_id);
+                $("#encounter_id").val(encounter_id);
+                document.getElementById("form1").submit();
+            }
+            
+            function getCal(index){
+                var val = document.getElementById(index).innerHTML;
+                //alert(val);
+                getVal(val);
+                
+            }
+            
+        </script>
+    </head>
+
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Claim Inquiry Results</p>
+        </div>
+        <div class="table-div">
+            <form method="post" name="form1" id="form1">
+                <table >
+                    <tr>
+                        <th align="center" colspan="20" style="background:#eeeeee">
+                            <p align="center"><b><big>Claim Inquiry Results</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <!-- <th width="10%" style="background:#eeeeee;text-align: center"><b>Operation</b></th> -->
+<!--                        <th width="17%" style="background:#eeeeee;text-align: center"><b>Name</b></th>-->
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Name"/></th>
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>MRN</b></th>-->
+                        
+                        <!-- Add fields for the results list -->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOB"/></th>
+                        <!-- Add fields for the results list -->
+                        
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="MRN"/></th>
+                         
+                        <!--move the DOS between the insurance and MRN -->
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th>
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Claim Status</b></th>-->
+                        <!--move the DOS between the insurance and MRN -->
+                        
+                        <!-- Add fields for the results list -->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Charge"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Paid"/></th>
+                        <th width="2%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="%"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Due"/></th>
+                        
+                        <!-- Add fields for the results list -->
+                        
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="P_Insurance"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="S_Insurance"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="CPT"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="A Code"/></th>
+<!--                        <th width="25%" style="background:#eeeeee;text-align: center"><b>Facility</b></th>-->
+                        <!-- <th width="25%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th> -->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Rendering P"/></th>
+                        
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Referring P"/></th>
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+                       <!-- <th width="6%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th> -->
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Claim Status</b></th>-->
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th>
+                        <th width="2%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="L"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Claim Status"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="B S"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="S S"/></th>
+                    </tr>
+                    <?php
+                    
+                    
+                    $count = 1;
+                    foreach ($this->patientList as $row) {
+                            
+                            /*******************UI Enhancement **************/
+                            
+                            if( ($row['display_flag'] ==  '1' || $row['display_flag'] ==  '2') && $row['color_flag'] == 0 )
+                                 echo "<tr bgcolor=\"#FF0000\">";
+                            else if( ($row['display_flag'] ==  '1' || $row['display_flag'] ==  '2') && $row['color_flag'] == 1 )
+                                 echo "<tr bgcolor=\"#00FF00\">";
+                            
+                            else if($row['display_flag'] ==  '0')
+                                echo "<tr style=\"background:#eeeeee;display:none\">";
+                            
+                            // echo "<td style= \"color:#FF78fd;font-weight:normal\" onclick=\"javascript:getVal($count)\">" . "<a>" . $row['operation'] . "</a>" . "</td>";
+                            if($row['color_flag'] == 0)
+                                echo "<td title='" . $row['alert'] . "' style='background-color:#" . $row['color_code'] . "; ' width='10%' id='last_name' style=\"font-weight:normal;\"><a>
+                                    <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; ' onclick=\"javascript:getVal($count)\">" .substr($row['name'],0,20). "</span></a>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td title='" . $row['alert'] . "' style='background-color:#" . $row['color_code'] . "; ' width='10%' id='last_name' style=\"font-weight:normal;background:#eeeeee;\"><a>
+                                    <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['name'],0,20). "</span></a>";
+                            
+                            
+                            if($row['display_flag'] ==  '1')
+                                echo  "<span  onclick=\"javascript:getCal(".$row['patient_id'].");\" style=\"color:#FF0000;\">" . '&nbsp;+'. "</span>" . "</td>";
+                            else if($row['display_flag'] ==  '0')
+                                echo "<span id= '".$row['patient_id']."'>".$count."</span>";
+                            
+                            /*******************UI Enhancement **************/
+                            if($row['color_flag'] == 0)
+                                echo "<td width= '5%' id='DOB' style=\"font-weight:normal\">" . $row['DOB'] . "</td>";
+                            else if ($row['color_flag'] == 1)
+                                echo "<td width= '5%' id='DOB' style=\"font-weight:normal;background:#eeeeee\">" . $row['DOB'] . "</td>";
+                            
+                            if($row['color_flag'] == 0)    
+                                echo "<td width='5%' id='MRN' style=\"font-weight:normal\">" . $row['account_number'] . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='MRN' style=\"background:#eeeeee;font-weight:normal\">" . $row['account_number'] . "</td>";
+                             
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%'id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%'id='DOS' style=\"background:#eeeeee;font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='Charge' style=\"font-weight:normal\">" . substr($row['total_charge'],0,8). "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='Charge' style=\"font-weight:normal;background:#eeeeee\">" . substr($row['total_charge'],0,8) . "</td>";
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='amount_paid' style=\"font-weight:normal\">" . substr($row['amount_paid'],0,8) . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='amount_paid' style=\"font-weight:normal;background:#eeeeee\">" . substr($row['amount_paid'],0,8)  . "</td>";
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='amount_paid' style=\"font-weight:normal\">" . $row['percentage']. "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='amount_paid' style=\"font-weight:normal;background:#eeeeee\">" .$row['percentage']  . "</td>";
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='amount_paid' style=\"font-weight:normal\">" . $row['due']. "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='amount_paid' style=\"font-weight:normal;background:#eeeeee\">" .$row['due']  . "</td>";
+                           
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='insurance_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['insurance_display'],0,15) . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='insurance_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" .substr($row['insurance_display'],0,15). "</td>";
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='insurance_s_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['insurance_s_display'],0,15) . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='insurance_s_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" .substr($row['insurance_s_display'],0,15). "</td>";
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='cpt_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . $row['cpt_code'] . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='cpt_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . $row['cpt_code'] . "</td>";
+                            
+                            if($row['color_flag'] == 0)   
+                                echo "<td width='5%' id='anes_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . $row['anes_code'] . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='anes_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . $row['anes_code'] . "</td>";
+                            
+                            if($row['color_flag'] == 0)      
+                                echo "<td width='5%' id='provider_name' style=\"font-weight:normal\">" .$row['provider_short_name'] . "</td>";
+                            else if($row['color_flag'] == 1)  
+                                echo "<td width='5%' id='provider_name' style=\"background:#eeeeee;font-weight:normal\">" . $row['provider_short_name'] . "</td>";
+                            
+                            if($row['color_flag'] == 0)  
+                                echo "<td width='10%' id='renderingprovider_last_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['renderingprovider_last_name'],0,15) . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='10%' id='renderingprovider_last_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" .substr($row['renderingprovider_last_name'],0,15). "</td>";
+                            
+                            if($row['color_flag'] == 0)  
+                                echo "<td width='5%' id='referringprovider_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['referringprovider_name'],0,15) . "</td>";
+                            else  if($row['color_flag'] == 1)
+                                echo "<td width='5%' id='referringprovider_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal;background:#eeeeee'>" . substr($row['referringprovider_name'],0,15) . "</td>";
+                            
+                            if($row['color_flag'] == 0) 
+                                echo "<td width='10%' id='facility_name' style=\"font-weight:normal\">" . $row['facility_short_name'] . "</td>";
+                            else if($row['color_flag'] == 1)
+                                echo "<td width='10%' id='facility_name' style=\"background:#eeeeee;font-weight:normal\">" . $row['facility_short_name'] . "</td>";
+                            //echo "<td id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                            
+                            if($row['color_flag'] == 0) 
+                                echo "<td width='2%' id='last' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['last'],0,30) . "</td>";
+                            else if($row['color_flag'] == 1) 
+                                echo "<td width='2%' id='last' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['last'], 0,30)."</td>";
+                            
+                            if($row['color_flag'] == 0) 
+                                echo "<td width='10%' id='claim_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['claim_status'],0,30) . "</td>";
+                            else if($row['color_flag'] == 1) 
+                                echo "<td width='10%' id='claim_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['claim_status'], 0,30)."</td>";
+                            if($row['color_flag'] == 0) 
+                                echo "<td width='10%' id='bill_status_display' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['bill_status'],5,30) . "</td>";
+                            else if($row['color_flag'] == 1) 
+                                echo "<td width='10%' id='bill_status_display' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['bill_status'], 5,30)."</td>";
+                            if($row['color_flag'] == 0) 
+                                echo "<td width='10%' id='statement_status_display' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['statement_status'],5,30) . "</td>";
+                            else if($row['color_flag'] == 1) 
+                                echo "<td width='10%' id='statement_status_display' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['statement_status'], 5,30)."</td>";
+                            /**************************************Add inquiry_last_name**********************************
+                            echo "<td style=\"display:none\">" . $row['inquiry_last_name'] . "</td>";
+                            /**************************************Add inquiry_last_name**********************************/
+                            
+                            echo "<td style=\"display:none\">" . $row['patient_id'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td></tr>";
+                            $count = $count + 1;
+                                               
+                            /*******************UI Enhancement **************/
+
+                    }
+                   
+                    
+                    ?>
+                    <tr>
+                        <td><input type="text" name="patient_id"  id="patient_id" style= "display:none"/></td>
+                        <td><input type="text" name="encounter_id"  id="encounter_id" style= "display:none"/></td>
+                        <td colspan="7"><input type="text" name="checkboxid"  id="checkboxid" value="10000" style= "display:none"/></td>
+                    </tr>
+                </table>
+                
+                <?php 
+                    
+                    $tmp_patientlist = $this->patientList;
+                    $claim_inquiry_results_limit = $tmp_patientlist[0]['limit_number'];
+                    $count_flag = $tmp_patientlist[0]['count_flag'];
+                    if($count_flag == 1)
+                        echo "<tr><p>More claims, only display the first ".$claim_inquiry_results_limit ." </p></tr>"; 
+                ?>
+                
+            </form>
+        </div>
+    </body>
+</html>

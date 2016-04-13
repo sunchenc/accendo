@@ -1,0 +1,625 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Mdedical Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link href="<?php echo $this->baseUrl ?>/styles/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/bootstrap.min.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+
+         <script type="text/javascript" language="javascript" >
+            function zip2citystate(name)
+            {
+                var zip=$(name).val();
+                var tp = name.split('_');
+                ti = tp[1];
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#insurance_city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#insurance_state" ).val(myjson.state);
+                    }
+                );
+                }
+            }
+        </script>
+        <script type="text/javascript">
+        
+        function editName () {
+            var name = $('#insurance_display');
+            var id = $('#insurance_id');
+            if(id[0].value != '-1'){
+                name.show();
+                id.hide();
+                name.focus();
+            }
+        }
+
+        function selectChange() {
+            var name = $('#insurance_display')[0];
+            var id = $('#insurance_id')[0];
+            if(id.value != '-1'){
+                name.width = id.width;
+                name.height = id.height;
+                name.value = id.options[id.selectedIndex].text;
+            }else{
+                name.value = '';
+            }
+        }
+        
+        function nameBlur () {
+            var name = $('#insurance_display');
+            var id = $('#insurance_id');
+            name.hide();
+            id.show();
+            if(name[0].value != id[0].options[id[0].selectedIndex].text){
+                id[0].options[id[0].selectedIndex].text = name[0].value;
+            }
+        }
+
+     
+        
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null)
+                        var a=document.getElementById("relogin");
+                        if(typeof a !== 'undefined')a.click(); 
+                }
+            );
+            var name = $('#insurance_display');
+            var id = $('#insurance_id');
+            name.blur(nameBlur);
+            name.hide();
+        })
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            var ifNeedAddTags = 1;
+            function auto_complete()
+            {
+                var check_insurance_id = $("#insurance_id").val();
+                //alert(check_insurance_id);
+                if(check_insurance_id == -1){
+                    $("#status").val('active');//active作为默认状态
+                }
+                selectChange();
+                var insurance_id=$("#insurance_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/insuranceinfo/",{insurance_id:insurance_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    $("#tags_checkbox").css("display","none");
+                    $("#tags_input").css("display","none");
+                    document.getElementById("tags_select").innerHTML="";
+                    document.getElementById("addmark").innerHTML="";
+                    $("#tags_select").append("<option value='-1'>Select</option>");
+                    if(myjson.fax_number!=null)
+                        $("#fax_number").val(myjson.fax_number);
+                    else
+                        $("#fax_number").val('');
+                    if(myjson.insurance_name!=null)
+                        $("#insurance_name").val(myjson.insurance_name);
+                    else
+                        $("#insurance_name").val('');
+                    if(myjson.insurance_street_address!=null)
+                        $("#insurance_street_address").val(myjson.insurance_street_address);
+                    else
+                        $("#insurance_street_address").val('');
+                    if(myjson.insurance_zip!=null)
+                        $("#insurance_zip").val(myjson.insurance_zip);
+                    else
+                        $("#insurance_zip").val('');
+                    if(myjson.insurance_state!=null)
+                        $("#insurance_state").val(myjson.insurance_state);
+                    else
+                        $("#insurance_state").val('');
+                    if(myjson.insurance_city!=null)
+                        $("#insurance_city").val(myjson.insurance_city);
+                    else
+                        $("#insurance_city").val('');
+                    if((myjson.tags_in_billingcompany!=null) && (myjson.insurance_name!=null)){
+                        for(i=0;i<myjson.tags_in_billingcompany.length;i++){
+                            $("#tags_select").append("<option value='" + myjson.tag_names[i] + "'>" + myjson.tag_names[i] + "</option>");
+                            $("#tags_select").append("<input type='text' style='display:none' id='" + myjson.tags_in_billingcompany[i]['tag_name'] + "_type' value='"+ myjson.tags_in_billingcompany[i]['tag_type']+"'>");
+                            $("#addmark").append("<input type='text' name='"+ myjson.tags_in_billingcompany[i]['tag_name']+ "' id='" + myjson.tags_in_billingcompany[i]['tag_name'] + "'>");
+                        }
+                    }
+                    if(myjson.tags!=null){
+                        for(i=0;i<myjson.tags.length;i++){
+                            $("#"+myjson.tags[i]['tag_name']).val(myjson.tags[i]['tag_type']);
+                        }
+                    }
+                    if(myjson.insurance_phone_number!=null)
+                        $("#insurance_phone_number").val(myjson.insurance_phone_number);
+                    else
+                        $("#insurance_phone_number").val('');
+                    if(myjson.EDI_number!=null)
+                        $("#EDI_number").val(myjson.EDI_number);
+                    else
+                        $("#EDI_number").val('');
+                    if(myjson.anesthesia_bill_rate!=null)
+                        $("#anesthesia_bill_rate").val(myjson.anesthesia_bill_rate);
+                    else
+                        $("#anesthesia_bill_rate").val('');
+                    if(myjson.payer_type!=null)
+                        $("#payer_type").val(myjson.payer_type);
+                    else
+                        $("#payer_type").val('');
+                    if(myjson.claim_submission_preference!=null)
+                        $("#claim_submission_preference").val(myjson.claim_submission_preference);
+                    else
+                        $("#claim_submission_preference").val('');
+                    if(myjson.insurance_notes!=null)
+                        $("#insurance_notes").val(myjson.insurance_notes);
+                    else
+                        $("#insurance_notes").val('');
+                    if(myjson.PID_interpretation)
+                        $("#PID_interpretation").val(myjson.PID_interpretation);
+                    else
+                        $("#PID_interpretation").val('');
+                    if(myjson.navinet_web_support_number!=null)
+                        $("#navinet_web_support_number").val(myjson.navinet_web_support_number);
+                    else
+                        $("#navinet_web_support_number").val('');
+                    if(myjson.appeal!=null)
+                        $("#appeal").val(myjson.appeal);
+                    else
+                        $("#appeal").val('');
+                    if(myjson.reconsideration!=null)
+                        $("#reconsideration").val(myjson.reconsideration);
+                    else
+                        $("#reconsideration").val('');
+                    if(myjson.claim_filing_deadline!=null)
+                        $("#claim_filing_deadline").val(myjson.claim_filing_deadline);
+                    else
+                        $("#claim_filing_deadline").val('');
+                    if(myjson.EFT!=null)
+                        $("#EFT").val(myjson.EFT);
+                    else
+                        $("#EFT").val('');
+                    if(myjson.claim_status_lookup!=null)
+                        $("#claim_status_lookup").val(myjson.claim_status_lookup);
+                    else
+                        $("#claim_status_lookup").val('');
+                    if(myjson.benefit_lookup!=null)
+                        $("#benefit_lookup").val(myjson.benefit_lookup);
+                    else
+                        $("#benefit_lookup").val('');
+                    if(myjson.anesthesia_bill_rate!=null)
+                        $("#anesthesia_bill_rate").val(myjson.anesthesia_bill_rate);
+                    else
+                        $("#anesthesia_bill_rate").val('');
+                    if(myjson.anesthesia_crosswalk_overwrite!=null)
+                        $("#anesthesia_crosswalk_overwrite").val(myjson.anesthesia_crosswalk_overwrite);
+                    else
+                        $("#anesthesia_crosswalk_overwrite").val('');
+                    if(myjson.fax_number!=null)
+                        $("#fax_number").val(myjson.fax_number);
+                    else
+                        $("#fax_number").val('');
+                    if(myjson.insurance_type!=null)
+                        $("#insurance_type").val(myjson.insurance_type);
+                    else
+                        $('#insurance_type').val('');
+                    if(myjson.status!=null){
+                        $("#status").val(myjson.status);
+                    }
+                    $(".doc_line").remove();
+                    var i =0;
+                    for(i=0;i<myjson.insurance_doc_list.length;i++)
+                    {   
+                        if (i%2 == 0){
+                            $("#doc_table").append("<tr class='doc_line' id='insurance_doc_" + i + "' style = 'background:#FF0000'>" +
+                                    "<td width='25%' style='text-align: center' >" + "<a href = \"/accendo/public/" + myjson.insurance_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.insurance_doc_list[i]['date'] + "</a></td>" +
+                                    "<td width='25%' style='text-align: center'>" + myjson.insurance_doc_list[i]['desc'] + "</td>" +
+                                    "<td width='25%' style='text-align: center'>" + myjson.insurance_doc_list[i]['user'] + "</td>" +
+                                    "<td width='25%' style='text-align: center'><input id = " + myjson.insurance_doc_list[i]['url'] + " style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"button\" name=\"button\" value=\"DELETE\" onclick = \"javascript:onDelete(this" + "," + i + ")\">" + "</input></td>" +
+                                    "</tr>");
+                        }else{
+                            $("#doc_table").append("<tr class='doc_line' id='provider_doc_" + i + "' style = 'background:#FF0000'>" +
+                                    "<td width='25%' style='background:#eeeeee;text-align: center' >" + "<a href = \"/accendo/public/" + myjson.insurance_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.insurance_doc_list[i]['date'] + "</a></td>" +
+                                    "<td width='25%' style='background:#eeeeee;text-align: center'>" + myjson.insurance_doc_list[i]['desc'] + "</td>" +
+                                    "<td width='25%' style='background:#eeeeee;text-align: center'>" + myjson.insurance_doc_list[i]['user'] + "</td>" +
+                                    "<td width='25%' style='background:#eeeeee;text-align: center'><input id = " + myjson.insurance_doc_list[i]['url'] + " style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"button\" name=\"button\" value=\"DELETE\" onclick = \"javascript:onDelete(this" + "," + i + ")\">" + "</input></td>" +
+                                    "</tr>");
+                        }
+                    }
+                    if (i%2 == 0){
+                            $("#doc_table").append("<tr class='doc_line'>"+
+                                    "<td width='25%' style='text-align: center' >" + "<input name=\"uploadedfil\" type=\"file\" id=\"uploadedfil\" /></td>" +
+                                    "<td width = '25%' style='text-align: center' id = \"desc\"><input type=\"text\" name=\"desc\"  id=\"desc\" ></input></td>" +
+                                    "<td width='25%' style='text-align: center'>" + myjson.user_name + "</td>"+
+                                    "<td width='25%' style='text-align: center'><input id=\"upload\" style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"submit\" name=\"submit\" value=\"UPLOAD\"></input></td>" +
+                            "</tr>");
+                    }else{
+                            $("#doc_table").append("<tr class='doc_line'>"+
+                                    "<td width='25%' style='background:#eeeeee;text-align: center' >" + "<input name=\"uploadedfil\" type=\"file\" id=\"uploadedfil\" /></td>" +
+                                    "<td width = '25%' style='background:#eeeeee;text-align: center' id = \"desc\"><input type=\"text\" name=\"desc\"  id=\"desc\" ></input></td>" +
+                                    "<td width='25%' style='background:#eeeeee;text-align: center'>" + myjson.user_name + "</td>"+
+                                    "<td width='25%' style='background:#eeeeee;text-align: center'><input id=\"upload\" style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"submit\" name=\"submit\" value=\"UPLOAD\"></input></td>" +
+                            "</tr>");
+                    }
+                });
+            }
+             function displaycheck(name){
+                var value=$(name).val();
+         
+                 for(var index=0;index<value.length;index++){
+                      var cur=value.charAt(index) ;
+                      if((cur<='9'&&cur>='0')||cur==' '||(cur<='z'&&cur>='a')||(cur<='Z'&&cur>='A')||cur=='-'||cur=='_'){
+                      }
+                      else{
+                          value=value.substr(0,index)+value.substr(index+1,value.length-index-1);
+                           $(name).val(value);
+                          var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                           setCaretPosition(document.getElementById(tempname),index);
+    
+                                        
+                      }
+                  }
+             }
+              function setCaretPosition(ctrl, pos){//设置光标位置函数
+                    if(ctrl.setSelectionRange)
+                    {
+                            ctrl.focus();
+                            ctrl.setSelectionRange(pos,pos);
+                    }
+                    else if (ctrl.createTextRange) {
+                            var range = ctrl.createTextRange();
+                            range.collapse(true);
+                            range.moveEnd('character', pos);
+                            range.moveStart('character', pos);
+                            range.select();
+                    }
+            }
+
+        </script>
+        <script type="text/javascript" language="javascript">
+            function onDelete(id,num)
+            {
+                var r=confirm("The selected document will be permenantly deleted from Accendo, please confirm");
+                var url = id.id;
+                var sele = "#insurance_doc_" + num;
+                if (r == true)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/deletebillingdocs/",{url:url,type:"insurance"},
+                    function(data){
+                        var answer='' ;
+                        eval("answer=" + data + ";");
+                        //alert("abc"+answer.result);
+                        if(answer.result=="true"){
+                            $(sele).remove();
+                        }else
+                        {
+                            alert("Unalbe to delete");
+                        }
+                    });
+                }
+                else
+                {
+                    //alert("No Doc Exsit!");
+                }
+                //$(sele).remove();
+                //$.post("<?php echo $this->baseUrl ?>/biller/claims/deletedocs/",{url:url},function(data){});
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+            }
+             function Isillage(name)
+            {
+                 var nameill=$(name).val();
+                 var namelenght=nameill.length;
+                 var temp=nameill.charAt(namelenght-1);
+                
+                // $(name).val('nameill');
+                 if(temp=="/"|| temp=="\\")
+                 {
+                    nameill=nameill.substr(0,namelenght-1);
+                    $(name).val(nameill);
+                 }
+            }   
+        </script>
+        <script type="text/javascript" language="javascript" >
+                function showoptionfield(){
+//                    alert("start");
+                    var option = $("#tags_select").val();
+//                    alert(option);
+                    var type_id = "#"+option+"_type";
+//                    alert(type_id);
+                    var type = $(type_id).val();
+//                    alert(type);
+                    var option_value = $("#"+option).val();
+                    if(type == 'binary'){
+//                      alert("a checkbox");
+//                      alert(option_value);
+                      $("#tags_input").css("display","none");
+                      $("#tags_checkbox").css("display","");
+                      if(option_value == "yes"){
+//                          alert(option_value);
+                         document.getElementById("tags_checkbox").checked = true;
+                      }else{
+//                         alert(option_value);
+                         document.getElementById("tags_checkbox").checked = false;
+                      }
+                     }else if(type == 'other'){
+//                      alert("an input field");
+//                      alert(option_value);
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","");
+                      $("#tags_input").val(option_value);
+                     }         
+                     if(option == "-1"){
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","none");
+                     }
+                }
+            </script>
+        <script type="text/javascript" language="javascript" >
+                function setvalue(type){
+                    var option = $("#tags_select").val();
+                    if(type == "checkbox"){
+//                        alert("should be checkbox");
+//                        var value = $("#tags_checkbox").val();
+//                        alert(value);
+                        if(document.getElementById("tags_checkbox").checked){
+                            $("#"+option).val("yes");
+//                            alert($("#"+option).val());
+                        }else{
+                            $("#"+option).val("no");
+//                            alert($("#"+option).val());
+                        }
+//                        alert($("#"+option).val());
+                    }else if(type == "input"){
+//                        alert("should be inputfield");
+                        var value = $("#tags_input").val();
+//                        alert(value);
+                        $("#"+option).val(value);  
+//                        alert($("#"+option).val());
+                    }
+                }
+            </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Insurance Information</p>
+        </div>
+        <div class="table-div" >
+            <form  enctype="multipart/form-data"  method="post" action="" onsubmit="javascript:return check();">
+                <table width="100%">
+                    <tr>
+                        <th align="left">Company Display Name</th>
+                        <td>
+                            <select class="select" name="insurance_id" id="insurance_id"  style="width: 100%" onchange="javascript:auto_complete()" >
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->insuranceList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                            <input type='input' value='' name='insurance_display' id='insurance_display' size="38"  onkeyup="javascript:displaycheck('#insurance_display')" />
+                            <a title='edit Display Name' href='JavaScript:void(0);' style='display:inline;color:red;' onclick='editName()'>edit</a>
+                        </td>
+                        <th align="left">Company Name</th><td ><input type="text" name="insurance_name" id="insurance_name" size="38"onkeyup="javascript:Isillage('#insurance_name')" /></td>
+                        <th align="left">Phone Number</th><td ><input type="text" name="insurance_phone_number" id="insurance_phone_number" onkeyup="javascript:phone('#insurance_phone_number')" size="38" /></td>
+                        <th align="left">Fax Number</th><td><input type="text" name="fax_number" id="fax_number" onkeyup="javascript:phone('#fax_number')" size="38" /></td>
+                    </tr>
+                    <tr>
+                        <!--th align="left">Crosswalk Overwrite</th><td><input type="text" name="anesthesia_crosswalk_overwrite" id="anesthesia_crosswalk_overwrite"/></td-->
+                        <th  align="left">Street Address</th><td><input type="text" name="insurance_street_address" id="insurance_street_address" size="44" /></td>
+                        <th align="left">Zip Code</th><td><input type="text" name="insurance_zip" id="insurance_zip"  onblur="javascript:zip2citystate('#insurance_zip')" size="38" /></td>
+                        <th align="left">City</th><td><input type="text" name="insurance_city" id="insurance_city"  size="38" /></td>
+                        <th align="left">State</th><td><input type="text" name="insurance_state" id="insurance_state"  size="38" /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Payer Type</th><!--td><input type="text" name="payer_type" id="payer_type" /></td>-->
+                        <td ><select name="payer_type" id="payer_type" style= "width:100% " >
+                                <option value="-1">Select</option>
+                                <option value="PI">PI</option>
+                                <option value="MM">MM</option>
+                                <option value="ME">ME</option>
+                                <option value="WC">WC</option>
+                                <option value="LI">LI</option>
+                        </select>
+                        </td>
+                        <th align="left">EDI Number</th><td><input type="text" name="EDI_number" id="EDI_number" size="38"  /></td>
+                        <th align="left">Submisson Method</th>
+                        <td ><select name="claim_submission_preference" id="claim_submission_preference" style= "width:100% " >
+                                <option value="Mail">Mail</option>
+                                <option value="EDI">EDI</option>
+                                <option value="Fax">Fax</option>
+                        </select>
+                        </td>
+                        <th  align="left">Bill Rate</th><td><input type="text" name="anesthesia_bill_rate" id="anesthesia_bill_rate" size="38"  /></td>
+                    </tr>
+                    <tr>
+                       
+                        <th align="left">Insurance Type</th>
+                        <td ><select name="insurance_type" id="insurance_type" style= "width:100% ">
+                                <option value="OTHER">OTHER</option>
+                                <option value="MEDICARE">MEDICARE</option>
+                                <option value="MEDICAID">MEDICAID</option>
+                                <option value="TRICARE">TRICARE</option>
+                                <option value="CHAMPVA">CHAMPVA</option>
+                                <option value="GROUP">GROUP</option>
+                                <option value="FECA">FECA</option>
+                               </select>
+                        </td>
+                        <th align="left">Tags</th><td>
+                            <!--<input type="text" name="tags" id="tags" size="38"  />-->
+                            
+                            <select class="select" name="tags_select" id="tags_select"  style="width: 50%" onchange="javascript:showoptionfield();" >
+                         
+                            <option value="-1">Select</option>
+                            </select>
+                            <input type ="checkbox"  style="display:none" name="tags_checkbox" id="tags_checkbox" onchange="javascript:setvalue('checkbox');">
+                            <input type ="text"  style="display:none" name="tags_input" id="tags_input" size="15" onchange="javascript:setvalue('input');">
+                        </td>
+                        <th align="left">Status</th>
+                        <td>
+                         <select  class="select"  name="status"  style= "width:100%" id="status">
+                            <option value='active'>active</option>
+                            <option value='inactive'>inactive</option>
+                        </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="8">&nbsp</th>
+                    </tr>
+                    <tr>
+                        <th  align="left">Benefit Lookup</th><td><input type="text" name="benefit_lookup" id="benefit_lookup" size="44"  /></td>
+                        <th align="left">Claim Lookup</th><td><input type="text" name="claim_status_lookup" id="claim_status_lookup" size="38"  /></td>
+                        <th align="left">EFT Lookup</th><td><input type="text" name="EFT" id="EFT" size="38" /></td>
+                        <th align="left">Claim Filing Deadline</th><td><input type="text" name="claim_filing_deadline" id="claim_filing_deadline" size="38"  /></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">Reconsideration</th><td><input type="text" name="reconsideration" id="reconsideration" size="44"  /></td>
+                        <th align="left">Appeal</th><td><input type="text" name="appeal" id="appeal" size="38"   /></td>
+                        <th align="left">Navinet Support Number</th><td><input type="text" name="navinet_web_support_number" id="navinet_web_support_number" size="38"  /></td>
+                        <th align="left">PID</th><td><input type="text" name="PID_interpretation" id="PID_interpretation" size="38"   /></td>
+                    </tr>
+                    <tr>
+                     <th></th><td style="display:none">
+                         <input type ="text" name="addmark" id="addmark">
+                   
+                         </td>
+                     </tr>
+                    <tr>
+                        <th >Notes</th><td colspan="7"><textarea style= "width:100%" rows="4"  name="insurance_notes" id="insurance_notes"  ></textarea></td>
+                    </tr>
+                    <tr>
+                        <td ><input type="submit" name="submit" value="Update" /></td>
+                        <!--<td ><input type="submit" name="submit" value="Delete" /></td>-->
+                        <td ><input type="button" name="delete" id="delete" value="Delete" onclick="deleteFac()"/></td>
+                        <div class="modal fade" id="login-modal">
+                            <div class="modal-dialog modal-lg">
+                                 <div class="modal-content">
+                                     <div class="modal-header">
+                                         <button class="close" data-dismiss="modal">&times</button>
+                                         <h4 style="color:red">This Insurance can not be deleted as the claims below are still associated with the Insurance !</h4>
+                                     </div>
+                                      <div class="modal-body">
+                                           <div class="container-fluid">
+                                               <div class="row">
+                                                   <div class="col-md-3"><strong>Last Name</strong></div>
+                                                   <div class="col-md-3"><strong>First Name</strong></div>
+                                                   <div class="col-md-3"><strong>DOS</strong></div>
+                                                   <div class="col-md-3"><strong>Provider</strong></div>
+                                               </div>
+                                               <div id="detail">
+
+                                               </div>
+
+                                           </div>
+                                          <br>
+                                          <div id="more" style="float:right">More...</div>
+                                      </div>
+                                      <div class="modal-footer">
+                                         <button class="btn btn-default" data-dismiss="modal">
+                                            Close
+                                         </button>
+                                      </div>
+                                 </div>
+                            </div>
+                        </div>
+                        
+                        <script>
+                            function deleteFac(){
+                               //var showdetail = document.getElementById("showdetail");
+                               var status = $("#status").val();
+                               //alert(status);
+                               var insurance_id = $("#insurance_id").val();
+                               //alert(insurance_id);
+                               //var facility_id = $("#facility_id").val();
+                               //alert(facility_id);
+                                $.post("<?php echo $this->baseUrl ?>/biller/data/deleteinsurance/",{'insurance_id':insurance_id,'status':status},function(data){
+                                    var myjson='';
+                                    eval("myjson=" + data + ";");
+                                    var flag = myjson.flag;
+                                    var status = myjson.status;
+                                    if(status==1){
+                                        alert('you can not delete an active insurance');
+                                    }else{
+                                            if(flag==1){
+                                                //alert('can not delete');
+                                                var patientinfoArray = myjson.patientinfoArray;
+                                                //alert(typeof(patientinfoArray));
+                                                //showdetail.style.display="";
+
+                                               
+                                                $("#login-modal").modal('show');
+                                                var len = patientinfoArray.length;
+                                                //alert(len);
+                                                if(len>10){
+                                                    len = 10;
+                                                }else{
+                                                    $("#more").hide();
+                                                }
+                                                for (var i=0;i<len;i++){
+                                                    $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-3\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['providername']+"</div></div>");
+                                                }
+                                                $('#login-modal').on('hide.bs.modal',function(){
+                                                    $("#detail").children().remove(); //删除所有子元素
+                                                });
+                                            }else{
+                                               alert('delete successfully');
+                                               window.location.href="<?php echo $this->baseUrl ?>/biller/data/insurance"; 
+                                            }
+                                    }
+                           
+
+                                });
+                            }
+                        </script>
+                        <td ><input type="submit" name="submit" value="New" /></td>
+                        <td colspan="5"></td>
+                    </tr>
+                </table>
+                <br></br>
+                <br></br>  
+                <table id="doc_table">
+                    <tr>
+                        <th colspan="4"><p  style="text-align: center;font-size: 16px;">Documents</p></th>
+                    </tr>
+                    <tr>
+                        <th width="25%" style="background:#eeeeee;text-align: center">Data and Time</th>
+                        <th width="25%" style="background:#eeeeee;text-align: center">Description</th>
+                        <th width="25%" style="background:#eeeeee;text-align: center">User</th>
+                        <th width="25%" style="background:#eeeeee;text-align: center"></th>
+                    </tr>
+                    
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

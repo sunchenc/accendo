@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                
+                         $.post("<?php echo $this->baseUrl ?>/biller/claims/download/",
+                function(data)
+                {
+                    
+                    if(data!=''&&data!=null)
+                        window.open(data);//这个方法就直接把这个TXT以浏览器的方式打开了 
+                }
+            );
+                
+                $("#provider_id").change(function(){
+                    var provider_id = $("#provider_id").val();
+                    if(provider_id){
+                        $("#id option").remove();
+                        $("#id").append("<option value=\"\">Select</option>");
+                    }
+                });
+            }
+        );
+        </script>
+
+
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                $("#tbody1").empty();
+                var id=$("#provider_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/providerbillinginfo/",{id:id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var tableTrElement = $("#table1 tr");//得到表格所有行
+                    var len = tableTrElement.length;//得到总行数
+                    var tableElement = $("#table1");//得到表格对象
+//                    tableElement.empty();
+                    var str="";
+                    $("#count").val(myjson.length);
+                    for(var i=0;i<(myjson.length-1);i++){
+                        if(myjson[i]['amount_paid']=='0.00'){
+                            myjson[i]["amount_paid"]="";
+                            myjson[i]["date_paid"]='';
+                        }
+                        str =str+ '<tr id='+i+'>'
+                            + '<td style=\"font-weight:normal;display:none\"> <input type=\"text\" id=\"providerbilling_id_'+i+'\"  name=\"providerbilling_id_'+i+'\" style=\"font-weight:normal;display:none\" value="'+ myjson[i]["id"] + '" /></td>'
+                            + '<td id="date_billed" style=\"font-weight:normal\" >' + myjson[i]["date_billed"]+ '</td>'
+                            + '<td id="bill_period" style=\"font-weight:normal\">' + myjson[i]["bill_period"] + '</td>'
+                        //                            + '<td id="DOB" style=\"font-weight:normal\">' + myjson[i]["DOB"] + '</td>'
+                            + '<td id="amount_collected" style=\"font-weight:normal\">' + myjson[i]["amount_collected"] + '</td>'
+                            + '<td id="amount_billed" style=\"font-weight:normal\">' + myjson[i]["amount_billed"] + '</td>'
+                            + "<td><input type=\"text\" id=\"amount_paid_"+i+"\"  name=\"amount_paid_"+i+"\" style=\"font-weight:normal\"  value=\""+ myjson[i]["amount_paid"] + "\"  onchange=\"datepaid("+i+")\"/></td>"
+                            + "<td><input type=\"text\" id=\"date_paid_"+i+"\"  name=\"date_paid_"+i+"\" style=\"font-weight:normal\" value=\""+ myjson[i]["date_paid"] +"\" />  </td>"
+                            + '<td> <input type=\"text\" id=\"notes_'+i+'\" name=\"notes_'+i+'\"style=\"font-weight:normal\" value="'+ myjson[i]["notes"] +'"/></td>'
+                            + '<td> <input type=\"text\" id=\" internal_notes_'+i+'\" name=\"internal_notes_'+i+'\"style=\"font-weight:normal\" value="'+ myjson[i]["internal_notes"] +'"/></td>'
+                            + '</tr>';
+                    }
+                    //                        $("#provider_id").val(myjson.provider_id);
+                    str = str + '<tr>' + '<th align=\"center\" style=\"background:#eeeeee\"> '+"Amount Due"+' </th>'+'<td><input type=\"text\" style=\"font-weight:normal\" value=\"'+myjson[myjson.length-1]['due']+'\"/></td>' +'</tr>';
+                    tableElement.append(str);
+                });
+            }
+        </script>
+
+        <script type="text/javascript" language="Javascript">
+            function datepaid(i){
+                var now= new Date();
+                var year=now.getFullYear();
+                var month=now.getMonth()+1;
+                var day=now.getDate();
+                var hour=now.getHours();
+                var minute=now.getMinutes();
+                var second=now.getSeconds();
+                $("#date_paid_"+i.toString()+"").val((month<10?"0":"")+month+'/'+(day<10?"0":"")+day+'/'+year);
+            }
+        </script>
+
+        <script type="text/javascript" language="Javascript" >
+            function getVal(){
+                var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                var providerbilling_ids=new Array();
+                var notes_array = new Array();
+                var internal_notes_array = new Array();
+                for(var i=0;i<table.rows.length;i++)
+                {
+                    if(td1[i*8].firstChild.checked)
+                    { 
+                        var providerbilling_id=td1[i*8+7].innerHTML;
+                        var notes = $("#notes_"+(i+1).toString()).val();
+                         var internal_notes = $("#internal_notes_"+(i+1).toString()).val();
+                        notes_array.push(notes);
+                        internal_notes_array.push(internal_notes);
+                        providerbilling_ids.push(providerbilling_id);
+                    }
+                    $("#providerbilling_ids").val(providerbilling_ids);
+                    $("#notes_array").val(notes_array);
+                    $("#internal_notes_array").val(internal_notes_array);
+                }
+            }
+        </script>
+
+  <script type="text/javascript" language="Javascript" >
+            function check()
+            {     
+                var allCheck = document.getElementsByTagName("input");   
+                for(var i=0; i < allCheck.length; i++){
+                  
+                     if(allCheck[i].type=="checkbox")
+                     {
+                         if (allCheck[i].checked == true)
+                                allCheck[i].checked = false;
+                        else allCheck[i].checked = true;
+                     }
+                }          
+              } 
+            </script>
+        
+            <script type="text/javascript" language="Javascript" >    
+            function fun()
+            {
+                check();
+            }
+        </script>
+
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; Provider Billing</p>
+        </div>
+        <div class="table-div" >
+            <form method="post"  action="" onsubmit="javascript:return check();">
+                <table>
+                    <tr>
+                        <th align="center" colspan="13" style="background:#eeeeee">
+                            <p align="center"><b><big>Provider Billing</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="2%" style="text-align: center;background:#eeeeee"><b onclick="javascript:fun();">Sel</b></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Name"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Bill Period"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Amount Collected"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Amount Billed"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Notes"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Internal Notes"/></th>
+                    </tr>
+                    <?php
+                    $count = 1;
+                    foreach ($this->providerbillingList as $row) {
+                        if ($count % 2 == 0) {
+                            echo "<tr>";
+                            echo $row["notes"];
+                             echo $row["internal_notes"];
+                            echo "<tr><td width= '2%'style=\"background:#eeeeee;text-align:center;\"><input type=checkbox id= 'check_" . $count . "' checked=true onclick=\"checkNumber()\"></td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['provider_name'] . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['bill_period'] . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['amount_collected'] . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['amount_billed'] . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . "<input type=\"text\" id='notes_".$count."' value=\"$row[notes]\"/>" . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . "<input type=\"text\" id='internal_notes_".$count."' value=\"$row[internal_notes]\"/>" . "</td>";
+                            echo "<td style=\"display:none\">" . $row['providerbilling_id'] . "</td>";
+                            echo "</tr>";
+                            $count+=1;
+                        } else {
+                            echo "<tr>";
+                            echo "<tr><td width= '2%' style=\"text-align:center;\"><input type=checkbox id= 'check_" . $count . "' checked=true onclick=\"checkNumber()\"></td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['provider_name'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['bill_period'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['amount_collected'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['amount_billed'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . "<input type=\"text\" id='notes_".$count."' value=\"$row[notes]\"/>" . "</td>";
+                           echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . "<input type=\"text\" id='internal_notes_".$count."' value=\"$row[internal_notes]\"/>" . "</td>";
+                            echo "<td style=\"display:none\">" . $row['providerbilling_id'] . "</td>";
+                            echo "</tr>";
+                            $count+=1;
+                        }
+                    }
+                    ?>
+
+<!--                    <tr>
+    <td ><input type="submit" name="submit" value="Update" /></td>
+    <td ><input type="submit" name="submit" value="Delete" /></td>
+    <td ><input type="submit" name="submit" value="New" /></td>
+    <td colspan="5"></td>
+</tr>-->
+
+
+                    <tr>
+                        <td colspan="3"><input type="submit" name="submit" id ="submit" align="center" value="providerbilling" onclick="javascript:getVal()" /></td>
+                    
+                        <td><input type="text" name="providerbilling_ids"  id="providerbilling_ids"size="20" style= "display:none"/></td>
+                        <td><input type="text" name="notes_array"  id="notes_array"size="20" style= "display:none"/></td>
+                        <td><input type="text" name="internal_notes_array"  id="internal_notes_array"size="20" style= "display:none"/></td>
+                        <td><input type="text" name="checkboxid"  id="checkboxid"size="20" value="10000" style= "display:none"/></td>
+                    </tr>
+                    <!--tr>
+                        <td colspan="3"><input type="submit" name="submit" id ="submit" align="center" value="update"  /></td>
+                    </tr-->
+
+                </table>
+
+                <table>
+                    <tr >
+                        <th align="left">Provider</th>
+                        <td>
+                            <select class="select" name="provider_id" id="provider_id" onchange="javascript:auto_complete()" style= "width:60%">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->providerlist as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <tr>
+                    <td width="100%">
+                        <table id="table1">
+                            <thead>
+                                <th width="14%" style="text-align: center"><b>Date Billed</b></th>
+                                <th width="14%" style="text-align: center"><b>Bill Period</b></th>
+                                <th width="14%" style="text-align: center"><b>Amount Collected</b></th>
+                                <th width="14%" style="text-align: center"><b>Amount billed</b></th>
+                                <th width="14%" style="text-align: center"><b>Amount paid</b></th>
+                                <th width="14%" style="text-align: center"><b>Date paid</b></th>
+                                <th width="14%" style="text-align: center"><b>Notes</b></th>
+                                <th width="14%" style="text-align: center"><b>Internal Notes</b></th>
+                            </thead>
+                            <tbody id="tbody1">
+                            </tbody>
+                            <td colspan="3"><input type="submit" name="submit" id ="submit" align="center" value="save"/></td>
+                            <td colspan="3"><input type="text" name="count" id ="count" align="center" style="display: none"/></td>
+                        </table>
+                    </td>
+                </tr>
+            </form>
+        </div>
+    </body>
+</html>

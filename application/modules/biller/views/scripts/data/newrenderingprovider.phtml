@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-
+    transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css"/>
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+         <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $("#FullName").hide();
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            ); 
+                $("#provider_id").change(function(){
+                     $('#import_or_new').val('new');
+                     $('#import_or_new').change();
+                     var provider_id = $("#provider_id").val();
+                     if(provider_id){
+                        $("#last_name option").remove();
+                        $("#last_name").append("<option value=\"\">Select</option>");
+                        $.post("<?php 
+                        echo $this->baseUrl
+                                ?>/biller/data/renderingproviderexistlist/",{provider_id:provider_id},function(data){
+                            var myjson='';
+                            eval("myjson=" + data + ";");
+                            for(var i = 0;i<myjson.exist_data.length;i++){
+                            $("#last_name").append("<option value='"+myjson.exist_data[i]['id']+"'>"+myjson.exist_data[i]['last_name']+","+myjson.exist_data[i]['first_name']
+                                +"</option>")
+                            }
+
+                        });
+                    }
+                });
+          $('#import_or_new').change(function (e){
+                var import_or_new = $("#import_or_new").val();
+                if(import_or_new == 'new') {
+                    $('#last_name').hide();
+                    $('#add_last_name').show();
+                    $('#add_first_name').show();
+                    $('#add_first_name').val('');
+                   $("#NPI").val('');
+                   $("#fax_number").val("");
+                    $("#street_address").val("");
+                    $("#zip").val("");
+                    $("#state").val("");
+                    $("#city").val("");
+                   $("#phone_number").val("");
+                   $("#secondary_phone_number").val("");
+                    $("#notes").val("");
+                   $("#status").val('active');
+                    $("#FullName").hide();
+                    $("#FirstName").show();
+                    $("#LastName").show();
+                }
+                else {
+                    $('#last_name').show();
+                    $('#add_last_name').hide();
+                    $('#add_first_name').hide();
+                    $("#LastName").hide();
+                    $("#FirstName").hide();
+                    $("#FullName").show();
+                    auto_complete();
+                }
+            });  
+        });
+        function auto_complete()
+            {
+                var id=$("#last_name").val();
+                var provider_id=$("#provider_id").val();
+                if(id.length!=0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/renderingproviderinfo/",{id:id,provider_id:provider_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        $("#fax_number").val(myjson.fax_number);
+                        $("#street_address").val(myjson.street_address);
+                        $("#zip").val(myjson.zip);
+                        $("#state").val(myjson.state);
+                        $("#city").val(myjson.city);
+                        $("#NPI").val(myjson.NPI);
+                        $("#phone_number").val(myjson.phone_number);
+                        $("#salutation").val(myjson.salutation);
+                        $("#secondary_phone_number").val(myjson.secondary_phone_number);
+                        $("#id1").val(myjson.id1);
+                        $("#id2").val(myjson.id2);
+                        $("#notes").val(myjson.notes);
+                        $("#status").val('active');
+                        $("#payer_id option").remove();
+                        $("#payer_id").append("<option value=''>select</option>");
+                        for(var i=0;i<myjson.innetworkpayersList.length;i++){
+                            $("#payer_id").append("<option value='"+
+                                myjson.innetworkpayersList[i]['insurance_id']+
+                                "'>"+myjson.innetworkpayersList[i]['insurance_name']+
+                                "</option>");
+                        }
+                    });
+                }
+                else
+                {
+                    $("#fax_number").val('');
+                    $("#NPI").val('');
+                    $("#street_address").val('');
+                    $("#zip").val('');
+                    $("#state").val('');
+                    $("#city").val('');
+                      $("#salutation").val('');
+                    $("#phone_number").val('');
+                    $("#secondary_phone_number").val('');
+                    $("#notes").val('');
+                    $("#status").val('active');
+                }
+            }
+            function isexisting()
+            {
+                var provider_id=$("#provider_id").val();
+                var add_first_name=$("#add_first_name").val();
+                var add_last_name=$("#add_last_name").val();
+                var NPI=$("#NPI").val();
+                var salutation=$("#salutation").val();
+           
+                
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+             
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/renderingexisting/",{provider_id:provider_id,add_first_name:add_first_name,add_last_name:add_last_name,NPI:NPI,salutation:salutation},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var add_last_name = document.getElementById("add_last_name");
+                    var add_first_name = document.getElementById("add_first_name");
+                    var NPI = document.getElementById("NPI");
+                    add_last_name.style.borderColor="#ffffff";
+                    add_first_name.style.borderColor="#ffffff";
+                    NPI.style.borderColor="#ffffff";
+                        $("#existing").hide();
+                        var myexist=myjson.existing;
+                        if(myexist)
+                        {
+                          add_last_name.style.borderColor="#ff0000";
+                          add_first_name.style.borderColor="#ff0000";
+                          NPI.style.borderColor="#ff0000";
+ 
+                          $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+        </script>
+         <script type="text/javascript" language="javascript" >
+            function zip2citystate(name)
+            {
+                var zip=$(name).val();
+                var tp = name.split('_');
+                ti = tp[1];
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#state" ).val(myjson.state);
+                    }
+                );
+                }
+            }
+        </script>
+             <script type="text/javascript" language="javascript" >
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+            }
+        </script>
+                    <script type="text/javascript" language="javascript" >
+                function showoptionfield(){
+//                    alert("start");
+                    var option = $("#tags_select").val();
+//                    alert(option);
+                    var type_id = "#"+option+"_type";
+//                    alert(type_id);
+                    var type = $(type_id).val();
+//                    alert(type);
+                    var option_value = $("#"+option).val();
+                    if(type == 'binary'){
+//                      alert("a checkbox");
+//                      alert(option_value);
+                      $("#tags_input").css("display","none");
+                      $("#tags_checkbox").css("display","");
+                      if(option_value == "yes"){
+//                          alert(option_value);
+                         document.getElementById("tags_checkbox").checked = true;
+                      }else{
+//                         alert(option_value);
+                         document.getElementById("tags_checkbox").checked = false;
+                      }
+                     }else if(type == 'other'){
+//                      alert("an input field");
+//                      alert(option_value);
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","");
+                      $("#tags_input").val(option_value);
+                     }
+                     if(option == "-1"){
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","none");
+                     }
+                }
+            </script>
+            <script type="text/javascript" language="javascript" >
+                function setvalue(type){
+                    var option = $("#tags_select").val();
+                    if(type == "checkbox"){
+//                        alert("should be checkbox");
+//                        var value = $("#tags_checkbox").val();
+//                        alert(value);
+                        if(document.getElementById("tags_checkbox").checked){
+                            $("#"+option).val("yes");
+//                            alert($("#"+option).val());
+                        }else{
+                            $("#"+option).val("no");
+//                            alert($("#"+option).val());
+                        }
+//                        alert($("#"+option).val());
+                    }else if(type == "input"){
+//                        alert("should be inputfield");
+                        var value = $("#tags_input").val();
+//                        alert(value);
+                        $("#"+option).val(value);  
+//                        alert($("#"+option).val());
+                    }
+                }
+            </script>       
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt;New Rendering Provider</p>
+        </div>
+        <div class="table-div" >
+            <form method="post"  action="" onsubmit="javascript:return check();">
+                <table>
+                    <tr >
+                           <th align="left">Provider Name<font color="#FF0000">*</font></th>
+                        <td >
+                            <select class="select" name="provider_id" style= "width:100%" id="provider_id"  style= "width:92% ">
+                                <option value="">Select</option>
+                                 <?php
+                                foreach ($this->providerList as $row) {
+                                    $tempnumber=$row['num'] - $this->allNumRend['num'];
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--". $row['street_address'] ."(" . $tempnumber . ")" ."</option>";
+                                }
+                                ?>
+                                   <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumRend['num']; ?>)</option>
+                            </select>
+                        </td>
+                       
+                           
+                         <th  id="LastName" style='align:left'>&nbsp;Last Name<font color="#FF0000">*</font></th>
+                         <th  id="FullName" style='align:left'>&nbsp;Full Name<font color="#FF0000">*</font></th>
+                        <td >
+                        <select  class="select"  name="import_or_new" style= "width: 100%" id="import_or_new">
+                            <option value='new'>New</option>
+                            <option value='import'>Import</option>
+                        </select>
+                        <select class="select" style= "width:100%;display:none"  name="last_name" style= "" id="last_name"  onchange="javascript:auto_complete()"  >
+                            <option value="">Select</option>
+                        </select>
+                        <input type="text"  name="add_last_name" id="add_last_name" size="63" onblur="javascript:isexisting()"/>
+                             <a name="existing" id="existing"  style='color:red;display:none' >existing</a>
+                        </td>
+                           
+                        <th align="left" id="FirstName">First Name<font color="#FF0000">*</font></th>
+                        <td >
+                        
+                            <input type="text" name="add_first_name" size="63" id="add_first_name" onblur="javascript:isexisting()" />
+                        </td>
+                     
+                    </tr>
+                   
+                    <tr>
+                         <th align="left">Street Address</th><td><input type="text" size="63" name="street_address" id="street_address"/></td>
+                        <th align="left">Zip</th><td><input type="text" name="zip" size="63" id="zip" onblur="javascript:zip2citystate('#zip')" /></td>
+                        <th  align="left">City</th><td><input type="text" name="city" size="63" id="city" /></td>
+                        
+                    </tr>
+                     <tr>
+                         <th align="left">State</th><td><input type="text" name="state" size="63" id="state" /></td>
+                        <th align="left">Phone Number</th><td><input type="text" size="63" name="phone_number" id="phone_number" onkeyup="javascript:phone('#phone_number')" /></td>
+                    
+                        <th align="left">Second Phone Number</th><td><input type="text" size="63" name="secondary_phone_number" id="secondary_phone_number"  onkeyup="javascript:phone('#secondary_phone_number')"/></td>
+                       
+                    </tr>
+                    <tr>
+                        <th  align="left">Fax Number</th><td><input size="63" type="text" name="fax_number" id="fax_number" onkeyup="javascript:phone('#fax_number')"/></td>
+                         <th align="left">NPI</th><td><input type="text" name="NPI" size="63" id="NPI" onblur="javascript:isexisting()" /></td>
+                           <th align="left"  size="55">Salutation</th>
+                        <td>
+                           
+                            <select class="select" name="salutation" id="salutation" style= "width:300px"   >
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->SalutationsList as $row) {
+                                       
+                                     echo "<option value='".$row."'>" . $row ."</option>";
+                                }
+                                ?>
+                               
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left">Status<font color="#FF0000">*</font></th>
+                        <td>
+                         <select  class="select"  name="status"  style= "width:100%" id="status">
+                            <option value='active'>active</option>
+                            <option value='inactive'>inactive</option>
+                        </select>
+                        </td>
+                        <th align="left">ID1</th><td><input type="text" name="id1" size="55" id="id1"/></td>
+                        <th  align="left">ID2</th><td><input type="text" name="id2" size="55" id="id2" /></td>
+                    </tr>
+                    <tr>
+                    <th align="left">Tags</th><td>
+                            <!--<input type="text" name="tags" id="tags" size="38"  />-->
+                        <select class="select" name="tags_select" id="tags_select"  style="width: 49%" onchange="javascript:showoptionfield();" >
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->tagList as $row) {
+                                    echo "<option value='" . $row['tag_name'] . "'>" . $row['tag_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        <?php
+                                foreach ($this->tagList as $row) {
+                                    if($row['tag_type'] == "binary"){
+                                        echo "<input type='text' style='display:none' id='" . $row['tag_name'] . "_type' value='".$row['tag_type']."'>";
+//                                        echo "<input type='checkbox' style='display:none' id='" . $row['tag_name'] . "'value='no'>";
+                                    }else if($row['tag_type'] == "other"){
+                                        echo "<input type='text' style='display:none' id='" . $row['tag_name'] . "_type' value='".$row['tag_type']."'>";
+//                                        echo "<input type='text' style='display:none' style='display:none' id='" . $row['tag_name'] . "'>";
+                                    }
+                                }
+                        ?>
+                            <input type ="checkbox"  style="display:none" name="tags_checkbox" id="tags_checkbox" onchange="javascript:setvalue('checkbox');">
+                            <input type ="text"  style="display:none" name="tags_input" id="tags_input" size="28" onchange="javascript:setvalue('input');">
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                     <th></th><td style="display:none">
+                    <?php
+                                foreach ($this->tagList as $row) {
+                                        echo "<input type='text' name='". $row['tag_name']. "' id='" . $row['tag_name'] . "'>";
+                                }
+                        ?>
+                         </td>
+                    </tr>
+                    <tr>
+                        <th>Notes</th><td colspan="5"><textarea rows="4" style= "width:100%" name="notes" id="notes"></textarea></td>
+                    </tr>
+                    
+                    <tr>
+                        <td width="15%" colspan="6"><input type="submit" name="next" value="Save" /></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery.multiselect.css" />
+<!--                <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/prettify.css" />-->
+
+
+<!--        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>-->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.8.js"></script>
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-ui.min.js"></script>
+<!--        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/prettify.js"></script>-->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.multiselect.js"></script>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+        
+        <script type="text/javascript" language="Javascript" >  
+            $(document).ready(function()
+            {
+                if("<?php echo $this->dobdiff ?>")
+                {
+                    $("#<?php echo $this->dobdiff ?>").css("border-bottom","2px solid red");
+                    $("#<?php echo $this->dobdiff ?>").focus();
+                }
+            });
+            
+            function checkNumber1(){
+                //alert("OK clicked!");
+                var checkinx = 1;
+                //alert(checkinx + " checked!");
+                $("#checkbox_index").val(checkinx);                                 
+            }
+            function checkNumber2(){
+                var checkinx = 2;
+                //alert("Cancel clicked!");
+                //alert(checkinx + " checked!");
+                $("#checkbox_index").val(checkinx);                                 
+            }
+        </script>
+    </head>
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Merge Patient</a> &gt; Patient Search Results</p>
+        </div>
+        <div class="table-div">
+            <form method="post" name="form1" id="form1">
+                <table >
+                    <tr>
+                        <th align="center" colspan="15" style="background:#eeeeee">
+                            <p align="left"><b><big>This is the patient to be merged (Click OK to Submit, Cancel to Cancel)</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>                        
+                        <th width="15%" style="background:#eeeeee;text-align: center">Last Name</th>
+                        <th width="15%" style="background:#eeeeee;text-align: center">First Name</th>
+                        <th width="5%" style="background:#eeeeee;text-align: center">DOB</th>                                           
+                        <th width="5%" style="background:#eeeeee;text-align: center">Account_Number</th>                                           
+                    </tr>
+                    <?php                                       
+                    $count = 1;
+                    foreach ($this->duppatientList as $row) {                            
+                    /*******************UI Enhancement **************/                            
+                        if($count%2 != 0) {
+                            echo "<tr bgcolor=\"#FF0000\">";
+                            
+                            echo "<td width='15%' id='last_name' style=\"font-weight:normal;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['last_name'],0,20). "</span></a>";
+                            echo "<td width='15%' id='first_name' style=\"font-weight:normal;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['first_name'],0,20). "</span></a>";    
+                            echo "<td width= '5%' id='DOB' style=\"font-weight:normal\">" . $row['dob'] . "</td>";                            
+                            echo "<td width= '5%' id='account_number_" . $count . "' style=\"font-weight:normal;text-align: center\">" . $row['account_number'] . "</td>";    
+                        }else {
+                            echo "<tr bgcolor=\"#00FF00\">";                                                                                                                                       
+                            echo "<tr><td width= '2%' style=\"background:#eeeeee;text-align:center;\"><input type=checkbox id= 'check_" . $count . "' onclick=\"checkNumber()\"></td>";                                                                       
+                            echo "<td  width='15%' id='last_name' style=\"font-weight:normal;background:#eeeeee;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['last_name'],0,20). "</span></a>";                                                                            
+                            echo "<td  width='15%' id='first_name' style=\"font-weight:normal;background:#eeeeee;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['first_name'],0,20). "</span></a>";                                                                  
+                            echo "<td width= '5%' id='DOB' style=\"font-weight:normal;background:#eeeeee\">" . $row['dob'] . "</td>";
+                            echo "<td width= '5%' id='account_number_" . $count . "' style=\"font-weight:normal;background:#eeeeee;text-align: center\">" . $row['account_number'] . "</td>";
+                        }
+                        $count = $count + 1;                                                                      
+                    }                                      
+                    ?>
+                    <tr >
+                        <tr>
+                        <th align="center" colspan="15" style="background:#eeeeee">
+                            <p align="left"><b><big>This is the patient to be kept (Click OK to Submit, Cancel to Cancel)</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>                        
+                        <th width="15%" style="background:#eeeeee;text-align: center">Last Name</th>
+                        <th width="15%" style="background:#eeeeee;text-align: center">First Name</th>
+                        <th width="5%" style="background:#eeeeee;text-align: center">DOB</th>                                           
+                        <th width="5%" style="background:#eeeeee;text-align: center">Account_Number</th>                                           
+                    </tr>
+                    <?php                                       
+                    $count = 1;
+                    foreach ($this->keeppatientList as $row) {                            
+                    /*******************UI Enhancement **************/                            
+                        if($count%2 != 0) {
+                            echo "<tr bgcolor=\"#FF0000\">";
+                           
+                            echo "<td width='15%' id='last_name' style=\"font-weight:normal;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['last_name'],0,20). "</span></a>";
+                            echo "<td width='15%' id='first_name' style=\"font-weight:normal;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['first_name'],0,20). "</span></a>";    
+                            echo "<td width= '5%' id='DOB' style=\"font-weight:normal\">" . $row['dob'] . "</td>";                            
+                            echo "<td width= '5%' id='account_number_" . $count . "' style=\"font-weight:normal;text-align: center\">" . $row['account_number'] . "</td>";    
+                        }else {
+                            echo "<tr bgcolor=\"#00FF00\">";                                                                                                                                       
+                            echo "<tr><td width= '2%' style=\"background:#eeeeee;text-align:center;\"><input type=checkbox id= 'check_" . $count . "' onclick=\"checkNumber()\"></td>";                                                                       
+                            echo "<td  width='15%' id='last_name' style=\"font-weight:normal;background:#eeeeee;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['last_name'],0,20). "</span></a>";                                                                            
+                            echo "<td  width='15%' id='first_name' style=\"font-weight:normal;background:#eeeeee;\"><a>
+                                <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;' onclick=\"javascript:getVal($count)\">" .substr($row['first_name'],0,20). "</span></a>";                                                                  
+                            echo "<td width= '5%' id='DOB' style=\"font-weight:normal;background:#eeeeee\">" . $row['dob'] . "</td>";
+                            echo "<td width= '5%' id='account_number_" . $count . "' style=\"font-weight:normal;background:#eeeeee;text-align: center\">" . $row['account_number'] . "</td>";
+                        }
+                        $count = $count + 1;                                                                      
+                    }                                      
+                    ?>
+                    <tr >
+                        <td colspan="14"><input type="submit" name="next" value="OK" onclick="checkNumber1()"/></td>
+                        <td colspan="14"><input type="submit" name="next" value="Cancel" onclick="checkNumber2()"/></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" name="checkbox_index"  id="checkbox_index" style= "display:none"/></td>
+                    </tr>
+                </table>                                            
+            </form>
+        </div>
+    </body>
+</html>

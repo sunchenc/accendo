@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript">
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+
+
+                $('#modifier_1').val('AA');
+                $('#import_or_new').change(function (e){
+                var import_or_new = $("#import_or_new").val();
+                
+                if(import_or_new == 'new') {
+                    $('#add_anesthesia_code').hide();
+                     $('#add_base_unit').hide();
+                    $('#add_description').hide();
+                    $('#add_modifier_1').hide();
+                    $('#add_modifier_2').hide();
+                    
+                    $('#anesthesia_code').show();
+                    $('#base_unit').show();
+                    $('#description').show();
+                    $('#modifier_1').show();
+                    $('#modifier_2').show();
+                }
+                else {
+                    $('#add_anesthesia_code').show();
+                    $('#add_base_unit').show();
+                    $('#add_description').show();
+                    $('#add_modifier_1').show();
+                    $('#add_modifier_2').show();
+                    $('#anesthesia_code').hide();
+                    $('#base_unit').hide();
+                    $('#description').hide();
+                    $('#modifier_1').hide();
+                    $('#modifier_2').hide();
+                    
+                  //  var base_unit1 = document.getElementById("base_unit1");
+                }
+            });
+            });
+            
+        </script>
+       
+             <script type="text/javascript" language="Javascript">
+                  $(document).ready(function(){
+  $("#provider_id").change(function(){
+                 $('#import_or_new').val('new');
+                var provider_id = $("#provider_id").val();
+               // $("#description").val("1");
+                if(provider_id){
+                    //$("#description").val("3");
+                    $("#add_anesthesia_code option").remove();
+                    $("#add_anesthesia_code").append("<option value=\"\">Select</option>");
+                   // $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesiacodeaddlist/",{provider_id:provider_id},function(data){
+                     $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesiacodeaddlist/",{provider_id:provider_id},
+                        function(data){
+                        var myjson='';
+                      //  $("#description").val("2");
+                        eval("myjson=" + data + ";");
+                        //var le=myjson.crosswalkList.length+4;
+                        // $("#description").val(le);
+                        for(var i = 0;i<myjson.crosswalkList.length;i++){
+                        $("#add_anesthesia_code").append("<option value='"+myjson.crosswalkList[i]['anesthesia_code']+"'>"+myjson.crosswalkList[i]['anesthesia_code']
+                            +"</option>");
+                        }
+                    });
+                }
+                //auto_complete();
+            });
+            });
+                   function isexisting()
+            {
+                var provider_id=$("#provider_id").val();
+                var anesthesia_code=$("#anesthesia_code").val();
+               
+           
+                
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+             
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesiacodeexisting/",{provider_id:provider_id,anesthesia_code:anesthesia_code},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var anesthesia_code = document.getElementById("anesthesia_code");
+                    
+                    anesthesia_code.style.borderColor="#ffffff";
+                   
+                        $("#existing").hide();
+                        var myexist=myjson.existing;
+                        if(myexist)
+                        {
+                          anesthesia_code.style.borderColor="#ff0000";
+                          
+                          $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+             function auto_complete()
+            {
+                var provider_id=$("#provider_id").val();
+         
+                var anesthesia_code = $('#add_anesthesia_code').val();
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+                $('#add_base_unit').val('');
+                $('#add_description').val('');
+                $('#add_modifier_1').val('');
+                 $('#add_modifier_2').val('');
+                //                alert("wwww");
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+                $.post("<?php echo $this->baseUrl ?>/biller/data/newanesthesiacodeinfo/",{anesthesia_code:anesthesia_code,provider_id:provider_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+
+                    //                        $('#anesthesia_code').val(myjson.anesthesia_code);
+                    //                        alert("if");
+                    //                        alert(myjson.anesthesia_code);
+                    $('#add_base_unit').val(myjson.base_unit);    
+                    $('#add_description').val(myjson.description);
+                    $('#add_modifier_1').val(myjson.modifier_1);
+                    $('#add_modifier_2').val(myjson.modifier_2);
+                    //                        $('#expected_amount').val(myjson.payment_expected);
+                    //                        $('#description').val(myjson.description);
+                    //                        //                            alert("else");
+                    //                        //                            alert(myjson.payment_expected);
+                    //                        $('#charge').val(myjson.charge_amount);
+                });
+            }
+    </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Anesthesia Code</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <tr>
+                         <th align="left" colspan="1" >Provider</th>
+                        <td  colspan="1" >
+                            <select class="select" name="provider_id" style= "width:100% " id="provider_id" >
+                                <option value="">Select</option>
+                                <?php
+                               
+                                foreach ($this->providerList as $row) {
+                                     $tempnumber=$row['num']-$this->allNumAne['num'];
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--". $row['street_address'] ."(" . $tempnumber . ")" ."</option>";
+                                }
+                                ?>
+                                 <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumAne['num']; ?>)</option>
+                            </select>
+                        </td>
+                          <th align="left">Anesthesia Code<font color="#FF0000">*</font></th>
+                       <td>
+                       <select  class="select"  name="import_or_new" style= "width:100%" id="import_or_new">
+                            <option value='new'>New</option>
+                            <option value='import'>Import</option>
+                        </select>
+                        <select class="select" style= "width:100%;display:none"  name="add_anesthesia_code" style= "" id="add_anesthesia_code"  onchange="javascript:auto_complete()"  >
+                        </select>
+                        <!--input type="text" name="facility_name" style= "width:69%" id="facility_name"/-->
+                        <input type="text" name="anesthesia_code" id="anesthesia_code" size="62"  onblur="javascript:isexisting()"/>
+                           <a name="existing" id="existing"  style='color:red;display:none' >existing</a>
+                        </td>
+                        
+                        <th align="left">Description<font color="#FF0000">*</font></th><td><input type="text" name="description" id="description" size="62" /><input type="text" name="add_description" style="display: none" id="add_description" size="62"  disabled="false"/></td>
+                        
+                    </tr>
+                    <tr>
+                         <th align="left">Base Unit<font color="#FF0000">*</font></th><td><input type="text" name="base_unit" id="base_unit" size="62" /><input type="text" name="add_base_unit" id="add_base_unit" style="display: none" size="62"  disabled="false"/></td>
+                         <th align="left">Modifier1</th><td><input colspan="1" type="text" name="modifier_1" id="modifier_1" size="62"  /><input colspan="1" type="text" name="add_modifier_1" id="add_modifier_1"  style="display: none"  disabled="false" size="62"  /></td>
+<!--                        <td><input  colspan="1" type="text" name="modifier_1" id="modifier_1" /> </td>-->
+                          <!--td colspan="1">
+                            <select class="select" name="modifier_1" id="modifier_1" style= "width:100% ">
+                                <option value="">select</option>
+                                <?php
+                                foreach ($this->modifierList as $row) {
+                                    echo "<option value='" . $row->modifier . "'>" . $row->modifier . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                          <th align="left">Modifier2</th><td><input colspan="1" type="text" name="modifier_2" id="modifier_2" size="62"  /><input colspan="1" type="text" name="add_modifier_2" id="add_modifier_2" style="display: none" disabled="false" size="62"  /></td>
+<!--                        <td><input  colspan="1" type="text" name="modifier_2" id="modifier_2" /> </td>-->
+                      <!--td colspan="1">
+                            <select class="select" name="modifier_2" id="modifier_2" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->modifierList as $row) {
+                                    echo "<option value='" . $row->modifier . "'>" . $row->modifier . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                    </tr>
+<!--                    <tr>
+                         <th align="left">Status<font color="#FF0000">*</font></th>
+                            <td>
+                             <select  class="select"  name="status"  style= "width:100%" id="status">
+                                <option value='active'>active</option>
+                                <option value='inactive'>inactive</option>
+                            </select>
+                            </td>
+                    </tr>-->
+                    <tr>
+                        <td colspan="8"><input type="submit" name="next" value="Save"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

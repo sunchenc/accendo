@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            function getVal(index){
+                var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                var patient_id=td1[(index-1)*20+18].innerHTML;
+                var encounter_id=td1[(index-1)*20+19].innerHTML;
+                $("#patient_id").val(patient_id);
+                $("#encounter_id").val(encounter_id);
+                document.getElementById("form1").submit();
+            }
+            
+            function getCal(index){
+                var val = document.getElementById(index).innerHTML;
+                //alert(val);
+                getVal(val);
+                
+            }
+            
+        </script>
+        <script type="text/javascript" language="Javascript" >
+        function deleterow(index){
+            var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                var patient_id=td1[(index-1)*20+18].innerHTML;
+                var encounter_id=td1[(index-1)*20+19].innerHTML;
+                $("tr[id=\'"+index+"\']").remove();
+        }
+        </script>
+    </head>
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Assigned Claims</p>
+        </div>
+        <div class="table-div">
+            <form method="post" name="form1" id="form1">
+                <table>
+                    <tr>
+                        <th align="center" colspan="18" style="background:#eeeeee">
+                            <p align="center"><b><big>Assigned Claims</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                               <!-- <th width="10%" style="background:#eeeeee;text-align: center"><b>Operation</b></th> -->
+       <!--                        <th width="17%" style="background:#eeeeee;text-align: center"><b>Name</b></th>-->
+<!--                        <th width="4%"  style="background:#eeeeee;text-align: center"><b>Choose</b></th>-->
+                         <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="From"/></th>
+                        
+                         <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Name"/></th>
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>MRN</b></th>-->
+                        
+                        <!-- Add fields for the results list -->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOB"/></th>
+                        <!-- Add fields for the results list -->
+                        
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="MRN"/></th>
+                         
+                        <!--move the DOS between the insurance and MRN -->
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th>
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Claim Status</b></th>-->
+                        <!--move the DOS between the insurance and MRN -->
+                        
+                        <!-- Add fields for the results list -->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Charge"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Paid"/></th>
+                        <th width="3%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="%"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Due"/></th>
+                        <!-- Add fields for the results list -->
+                        
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Insurance"/></th>
+<!--                        <th width="25%" style="background:#eeeeee;text-align: center"><b>Facility</b></th>-->
+                        <!-- <th width="25%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th> -->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Rendering Provider"/></th>
+                        
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Referring Provider"/></th>
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+                       <!-- <th width="6%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th> -->
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Claim Status</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Last"/></th>
+                        
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Claim Status"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Bill Status"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Statement Status"/></th>
+                    </tr> 
+<?php
+                    
+                    
+                    $count = 1;
+                    foreach ($this->assignedclaimsList as $row) {
+                            
+                            /*******************UI Enhancement **************/
+                            
+                            if($count%2==0){
+                                 echo "<tr id=$count style=\"background:#eeeeee;font-weight:normal\">";      
+                                 //echo "<td>".$row['user_name'] ."</td>" ;
+                            // echo "<td style= \"color:#FF78fd;font-weight:normal\" onclick=\"javascript:getVal($count)\">" . "<a>" . $row['operation'] . "</a>" . "</td>";
+//                               echo"<td id='last_name' style=\"background:#eeeeee;font-weight:normal\">" ."<a>
+//                                    <span onclick=\"javascript:deleterow($count)\">" . "delete" . "</span></a>"; 
+                                echo "<td width='10%' id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" . substr($row['user_name'],0,10) . "</td>";
+                                echo "<td width='10%' id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" ."<a>
+                                    <span onclick=\"javascript:getVal($count)\">" . substr($row['name'],0,20) . "</span></a>"; 
+//                                echo  "<span onclick=\"javascript:getCal(".$row['patient_id'].");\" style=\"color:#FF0000;\">" . '&nbsp;+'. "</span>" . "</td>";
+                            /*******************UI Enhancement **************/
+                                echo "<td width='5%' id='DOB' style=\"background:#eeeeee;font-weight:normal\">" . $row['DOB'] . "</td>";                              
+                                echo "<td width='5%' id='MRN' style=\"background:#eeeeee;font-weight:normal\">" . $row['account_number'] . "</td>";  
+                                echo "<td width='5%' id='DOS' style=\"background:#eeeeee;font-weight:normal\">" . $row['start_date_1'] . "</td>";          
+                                echo "<td width='5%' id='Charge' style=\"background:#eeeeee;font-weight:normal\">" . $row['total_charge'] . "</td>";
+                                echo "<td width='5%' id='amount_paid' style=\"background:#eeeeee;font-weight:normal\">" . $row['amount_paid'] . "</td>";             
+                                echo "<td width='3%' id='percentage' style=\"background:#eeeeee;font-weight:normal\">" . $row['percentage'] . "</td>"; 
+                                echo "<td width='5%' id='due' style=\"background:#eeeeee;font-weight:normal\">" . $row['balance_due'] . "</td>"; 
+                                echo "<td width='10%' id='insurance_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" . substr($row['insurance_display'],0,15) . "</td>";                           
+                                echo "<td width='5%' id='provider_name' style=\"background:#eeeeee;font-weight:normal\">" . $row['provider_short_name'] . "</td>";                           
+                                echo "<td width='10%' id='renderingprovider_last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" . substr($row['renderingprovider_name'],0,15) . "</td>";              
+                                echo "<td width='10%' id='referringprovider_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" . substr($row['referringprovider_name'],0,15) . "</td>";
+                                echo "<td width='5%' id='facility_name' style=\"background:#eeeeee;font-weight:normal\">" . $row['facility_short_name'] . "</td>";
+                            //echo "<td id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                                echo "<td width='5%' id='due' style=\"background:#eeeeee;font-weight:normal\">" . $row['last'] . "</td>"; 
+                                echo "<td width='10%' id='claim_status' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" . substr($row['claim_status_display'],0,30) . "</td>";
+                                echo "<td width='10%' id='bill_status_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" . substr($row['bill_status_display'],5,30) . "</td>";
+                                echo "<td width='10%' id='statement_status_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal'>" . substr($row['statement_status_display'],5,30) . "</td>";
+                            /**************************************Add inquiry_last_name**********************************
+                            echo "<td style=\"display:none\">" . $row['inquiry_last_name'] . "</td>";
+                            /**************************************Add inquiry_last_name**********************************/
+                            
+                            echo "<td style=\"display:none\">" . $row['patient_id'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td></tr>";
+                            $count = $count + 1;
+                    }else{
+                         echo "<tr id=$count style=\"font-weight:normal\">";             
+                            // echo "<td style= \"color:#FF78fd;font-weight:normal\" onclick=\"javascript:getVal($count)\">" . "<a>" . $row['operation'] . "</a>" . "</td>";
+//                               echo"<td id='last_name' style=\"font-weight:normal;\">" ."<a>
+//                                    <span onclick=\"javascript:deleterow($count)\">" . "delete" . "</span></a>"; \
+                                //echo "<td>nihao</td>";
+                                echo "<td width='10%' id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['user_name'],0,10) . "</td>";
+                                echo "<td width='10%' id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal;'>" ."<a>
+                                    <span onclick=\"javascript:getVal($count)\">" . substr($row['name'],0,20) . "</span></a>"; 
+//                                echo  "<span onclick=\"javascript:getCal(".$row['patient_id'].");\" style=\"color:#FF0000;\">" . '&nbsp;+'. "</span>" . "</td>";
+                            /*******************UI Enhancement **************/
+                                echo "<td width='5%' id='DOB' style=\"font-weight:normal\">" . $row['DOB'] . "</td>";                              
+                                echo "<td width='5%' id='MRN' style=\"font-weight:normal\">" . $row['account_number'] . "</td>";  
+                                echo "<td width='5%' id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";          
+                                echo "<td width='5%' id='Charge' style=\"font-weight:normal\">" . $row['total_charge'] . "</td>";
+                                echo "<td width='5%' id='amount_paid' style=\"font-weight:normal\">" . $row['amount_paid'] . "</td>";        
+                                echo "<td width='3%' id='percentage' style=\"font-weight:normal\">" . $row['percentage'] . "</td>"; 
+                                echo "<td width='5%' id='due' style=\"font-weight:normal\">" . $row['balance_due'] . "</td>"; 
+                                echo "<td width='10%' id='insurance_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['insurance_display'],0,15) . "</td>";                           
+                                echo "<td width='5%' id='provider_name' style= 'font-weight:normal'>" . $row['provider_short_name'] . "</td>";                           
+                                echo "<td width='10%' id='renderingprovider_last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['renderingprovider_name'],0,15) . "</td>";              
+                                echo "<td width='10%' id='referringprovider_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['referringprovider_name'],0,15) . "</td>";
+                                echo "<td width='5%' id='facility_name' style=\"font-weight:normal\">" . $row['facility_short_name'] . "</td>";
+                            //echo "<td id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                                echo "<td width='5%' id='due' style=\"font-weight:normal\">" . $row['last'] . "</td>"; 
+                                echo "<td width='10%' id='claim_status' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['claim_status'],0,30) . "</td>";
+                                echo "<td width='10%' id='bill_status_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['bill_status_display'],5,30) . "</td>";
+                                echo "<td width='10%' id='statement_status_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['statement_status_display'],5,30) . "</td>";
+                            /**************************************Add inquiry_last_name**********************************
+                            echo "<td style=\"display:none\">" . $row['inquiry_last_name'] . "</td>";
+                            /**************************************Add inquiry_last_name**********************************/
+                            
+                            echo "<td style=\"display:none\">" . $row['patient_id'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td></tr>";
+                            $count = $count + 1;
+                    }
+                    }
+                    
+                    ?>
+                      <td><input type="text" name="patient_id"  id="patient_id" style= "display:none"/></td>
+                        <td><input type="text" name="encounter_id"  id="encounter_id" style= "display:none"/></td>
+                </table>
+
+               
+            </form>
+        </div>
+    </body>
+</html>

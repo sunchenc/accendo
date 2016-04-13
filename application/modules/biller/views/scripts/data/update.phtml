@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+    </head>
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Administration</a> &gt; Update All Tables</p>
+        </div>
+        <div class="table-div" >
+            <form action="manageclaims.php" method="post" name="Service">
+                <table>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr >
+                                    <th align="left">Update Providers:</th><td><input type="file" name=""size="5"/></td>
+                                    <th align="left">Update Rendering Providers:</th><td><input type="file" name=""size="5"/></td>
+                                    <th align="left">Update SurgeryAnesthesia Crosswalk:</th><td><input type="file" name=""size="5"/></td>
+                                </tr>
+                                <tr >
+                                    <th align="left">Update Modifiers:</th><td><input type="file" name=""size="5"/></td>
+                                    <th align="left">Update Diagnosis Code:</th><td><input type="file" name=""size="5"/></td>
+                                    <th align="left">Update Facilities Name And Address:</th><td><input type="file" name=""size="5"/></td>
+                                </tr>
+                                <tr >
+                                    <th align="left">Update CPT Code:</th><td><input type="file" name=""size="5"/></td>
+                                    <th></th><td></td>
+                                    <th></th><td></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td width="15%"><input type="submit" name="next" value="Update All Tables" /></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

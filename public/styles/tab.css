@@ -1,0 +1,19 @@
+*{margin:0; padding:0;}
+h2,p{line-height:2.5em;}
+ul{list-style:none;}
+.column{margin:20px; width:100%; position:relative;  font-size:12px;}
+ .column{   margin: 15px 0;
+    width: 99%;
+    font-size: 12px;}
+.title{width:800px; height:30px; overflow:hidden;}
+.title ul{}
+.title li{float:left; margin:0 4px;}
+.title a,.title span{display:block; float:left; height:30px; line-height:30px; background:url(../images/tab_bg.png) no-repeat 0 0; cursor:pointer; color:#FFF; text-decoration:none}
+.title a{padding-left:10px;}
+.title span{padding-right:10px; background-position:right 0;}
+.title a:hover{background-position:0 -30px;}
+.title a:hover span{background-position:right -30px;}
+
+.on a,.on a:hover{background-position:0 -60px;}
+.on a span,.on a:hover span{background-position:right -60px;  color:#000;}
+.content{position:absolute; top:29px; left:0; z-index:-1; width:100%;  border:1px solid #2d83da;}

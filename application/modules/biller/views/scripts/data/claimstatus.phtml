@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link href="<?php echo $this->baseUrl ?>/styles/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+         <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/bootstrap.min.js"></script>
+       <!--by Pandazhao -->
+       <script type="text/javascript" language="Javascript">
+      $(document).ready(function()
+            {
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+            });
+       </script>
+       <!-- by Pandazhao-->
+        <script type="text/javascript" language="Javascript" >
+            function changeclaimstatus()
+            {
+                var id=$("#claim_status_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/claimstatusinfo/",{id:id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var required = myjson.required;
+                    $("#claimdescription").val(myjson.description);
+                    $("#csstatus").val(myjson.status);
+                    
+                    if(required == 1){
+                        document.getElementById('claimdescription').readOnly= true;//readOnly 属性的input 框在后台还能得到
+                        document.getElementById('claimdescription').style.backgroundColor="#EBEBE4" ;//设置不能编辑的背景色
+//                        document.getElementById('claimdescription').disabled=true;
+//                        document.getElementById('claimupdate').disabled=true;
+                        document.getElementById('claimdelete').disabled=true;
+                        document.getElementById('csstatus').disabled=true;
+                        document.getElementById('csstatus').style.backgroundColor="#EBEBE4" ;
+                      
+                    }else{
+                        document.getElementById('claimdescription').readOnly= false;
+                        document.getElementById('claimdescription').style.backgroundColor="#FFF" ;
+                        //document.getElementById('claimupdate').disabled=false;
+                        document.getElementById('claimdelete').disabled=false;
+                        document.getElementById('csstatus').disabled=false;
+                        document.getElementById('csstatus').style.backgroundColor="#FFF" ;
+                    }
+                });
+            }
+        </script>
+             <script type="text/javascript" language="Javascript" >
+            function changebillstatus()
+            {
+                var id=$("#bill_status_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/billstatusinfo/",{id:id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var required = myjson.required;
+                   
+                    $("#billdescription").val(myjson.description);
+                    $("#bsstatus").val(myjson.status);
+                    if(required == 1){
+                        document.getElementById('billdescription').readOnly= true;//readOnly 属性的input 框在后台还能得到
+                        document.getElementById('billdescription').style.backgroundColor="#EBEBE4" ;//设置不能编辑的背景色
+                        //document.getElementById('billupdate').disabled=false;
+                        document.getElementById('billdelete').disabled=true;
+                        document.getElementById('bsstatus').disabled=true;
+                        document.getElementById('bsstatus').style.backgroundColor="#EBEBE4" ;
+                    }else{
+                        document.getElementById('billdescription').readOnly= false;
+                        document.getElementById('billdescription').style.backgroundColor="#FFF" ;
+                        //document.getElementById('billdescription').disabled=false;
+                        //document.getElementById('billupdate').disabled=false;
+                        document.getElementById('billdelete').disabled=false;
+                        document.getElementById('bsstatus').disabled=false;
+                        document.getElementById('bsstatus').style.backgroundColor="#FFF" ;
+                    }
+                });
+            }
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function changestatementstatus()
+            {
+                var id=$("#statement_status_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/statementstatusinfo/",{id:id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var required = myjson.required;
+                    $("#statementdescription").val(myjson.description);
+                    $("#ssstatus").val(myjson.status);
+                    if(required == 1){
+                        document.getElementById('statementdescription').readOnly= true;//readOnly 属性的input 框在后台还能得到
+                        document.getElementById('statementdescription').style.backgroundColor="#EBEBE4" ;//设置不能编辑的背景色
+//                        document.getElementById('statementupdate').disabled=true;
+                        document.getElementById('statementdelete').disabled=true;
+                        document.getElementById('ssstatus').disabled=true;
+                        document.getElementById('ssstatus').style.backgroundColor="#EBEBE4" ;
+                    }else{
+                        document.getElementById('statementdescription').readOnly= false;
+                        document.getElementById('statementdescription').style.backgroundColor="#FFF" ;
+                        //document.getElementById('statementdescription').disabled=false;
+                        //document.getElementById('statementupdate').disabled=false;
+                        document.getElementById('statementdelete').disabled=false;
+                        document.getElementById('ssstatus').disabled=false;
+                        document.getElementById('ssstatus').style.backgroundColor="#FFF" ;
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Claim Status</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                     <th align="center" colspan="15" style="font-size: larger;line-height:30px;background:#eeeeee">
+                        <p align="center"><b><big>Claim Status</big></b></p>
+                    </th>
+                   </tr>
+                    <tr >
+                        <th align="left" colspan="1" >Claim Status</th>
+                        <td  colspan="1" >
+                            <select class="select" name="claim_status_id" style= "width:60% " id="claim_status_id" onchange="javascript:changeclaimstatus()">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->claimstatusList as $row) {
+                                    echo "<option value='" . $row['cid'] . "'>" . $row['claim_status'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+<!--                        <th align="left">Claim Status Display</th>
+                        <td>
+                            <select class="select" name="diagnosis_code" id="diagnosis_code" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->diagnosiscodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->diagnosis_code . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>-->
+                        <th align="right" colspan="1">Claim Status Display</th><td><input type="text" name="claimdescription" id="claimdescription" size="50"/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Status</th>
+                         <td>
+                             <select  class="select"  name="csstatus"   style= "width:60%" id="csstatus">
+                                <option value='active'>active</option>
+                                <option value='inactive'>inactive</option>
+                            </select>
+                         </td>
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" id="claimupdate" value="Update Claim Status"/></td>
+                        <!--<td colspan="1"><input type="submit" name="submit" id="claimdelete" value="Delete Claim Status"/></td>-->
+                        <td ><input type="button" name="claimdelete" id="claimdelete" value="Delete Claim Status" onclick="deleteFac('claim_status')"/></td>
+                        <div class="modal fade" id="login-modal">
+                            <div class="modal-dialog modal-lg">
+                                 <div class="modal-content">
+                                     <div class="modal-header">
+                                         <button class="close" data-dismiss="modal">&times</button>
+                                         <h4 style="color:red;display:none" id="csalert">This Claim Status can not be deleted as the claims below are still associated with the Claim Status !</h4>
+                                         <h4 style="color:red;display:none" id="bsalert">This Bill Status can not be deleted as the claims below are still associated with the Bill Status !</h4>
+                                         <h4 style="color:red;display:none" id="ssalert">This Statement Status can not be deleted as the claims below are still associated with the Statement Status !</h4>
+                                     </div>
+                                      <div class="modal-body">
+                                           <div class="container-fluid">
+                                               <div class="row">
+                                                   <div class="col-md-3"><strong>Last Name</strong></div>
+                                                   <div class="col-md-3"><strong>First Name</strong></div>
+                                                   <div class="col-md-3"><strong>DOS</strong></div>
+                                                   <div class="col-md-3"><strong>Provider</strong></div>
+                                               </div>
+                                               <div id="detail">
+
+                                               </div>
+
+                                           </div>
+                                          <br>
+                                          <div id="more" style="float:right">More...</div>
+                                      </div>
+                                      <div class="modal-footer">
+                                         <button class="btn btn-default" data-dismiss="modal">
+                                            Close
+                                         </button>
+                                      </div>
+                                 </div>
+                            </div>
+                        </div>
+                            <script>
+                            function deleteFac(type){
+                               //var showdetail = document.getElementById("showdetail");
+                               
+                               if(type=="claim_status"){
+                                   var status = $("#csstatus").val();
+                                    var id = $("#claim_status_id").val();
+                                    var text = $("#claim_status_id").find("option:selected").text();
+                                    $("#csalert").css('display',"");
+                               }else if(type=="bill_status"){
+                                   var status = $("#bsstatus").val();
+                                    var id = $("#bill_status_id").val();
+                                    var text = $("#bill_status_id").find("option:selected").text();
+                                    $("#bsalert").css('display',"");
+                               }else {
+                                   var status = $("#ssstatus").val();
+                                    var id = $("#statement_status_id").val();
+                                    var text = $("#statement_status_id").find("option:selected").text();
+                                    $("#ssalert").css('display',"");
+                               }
+                               //alert(id);
+                               //alert(text);
+                               //alert(status);
+                               //var provider_id = $("#provider_id").val();
+                               //alert(provider_id);
+                               //var facility_id = $("#facility_id").val();
+                               //alert(facility_id);
+                                $.post("<?php echo $this->baseUrl ?>/biller/data/deletestatus/",{'id':id,'status':status,'type':type,'text':text},function(data){
+                                    var myjson='';
+                                    eval("myjson=" + data + ";");
+                                    var flag = myjson.flag;
+                                    var status = myjson.status;
+                                    if(status==1){
+                                        alert('you can not delete an active data');
+                                    }else{
+                                            if(flag==1){
+                                                //alert('can not delete');
+                                                var patientinfoArray = myjson.patientinfoArray;
+                                                //alert(typeof(patientinfoArray));
+                                                //showdetail.style.display="";
+
+                                               
+                                                $("#login-modal").modal('show');
+                                                var len = patientinfoArray.length;
+                                                //alert(len);
+                                                if(len>10){
+                                                    len = 10;
+                                                }else{
+                                                    $("#more").hide();
+                                                }
+                                                for (var i=0;i<len;i++){
+                                                    $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-3\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['providername']+"</div></div>");
+                                                }
+                                                $('#login-modal').on('hide.bs.modal',function(){
+                                                    $("#detail").children().remove(); //删除所有子元素
+                                                });
+                                            }else{
+                                               alert('delete successfully');
+                                               window.location.href="<?php echo $this->baseUrl ?>/biller/data/claimstatus"; 
+                                            }
+                                    }
+                           
+
+                                });
+                            }
+                        </script>
+                        <td colspan="3"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+                 <tr style="height:50px">  </tr>
+                     <th align="center" colspan="15" style="font-size: larger;line-height:30px;background:#eeeeee">
+                        <p align="center"><b><big>Bill Status</big></b></p>
+                    </th>
+                   </tr>
+                           <tr >
+                        <th align="left" colspan="1" >Bill Status</th>
+                        <td  colspan="1" >
+                            <select class="select" name="bill_status_id" style= "width:60% " id="bill_status_id" onchange="javascript:changebillstatus()">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->billstatusList as $row) {
+                                    echo "<option value='" . $row['bid'] . "'>" . $row['bill_status'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+<!--                        <th align="left">Claim Status Display</th>
+                        <td>
+                            <select class="select" name="diagnosis_code" id="diagnosis_code" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->diagnosiscodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->diagnosis_code . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>-->
+                        <th align="right" colspan="1">Bill Status Display</th><td><input type="text" name="billdescription" id="billdescription" size="50"/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Status</th>
+                         <td>
+                             <select  class="select"  name="bsstatus"   style= "width:60%" id="bsstatus">
+                                <option value='active'>active</option>
+                                <option value='inactive'>inactive</option>
+                            </select>
+                         </td>
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" id="billupdate" value="Update Bill Status"/></td>
+                        <!--<td colspan="1"><input type="submit" name="submit" id="billdelete" value="Delete Bill Status"/></td>-->
+                        <td ><input type="button" name="billdelete" id="billdelete" value="Delete Bill Status" onclick="deleteFac('bill_status')"/></td>
+                        <td colspan="3"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+                   <tr style="height:50px">  </tr>
+                     <tr>
+                    <th align="center" colspan="15" style="font-size: larger;line-height:30px;background:#eeeeee">
+                        <p align="center"><b><big>Statement Status</big></b></p>
+                    </th>
+                   </tr>
+                    <tr >
+                        <th align="left" colspan="1" >Statement Status</th>
+                        <td  colspan="1" >
+                            <select class="select" name="statement_status_id" style= "width:60% " id="statement_status_id" onchange="javascript:changestatementstatus()">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->statementstatusList as $row) {
+                                    echo "<option value='" . $row['sid'] . "'>" . $row['statement_status'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+<!--                        <th align="left">statement Status Display</th>
+                        <td>
+                            <select class="select" name="diagnosis_code" id="diagnosis_code" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->diagnosiscodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->diagnosis_code . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>-->
+                        <th align="right" colspan="1">Statement Status Display</th><td><input type="text" name="statementdescription" id="statementdescription" size="50"/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Status</th>
+                         <td>
+                             <select  class="select"  name="ssstatus"   style= "width:60%" id="ssstatus">
+                                <option value='active'>active</option>
+                                <option value='inactive'>inactive</option>
+                            </select>
+                         </td>
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" id="statementupdate" value="Update Statement Status"/></td>
+                        <!--<td colspan="1"><input type="submit" name="submit" id="statementdelete" value="Delete Statement Status"/></td>-->
+                        <td ><input type="button" name="statementdelete" id="statementdelete" value="Delete Statement Status" onclick="deleteFac('statement_status')"/></td>
+                        <td colspan="3"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

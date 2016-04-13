@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click();
+                    }
+                }
+            );
+            
+            $("#provider_id").change(function(){
+            var provider_id = $("#provider_id").val();
+            $(".doc_line").remove();
+            if(provider_id){
+                $("#facility_id option").remove();
+                $("#facility_id").append("<option value=\"\">Select</option>");
+                $.post("<?php echo $this->baseUrl ?>/biller/data/facilitylist/",{provider_id:provider_id},function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    for(var i = 0;i<myjson.facilityList.length;i++){
+                    $("#facility_id").append("<option value='"+myjson.facilityList[i]['id']+"'>"+myjson.facilityList[i]['facility_display']
+                        +"</option>")
+                    }
+                    
+                });
+            }
+        });
+        }
+    );
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var provider_id=$("#provider_id").val();
+                var facility_id=$("#facility_id").val();
+                if(facility_id!=null)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/facilityinfo/",{facility_id:facility_id,provider_id:provider_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        $("#fax_number").val(myjson.fax_number);
+                        $("#street_address").val(myjson.street_address);
+                        $("#zip").val(myjson.zip);
+                        $("#state").val(myjson.state);
+                        $("#city").val(myjson.city);
+                        $("#phone_number").val(myjson.phone_number);  
+                        //$("#provider_id").val(myjson.provider_id);
+                        $("#service_doc_first_page").val(myjson.service_doc_first_page);
+                        $("#service_doc_second_page").val(myjson.service_doc_second_page);
+                        $("#service_doc_third_page").val(myjson.service_doc_third_page);
+                        $("#service_doc_forth_page").val(myjson.service_doc_fortht_page);
+                        $("#facility_name").val(myjson.facility_name);
+                        $("#description").val(myjson.description);
+                        $("#notes").val(myjson.notes);
+                        $("#status").val(myjson.status);
+                        $(".doc_line").remove();
+                        for(var i=0;i<myjson.facility_doc_list.length;i++)
+                        {   
+                            if (i%2 == 0){
+                                $("#doc_table").append("<tr class='doc_line' id='provider_doc_" + i + "' style = 'background:#FF0000'>" +
+                                        "<td width='33%' style='text-align: center' >" + "<a href = \"/accendo/public/" + myjson.facility_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.facility_doc_list[i]['date'] + "</a></td>" +
+                                        "<td width='33%' style='text-align: center'>" + myjson.facility_doc_list[i]['desc'] + "</td>" +
+                                        "<td width='34%' style='text-align: center'>" + myjson.facility_doc_list[i]['user'] + "</td>" +
+                                        "</tr>");
+                            }else{
+                                $("#doc_table").append("<tr class='doc_line' id='provider_doc_" + i + "' style = 'background:#FF0000'>" +
+                                        "<td width='33%' style='background:#eeeeee;text-align: center' >" + "<a href = \"/accendo/public/" + myjson.facility_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.facility_doc_list[i]['date'] + "</a></td>" +
+                                        "<td width='33%' style='background:#eeeeee;text-align: center'>" + myjson.facility_doc_list[i]['desc'] + "</td>" +
+                                        "<td width='34%' style='background:#eeeeee;text-align: center'>" + myjson.facility_doc_list[i]['user'] + "</td>" +
+                                        "</tr>");
+                            }
+                        }
+                        
+                    });
+                }
+                else
+                {
+                    $("#fax_number").val('');
+                    $("#street_address").val('');
+                    $("#zip").val('');
+                    $("#state").val('');
+                    $("#city").val('');
+                    $("#phone_number").val('');
+                    $("#service_doc_first_page").val('');
+                    $("#service_doc_second_page").val('');
+                    $("#service_doc_third_page").val('');
+                    $("#service_doc_forth_page").val('');
+                    $("#notes").val('');
+                    $("#status").val('')
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Claim Management</a> &gt; Facility</p>
+        </div>
+        <div class="table-div" >
+            <form method="post"  action="" >
+                <table>
+                    <tr >
+                           <th align="left">Provider</th>
+                       <td >
+                            <select class="select"  name="provider_id" style= "width:100%" id="provider_id">
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    $tempnumber=$row['num']-$this->allNumFac['num'];
+                                    $selectedStr = '';
+                                    if($row['id'] == $this->initProvider_id)$selectedStr = ' selected=\'selected\' ';
+                                    echo "<option value='" . $row['id'] .'\''.$selectedStr. ">" . $row['provider_name']  ."--". $row['street_address'] ."(" . $tempnumber . ")" . "</option>";
+                                }
+                                ?>
+                                <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumFac['num']; ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Facility Name</th>
+                        <td >
+                            <select class="select"  name="facility_id" style= "width:100%" id="facility_id" onchange="javascript:auto_complete()" >
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->facilityList as $row) {
+                                    echo "<option value='" . $row['fid'] . "'>" . $row['facility_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left">Facility Name</th><td><input type="text" size="55" name="facility_name" id="facility_name" /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Phone Number</th><td><input type="text" style= "width:99%" name="phone_number" id="phone_number" readonly= "true "/></td>
+                        <th align="left">Street Address</th><td><input type="text" name="street_address" style= "width:99%" id="street_address" readonly= "true "/></td>
+                        <th  align="left">City</th><td><input type="text" style= "width:99%" name="city" id="city" readonly= "true "/></td>
+                    </tr>
+                    <tr>  
+                        <th align="left">State</th><td><input type="text" style= "width:99%" name="state" id="state" readonly= "true "/></td>
+                        <th align="left">Zip</th><td><input type="text" style= "width:99%" name="zip" id="zip" readonly= "true "/></td>
+                        <th  align="left">Fax Number</th><td><input type="text" style= "width:99%" name="fax_number" id="fax_number" readonly= "true "/></td>
+                    </tr>
+                    <tr> 
+                        <th  align="left">Service Doc First Page</th><td><input type="text" style= "width:99%" name="service_doc_first_page" id="service_doc_first_page" readonly= "true "/></td>
+                        <th  align="left">Service Doc Second Page</th><td><input type="text" style= "width:99%" name="service_doc_second_page" id="service_doc_second_page" readonly= "true "/></td>
+                        <th  align="left">Service Doc Third Page</th><td><input type="text" style= "width:99%" name="service_doc_third_page" id="service_doc_third_page" readonly= "true "/></td>
+                    </tr>
+                     <tr>
+                        <th  align="left">Service Doc Forth Page</th><td><input type="text" style= "width:99%" name="service_doc_forth_page" id="service_doc_forth_page" readonly= "true "/></td>
+                        <th  align="left">status</th><td><input type="text" name="status" style= "width:30%" id="status" readonly= "true "/></td>
+                        <th  align="left">Description</th><td><input type="text" size="55" name="description" id="description" readonly= "true "/></td>
+
+                    </tr>
+                        <th>Notes</th><td colspan="5" ><textarea style= "width:100%" rows="4" name="notes" id="notes"  readonly= "true "></textarea></td>
+                    </tr>
+                </table>
+                <br></br>
+                <br></br>  
+                <table id="doc_table">
+                    <tr>
+                        <th colspan="3"><p  style="text-align: center;font-size: 16px;">Documents</p></th>
+                    </tr>
+                    <tr>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Data and Time</th>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Description</th>
+                        <th width="34%" style="background:#eeeeee;text-align: center">User</th>
+                    </tr>
+                    
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

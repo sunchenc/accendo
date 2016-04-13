@@ -1,0 +1,162 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Document Input</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                
+            $(window).unload(function(){
+                try {
+                    window.opener.refreshaccessbutton();
+                } catch (e) {
+                }
+                window.self.close();
+            });
+            });
+        </script>
+        <script type="text/javascript">
+            function desc_selfdef()
+            {
+                var doc_desc  = $("#doc_desc").val();
+                if(doc_desc == 'selfdefinition')
+                {
+                    $("#selfdefinition").css("display","inline");
+                }
+                else
+                {
+                    $("#selfdefinition").css("display","none");
+                }
+                
+            }
+            function desc_source_selfdef()
+            {
+                var doc_desc  = $("#doc_desc_source").val();
+                if(doc_desc == 'selfdefinition')
+                {
+                    $("#selfdefinition_source").css("display","inline");
+                }
+                else
+                {
+                    $("#selfdefinition_source").css("display","none");
+                }
+            }
+        </script>
+    </head>
+    <body >
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        
+        <div class="table-div">
+            <form enctype="multipart/form-data"  method="POST" >
+                <table>
+                    <tr>
+                        <td>
+                            <p ><b><center><h1>The New Document Input Page</h1></center></b></p>
+                        <p>
+                            <center >
+                                <div id="current">
+                                <?php echo $this->cur_service_info['patient_name'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <?php echo $this->cur_service_info['MRN'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <?php echo $this->cur_service_info['DOS'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                <?php echo $this->cur_service_info['insurance'] ?> 
+                                </div> 
+                            </center>
+                        </p>
+                        </td>
+                    </tr>
+                </table>      
+                <table>
+                    <tr>
+                        <th align="left" style= "width:50% ">Document Type:</th> 
+                        <td>
+                            <select name="file_type" id="file_type"  style= "width:60% ">
+                            <option value="">Select</option>
+                            <option value="Patient">Patient or Insurance Related</option>
+                            <option value="Claim">Services or Claims Related</option>
+                            </select>
+                       
+                        </td>
+                    </tr>
+                    <tr>
+                        <th align="left" style= "width:50% ">Document Description:</th> 
+                        <td>
+                            <select name="doc_desc" id="doc_desc"  style= "width:60% " onchange = "javascript:desc_selfdef()">
+                            <option value="">Select</option>
+                            <option value="Payment">Payment</option>
+                            <option value="EOB">EOB</option>
+                            <option value="CMS1500">CMS1500</option>
+                            <option value="FacilitySheet">Facility Sheet</option>
+                            <option value="selfdefinition">Self-Definition</option>
+                            </select>
+                       
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr id = "selfdefinition" style='display:none'>
+                        <th align="left" style= "width:50% ">Self Document Description:</th> 
+                        <td>
+                            <input type="text" name="new_description"  id="new_description" size="42"></input>
+                            
+                       
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                 <tr>
+                        <th align="left" style= "width:50% ">Document Source:</th> 
+                        <td>
+                            <select name="doc_desc_source" id="doc_desc_source"  style= "width:60% " onchange = "javascript:desc_source_selfdef()">
+                            <option value="">Select</option>
+                            <option value="source1">source1</option>
+                            <option value="source2">source2</option>
+                            <option value="source3">source3</option>
+                            <option value="source4">source4</option>
+                            <option value="selfdefinition">Self-Definition</option>
+                            </select>
+                       
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr id = "selfdefinition_source" style='display:none'>
+                        <th align="left" style= "width:50% ">Self Document Source Description:</th> 
+                        <td>
+                            <input type="text" name="new_description_source"  id="new_description_source" size="42"></input>
+                            
+                       
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <th align="left">Select File:</th>
+                        <td width="50%">
+                        <input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
+                        <input name="uploadedfile" type="file" id="uploadedfile" />
+                        </td>
+                    </tr>
+                </table>
+                <table>
+                    <tr>
+                        <td align="center"><p align="center"> <input type="submit"  id="upload"n ame="upload" value="Upload" /></p></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

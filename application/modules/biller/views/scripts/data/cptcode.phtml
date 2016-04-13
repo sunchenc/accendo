@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+        })
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var id=$("#id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/cptcodeinfo/",{id:id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    $("#id").val(myjson.id);
+                    $("#CPT_code").val(myjson.CPT_code);
+                    $("#description").val(myjson.description);
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">System Management</a> &gt; CPT Code</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <tr >
+                        <th align="left">CPT Code</th>
+                        <td>
+                            <select class="select" name="id" id="id" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->cptcodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->CPT_code . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left" colspan="2">Description</th><td><input type="text" name="description" id="description" style= "width:100% "/></td>
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" value="Update"/></td>
+                        <td colspan="1"><input type="submit" name="submit" value="Delete"/></td>
+                        <td colspan="3"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

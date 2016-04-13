@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/navigation.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+        });
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var insurance_id=$("#insurance_id").val();
+                if(insurance_id!=null)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/insuranceinfo/",{insurance_id:insurance_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        $("#insurance_id").val(myjson.insurance_id);
+                        if(myjson.fax_number!=null)
+                            $("#fax_number").val(myjson.fax_number);
+                        else
+                            $("#fax_number").val('');
+                        if(myjson.insurance_street_address!=null)
+                            $("#insurance_street_address").val(myjson.insurance_street_address);
+                        else
+                            $("#insurance_street_address").val('');
+                        if(myjson.insurance_zip!=null)
+                            $("#insurance_zip").val(myjson.insurance_zip);
+                        else
+                            $("#insurance_zip").val('');
+                        if(myjson.insurance_state!=null)
+                            $("#insurance_state").val(myjson.insurance_state);
+                        else
+                            $("#insurance_state").val('');
+                        if(myjson.insurance_city!=null)
+                            $("#insurance_city").val(myjson.insurance_city);
+                        else
+                            $("#insurance_city").val('');
+                        if(myjson.insurance_phone_number!=null)
+                            $("#insurance_phone_number").val(myjson.insurance_phone_number);
+                        else
+                            $("#insurance_phone_number").val('');
+                        if(myjson.EDI_number!=null)
+                            $("#EDI_number").val(myjson.EDI_number);
+                        else
+                            $("#EDI_number").val('');
+                        if(myjson.anesthesia_bill_rate!=null)
+                            $("#anesthesia_bill_rate").val(myjson.anesthesia_bill_rate);
+                        else
+                            $("#anesthesia_bill_rate").val('');
+                        if(myjson.payer_type!=null)
+                            $("#payer_type").val(myjson.payer_type);
+                        else
+                            $("#payer_type").val('');
+                        if(myjson.claim_submission_preference!=null)
+                            $("#claim_submission_preference").val(myjson.claim_submission_preference);
+                        else
+                            $("#claim_submission_preference").val('');
+                        if(myjson.insurance_notes!=null)
+                            $("#insurance_notes").val(myjson.insurance_notes);
+                        else
+                            $("#insurance_notes").val('');
+                        if(myjson.PID_interpretation)
+                            $("#PID_interpretation").val(myjson.PID_interpretation);
+                        else
+                            $("#PID_interpretation").val('');
+                        if(myjson.navinet_web_support_number!=null)
+                            $("#navinet_web_support_number").val(myjson.navinet_web_support_number);
+                        else
+                            $("#navinet_web_support_number").val('');
+                        if(myjson.appeal!=null)
+                            $("#appeal").val(myjson.appeal);
+                        else
+                            $("#appeal").val('');
+                        if(myjson.reconsideration!=null)
+                            $("#reconsideration").val(myjson.reconsideration);
+                        else
+                            $("#reconsideration").val('');
+                        if(myjson.claim_filing_deadline!=null)
+                            $("#claim_filing_deadline").val(myjson.claim_filing_deadline);
+                        else
+                            $("#claim_filing_deadline").val('');
+                        if(myjson.EFT!=null)
+                            $("#EFT").val(myjson.EFT);
+                        else
+                            $("#EFT").val('');
+                        if(myjson.claim_status_lookup!=null)
+                            $("#claim_status_lookup").val(myjson.claim_status_lookup);
+                        else
+                            $("#claim_status_lookup").val('');
+                        if(myjson.benefit_lookup!=null)
+                            $("#benefit_lookup").val(myjson.benefit_lookup);
+                        else
+                            $("#benefit_lookup").val('');
+                        if(myjson.anesthesia_bill_rate!=null)
+                            $("#anesthesia_bill_rate").val(myjson.anesthesia_bill_rate);
+                        else
+                            $("#anesthesia_bill_rate").val('');
+                        if(myjson.anesthesia_crosswalk_overwrite!=null)
+                            $("#anesthesia_crosswalk_overwrite").val(myjson.anesthesia_crosswalk_overwrite);
+                        else
+                            $("#anesthesia_crosswalk_overwrite").val('');
+                        if(myjson.fax_number!=null)
+                            $("#fax_number").val(myjson.fax_number);
+                        else
+                            $("#fax_number").val('');
+                        if(myjson.insurance_type!=null)
+                        $("#insurance_type").val(myjson.insurance_type);
+                    else
+                        $('#insurance_type').val('');
+                    $(".doc_line").remove();
+                    for(var i=0;i<myjson.insurance_doc_list.length;i++)
+                    {   if (i%2 == 0){
+                            $("#doc_table").append("<tr class='doc_line' id='insurance_doc_" + i + "' style = 'background:#FF0000'>" +
+                                    "<td width='33%' style='text-align: center' >" + "<a href = \"/accendo/public/" + myjson.insurance_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.insurance_doc_list[i]['date'] + "</a></td>" +
+                                    "<td width='33%' style='text-align: center'>" + myjson.insurance_doc_list[i]['desc'] + "</td>" +
+                                    "<td width='34%' style='text-align: center'>" + myjson.insurance_doc_list[i]['user'] + "</td>" +
+                                    "</tr>");
+                        }else{
+                            $("#doc_table").append("<tr class='doc_line' id='insurance_doc_" + i + "' style = 'background:#FF0000'>" +
+                                    "<td width='33%' style='background:#eeeeee;text-align: center' >" + "<a href = \"/accendo/public/" + myjson.insurance_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.insurance_doc_list[i]['date'] + "</a></td>" +
+                                    "<td width='33%' style='background:#eeeeee;text-align: center'>" + myjson.insurance_doc_list[i]['desc'] + "</td>" +
+                                    "<td width='34%' style='background:#eeeeee;text-align: center'>" + myjson.insurance_doc_list[i]['user'] + "</td>" +
+                                    "</tr>");
+                        }
+                    }
+                    });
+                }
+                else
+                {
+                    $("#fax_number").val('');
+                    $("#insurance_street_address").val('');
+                    $("#insurance_zip").val('');
+                    $("#insurance_state").val('');
+                    $("#insurance_city").val('');
+                    $("#insurance_phone_number").val('');
+                    $("#EDI_number").val('');
+                    $("#anesthesia_bill_rate").val('');
+                    $("#payer_type").val('');
+                    $("#anesthesia_crosswalk_overwrite").val('');
+                    $("#claim_submission_preference").val('');
+                    $("#insurance_notes").val('');
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function date(name)
+            {
+                var DOB=$(name).val();
+                if(DOB.length==2)
+                {
+                    DOB=DOB+'/';
+                    $(name).val(DOB);
+                }
+                if(DOB.length==5)
+                {
+                    DOB=DOB+'/';
+                    $(name).val(DOB);
+                }
+                if(DOB.length>10)
+                {
+                    DOB = DOB.substr(0,10);
+                    $(name).val(DOB);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function zipcode(name)
+            {
+                var zip=$(name).val();
+                if(zip.length==5)
+                {
+                    $(name).val(zip);
+                }
+                if(zip.length==6)
+                {
+                    zip = zip.substr(0,5)+'-'+zip.substr(5,5);
+                    $(name).val(zip);
+                }
+                if(zip.length>10)
+                {
+                    zip = zip.substr(0,10);
+                    $(name).val(zip);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function ssn(name)
+            {
+                var SSN=$(name).val();
+                if(SSN.length==3)
+                {
+                    SSN=SSN+'-';
+                    $(name).val(SSN);
+                }
+                if(SSN.length==6)
+                {
+                    SSN=SSN+'-';
+                    $(name).val(SSN);
+                }
+                if(SSN.length>11)
+                {
+                    SSN = SSN.substr(0,11);
+                    $(name).val(SSN);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function zip2citystate()
+            {
+                var zip=$("#zip").val();
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#state").val(myjson.state);
+                    }
+                );
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Insurance Information</p>
+        </div>
+        <div class="table-div" >
+            <form  method="post" action="" onsubmit="javascript:return check();">
+                <table width="100%">
+                    <tr>
+                        <th align="left">Company Name</th>
+                        <td>
+                            <select class="select" name="insurance_id" id="insurance_id"  onchange="javascript:auto_complete()" >
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->insuranceList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left">Phone Number</th><td ><input type="text" name="insurance_phone_number" id="insurance_phone_number" readonly= "true"/></td>
+                        <th align="left">Fax Number</th><td><input type="text" name="fax_number" id="fax_number" readonly= "true "/></td>
+                        <th align="left">Crosswalk Overwrite</th><td><input type="text" name="anesthesia_crosswalk_overwrite" id="anesthesia_crosswalk_overwrite" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">Street Address</th><td><input type="text" name="insurance_street_address" id="insurance_street_address" readonly= "true "/></td>
+                        <th align="left">City</th><td><input type="text" name="insurance_city" id="insurance_city"  readonly= "true "/></td>
+                        <th align="left">State</th><td><input type="text" name="insurance_state" id="insurance_state"  readonly= "true "/></td>
+                        <th align="left">Zip Code</th><td><input type="text" name="insurance_zip" id="insurance_zip"  readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Payer Type</th><td><input type="text" name="payer_type" id="payer_type" readonly= "true "/></td>
+                        <th align="left">EDI Number</th><td><input type="text" name="EDI_number" id="EDI_number"  readonly= "true "/></td>
+                        <th align="left">Submisson Method</th>
+                        <td ><select name="claim_submission_preference" id="claim_submission_preference" style= "width:100% " disabled="true">
+                                <option value="EDI">EDI</option>
+                                <option value="Fax">Fax</option>
+                                <option value="Mail">Mail</option>
+                            </select>
+                        </td>
+                        <th  align="left">Bill Rate</th><td><input type="text" name="anesthesia_bill_rate" id="anesthesia_bill_rate" readonly= "true " /></td>
+                    </tr>
+                     <tr>
+                        <th align="left">Insurance Type</th>
+                        <td ><select name="insurance_type" id="insurance_type" style= "width:100% ">
+                                <option value="">Select</option>
+                                <option value="MEDICARE">MEDICARE</option>
+                                <option value="MEDICAID">MEDICAID</option>
+                                <option value="TRICARE">TRICARE</option>
+                                <option value="CHAMPVA">CHAMPVA</option>
+                                <option value="GROUP">GROUP</option>
+                                <option value="FECA">FECA</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="8">&nbsp</th>
+                    </tr>
+                    <tr>
+                        <th  align="left">Benefit Lookup</th><td><input type="text" name="benefit_lookup" id="benefit_lookup" readonly= "true "/></td>
+                        <th align="left">Claim Lookup</th><td><input type="text" name="claim_status_lookup" id="claim_status_lookup" readonly= "true " /></td>
+                        <th align="left">EFT Lookup</th><td><input type="text" name="EFT" id="EFT" readonly= "true " /></td>
+                        <th align="left">Claim Filing Deadline</th><td><input type="text" name="claim_filing_deadline" id="claim_filing_deadline"  readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">Reconsideration</th><td><input type="text" name="reconsideration" id="reconsideration" readonly= "true "/></td>
+                        <th align="left">Appeal</th><td><input type="text" name="appeal" id="appeal" readonly= "true " /></td>
+                        <th align="left">Navinet Support Number</th><td><input type="text" name="navinet_web_support_number" id="navinet_web_support_number"  readonly= "true "/></td>
+                        <th align="left">PID</th><td><input type="text" name="PID_interpretation" id="PID_interpretation" readonly= "true " /></td>
+                    </tr>
+                    <tr>
+                        <th >Notes</th><td colspan="7"><textarea style= "width:100%" rows="4"  name="insurance_notes" id="insurance_notes" readonly= "true "></textarea></td>
+                    </tr>
+                </table>
+                <br></br>
+                <br></br>
+                <table id="doc_table">
+                    <tr>
+                        <th colspan="3"><p  style="text-align: center;font-size: 16px;">Documents</p></th>
+                    </tr>
+                    <tr>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Data and Time</th>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Description</th>
+                        <th width="34%" style="background:#eeeeee;text-align: center">User</th>
+                    </tr>
+                    
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

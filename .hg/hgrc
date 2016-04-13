@@ -1,0 +1,6 @@
+# example repository config (see "hg help config" for more info)
+
+[paths]
+default = https://SunCiCi@bitbucket.org/ebsllc/accendo
+default-push = https://SunCiCi@bitbucket.org/ebsllc/accendo
+

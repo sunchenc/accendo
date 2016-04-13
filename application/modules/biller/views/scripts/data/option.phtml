@@ -1,0 +1,484 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+         <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            ); 
+//            $.get("<?php echo $this->baseUrl ?>/biller/data/optioninfo/",function(data){
+//                var myjson='';
+//                    eval("myjson=" + data + ";");
+//                    $("#id").val(myjson.id);
+//                    $("#anesthesia_unit_rounding").val(myjson.anesthesia_unit_rounding);
+//                    $("#anesthesia_billing_rate_for_non_par").val(myjson.anesthesia_billing_rate_for_non_par);
+//                    $("#patient_statement_interval").val(myjson.patient_statement_interval);
+//                    $("#PIP_rate").val(myjson.PIP_rate);
+////                    var auto_populate_diagnosis_pointer = document.getElementsByName("auto_populate_diagnosis_pointer[]")[0];
+////                    if(myjson.auto_populate_diagnosis_pointer=='1')
+////                        auto_populate_diagnosis_pointer.checked=true;
+////                    else
+////                        auto_populate_diagnosis_pointer.checked=false;
+////                    var signature_on_file_for_all_signatures = document.getElementsByName("signature_on_file_for_all_signatures[]")[0];
+////                    if(myjson.signature_on_file_for_all_signatures=='1')
+////                        signature_on_file_for_all_signatures.checked=true;
+////                    else
+////                        signature_on_file_for_all_signatures.checked=false;
+////                    var use_DOS_for_all_dates = document.getElementsByName("use_DOS_for_all_dates[]")[0];
+////                    if(myjson.use_DOS_for_all_dates=='1')
+////                        use_DOS_for_all_dates.checked=true;
+////                    else
+////                        use_DOS_for_all_dates.checked=false;
+////                    var yes_for_assingment_of_benefits = document.getElementsByName("yes_for_assingment_of_benefits[]")[0];
+////                    if(myjson.yes_for_assingment_of_benefits=='1')
+////                        yes_for_assingment_of_benefits.checked=true;
+////                    else
+////                        yes_for_assingment_of_benefits.checked=false;
+////                    var default_end_date_to_start_date = document.getElementsByName("default_end_date_to_start_date[]")[0];
+////                    if(myjson.default_end_date_to_start_date=='1')
+////                        default_end_date_to_start_date.checked=true;
+////                    else
+////                        default_end_date_to_start_date.checked=false;
+//                    $("#default_patient_relationship_to_insured").val(myjson.default_patient_relationship_to_insured);
+//                    $("#default_modifier").val(myjson.default_modifier);
+//                    $("#default_facility").val(myjson.default_facility);
+//                    $("#default_provider").val(myjson.default_provider);
+//                    $("#default_rendering_provider").val(myjson.default_rendering_provider);
+//                    $("#provider_invoice_rate").val(myjson.provider_invoice_rate);
+//                    $("#number_of_days_without_activities").val(myjson.number_of_days_without_activities);
+//                  //  $("#number_of_days_after_issued_but_not_received").val(myjson.number_of_days_after_issued_but_not_received);
+//                    $("#number_of_days_no_payment_issued").val(myjson.number_of_days_no_payment_issued);
+//                   // $("#number_of_days_no_payment_after_agreed").val(myjson.number_of_days_no_payment_after_agreed);
+//                  //  $("#number_of_days_AR_outstanding").val(myjson.number_of_days_AR_outstanding);
+//                    $("#number_of_days_for_delayed_bill_generation").val(myjson.number_of_days_for_delayed_bill_generation 	);
+//                    //$("#number_of_days_for_litigation_followup").val(myjson.number_of_days_for_litigation_followup);
+//                  //  $("#number_of_days_bill_has_not_been_generated").val(myjson.number_of_days_bill_has_not_been_generated);
+//               //     $("#close_to_claim_filing_deadline").val(myjson.close_to_claim_filing_deadline);
+//                   // $("#invoice_delivery_preference").val(myjson.invoice_delivery_preference);
+//                    //$("#reports_delivery_preference").val(myjson.reports_delivery_preference);
+//                  //  $("#default_place_of_service").val(myjson.default_place_of_service);
+//                 //   $("#non_par_expected_pay").val(myjson.non_par_expected_pay);
+//                    $("#anesthesia_billing_rate_for_par").val(myjson.anesthesia_billing_rate_for_par);
+//                    //wenti 
+//                    $("#statement_I_1").val(myjson.statement_I_1);
+//                    $("#statement_I_2").val(myjson.statement_I_2);
+//                    $("#statement_I_3").val(myjson.statement_I_3);
+//                    $("#statement_I_4").val(myjson.statement_I_4);
+//                    $("#statement_II_1").val(myjson.statement_II_1);
+//                    $("#statement_II_2").val(myjson.statement_II_2);
+//                    $("#statement_II_3").val(myjson.statement_II_3);
+//                    $("#statement_II_4").val(myjson.statement_II_4);
+//                    $("#statement_III_1").val(myjson.statement_III_1);
+//                    $("#statement_III_2").val(myjson.statement_III_2);
+//                    $("#statement_III_3").val(myjson.statement_III_3);
+//                    $("#statement_III_4").val(myjson.statement_III_4);
+//                     $("#autoposting").val(myjson.autoposting);
+//                    $("#number_of_days_include_in_ledger").val(myjson.number_of_days_include_in_ledger);
+//                    $("#SI_send_to_patient").val(myjson.SI_send_to_patient);
+//                    $("#SI_co_insurance").val(myjson.SI_co_insurance);
+//                    $("#SI_deductible").val(myjson.SI_deductible);
+//                    $("#SI_selfpay").val(myjson.SI_selfpay);
+//                    $("#installment_statement_date").val(myjson.installment_statement_date);
+//                    $("#custom_label_1").val(myjson.custom_label_1);
+//                    $("#custom_label_2").val(myjson.custom_label_2);
+//                    $("#custom_label_3").val(myjson.custom_label_3);
+//                    $("#custom_label_4").val(myjson.custom_label_4);
+//                    $("#default_pay_rate").val(myjson.default_pay_rate);
+//                     $("#min_gap").val(myjson.min_gap);
+//                    
+//                    $("#tags").val(myjson.tags);
+//                    
+//            });
+      
+        });
+        </script>
+          
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var id=$("#option_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/optioninfo/",{id:id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    $("#tags_checkbox").css("display","none");
+                    $("#tags_input").css("display","none");
+                    document.getElementById("tags_select").innerHTML="";
+                    document.getElementById("addmark").innerHTML="";
+                    $("#tags_select").append("<option value='-1'>Select</option>");                    
+                    $("#option_id").val(myjson.id);
+                    $("#anesthesia_unit_rounding").val(myjson.anesthesia_unit_rounding);
+                    $("#anesthesia_billing_rate_for_non_par").val(myjson.anesthesia_billing_rate_for_non_par);
+                    $("#patient_statement_interval").val(myjson.patient_statement_interval);
+                    $("#PIP_rate").val(myjson.PIP_rate);
+//                    var auto_populate_diagnosis_pointer = document.getElementsByName("auto_populate_diagnosis_pointer[]")[0];
+//                    if(myjson.auto_populate_diagnosis_pointer=='1')
+//                        auto_populate_diagnosis_pointer.checked=true;
+//                    else
+//                        auto_populate_diagnosis_pointer.checked=false;
+//                    var signature_on_file_for_all_signatures = document.getElementsByName("signature_on_file_for_all_signatures[]")[0];
+//                    if(myjson.signature_on_file_for_all_signatures=='1')
+//                        signature_on_file_for_all_signatures.checked=true;
+//                    else
+//                        signature_on_file_for_all_signatures.checked=false;
+//                    var use_DOS_for_all_dates = document.getElementsByName("use_DOS_for_all_dates[]")[0];
+//                    if(myjson.use_DOS_for_all_dates=='1')
+//                        use_DOS_for_all_dates.checked=true;
+//                    else
+//                        use_DOS_for_all_dates.checked=false;
+//                    var yes_for_assingment_of_benefits = document.getElementsByName("yes_for_assingment_of_benefits[]")[0];
+//                    if(myjson.yes_for_assingment_of_benefits=='1')
+//                        yes_for_assingment_of_benefits.checked=true;
+//                    else
+//                        yes_for_assingment_of_benefits.checked=false;
+//                    var default_end_date_to_start_date = document.getElementsByName("default_end_date_to_start_date[]")[0];
+//                    if(myjson.default_end_date_to_start_date=='1')
+//                        default_end_date_to_start_date.checked=true;
+//                    else
+//                        default_end_date_to_start_date.checked=false;
+                    $("#default_patient_relationship_to_insured").val(myjson.default_patient_relationship_to_insured);
+                    $("#default_modifier").val(myjson.default_modifier);
+                    $("#default_facility").val(myjson.default_facility);
+                    $("#default_provider").val(myjson.default_provider);
+                    $("#default_rendering_provider").val(myjson.default_rendering_provider);
+                    $("#provider_invoice_rate").val(myjson.provider_invoice_rate);
+                    $("#number_of_days_without_activities").val(myjson.number_of_days_without_activities);
+                  //  $("#number_of_days_after_issued_but_not_received").val(myjson.number_of_days_after_issued_but_not_received);
+                    $("#number_of_days_no_payment_issued").val(myjson.number_of_days_no_payment_issued);
+                   // $("#number_of_days_no_payment_after_agreed").val(myjson.number_of_days_no_payment_after_agreed);
+                  //  $("#number_of_days_AR_outstanding").val(myjson.number_of_days_AR_outstanding);
+                    $("#number_of_days_for_delayed_bill_generation1").val(myjson.number_of_days_for_delayed_bill_generation1);
+                    $("#number_of_days_for_delayed_bill_generation2").val(myjson.number_of_days_for_delayed_bill_generation2);
+                    $("#number_of_days_for_delayed_bill_generation3").val(myjson.number_of_days_for_delayed_bill_generation3);                    
+                    //$("#number_of_days_for_litigation_followup").val(myjson.number_of_days_for_litigation_followup);
+                  //  $("#number_of_days_bill_has_not_been_generated").val(myjson.number_of_days_bill_has_not_been_generated);
+               //     $("#close_to_claim_filing_deadline").val(myjson.close_to_claim_filing_deadline);
+                   // $("#invoice_delivery_preference").val(myjson.invoice_delivery_preference);
+                    //$("#reports_delivery_preference").val(myjson.reports_delivery_preference);
+                  //  $("#default_place_of_service").val(myjson.default_place_of_service);
+                 //   $("#non_par_expected_pay").val(myjson.non_par_expected_pay);
+                    $("#anesthesia_billing_rate_for_par").val(myjson.anesthesia_billing_rate_for_par);
+                    //wenti 
+                    $("#statement_I_1").val(myjson.statement_I_1);
+                    $("#statement_I_2").val(myjson.statement_I_2);
+                    $("#statement_I_3").val(myjson.statement_I_3);
+                    $("#statement_I_4").val(myjson.statement_I_4);
+                    $("#statement_II_1").val(myjson.statement_II_1);
+                    $("#statement_II_2").val(myjson.statement_II_2);
+                    $("#statement_II_3").val(myjson.statement_II_3);
+                    $("#statement_II_4").val(myjson.statement_II_4);
+                    $("#statement_III_1").val(myjson.statement_III_1);
+                    $("#statement_III_2").val(myjson.statement_III_2);
+                    $("#statement_III_3").val(myjson.statement_III_3);
+                    $("#statement_III_4").val(myjson.statement_III_4);
+                    $("#statement_V_1").val(myjson.statement_V_1);
+                    $("#autoposting").val(myjson.autoposting);
+                    $("#number_of_days_include_in_ledger").val(myjson.number_of_days_include_in_ledger);
+                    $("#SI_send_to_patient").val(myjson.SI_send_to_patient);
+                    $("#SI_co_insurance").val(myjson.SI_co_insurance);
+                    $("#SI_deductible").val(myjson.SI_deductible);
+                    $("#SI_selfpay").val(myjson.SI_selfpay);
+                    $("#installment_statement_date").val(myjson.installment_statement_date);
+                    $("#custom_label_1").val(myjson.custom_label_1);
+                    $("#custom_label_2").val(myjson.custom_label_2);
+                    $("#custom_label_3").val(myjson.custom_label_3);
+                    $("#custom_label_4").val(myjson.custom_label_4);
+                    $("#default_pay_rate").val(myjson.default_pay_rate);
+                     $("#min_gap").val(myjson.min_gap);
+                    $("#toomanyminutes").val(myjson.toomanyminutes);
+//                    $("#tags").val(myjson.tags);
+                    if((myjson.tags_in_billingcompany!=null)){
+                        for(i=0;i<myjson.tags_in_billingcompany.length;i++){
+                            $("#tags_select").append("<option value='" + myjson.tag_names[i] + "'>" + myjson.tag_names[i] + "</option>");
+                            $("#tags_select").append("<input type='text' style='display:none' id='" + myjson.tags_in_billingcompany[i]['tag_name'] + "_type' value='"+ myjson.tags_in_billingcompany[i]['tag_type']+"'>");
+                            $("#addmark").append("<input type='text' name='"+ myjson.tags_in_billingcompany[i]['tag_name']+ "' id='" + myjson.tags_in_billingcompany[i]['tag_name'] + "'>");
+                        }
+                    }
+                    if(myjson.tags!=null){
+                        for(i=0;i<myjson.tags.length;i++){
+                            $("#"+myjson.tags[i]['tag_name']).val(myjson.tags[i]['tag_type']);
+                        }
+                    }
+                    
+                    
+                   // $("#statement_I_1")
+                 //   $("#in_network_contract_rates").val(myjson.in_network_contract_rates);
+                   // $("#number_of_days_offered_but_not_agreed").val(myjson.number_of_days_offered_but_not_agreed);
+                });
+            }
+        </script>
+<script type="text/javascript" language="javascript" >
+                function showoptionfield(){
+//                    alert("start");
+                    var option = $("#tags_select").val();
+//                    alert(option);
+                    var type_id = "#"+option+"_type";
+//                    alert(type_id);
+                    var type = $(type_id).val();
+//                    alert(type);
+                    var option_value = $("#"+option).val();
+                    if(type == 'binary'){
+//                      alert("a checkbox");
+//                      alert(option_value);
+                      $("#tags_input").css("display","none");
+                      $("#tags_checkbox").css("display","");
+                      if(option_value == "yes"){
+//                          alert(option_value);
+                         document.getElementById("tags_checkbox").checked = true;
+                      }else{
+//                         alert(option_value);
+                         document.getElementById("tags_checkbox").checked = false;
+                      }
+                     }else if(type == 'other'){
+//                      alert("an input field");
+//                      alert(option_value);
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","");
+                      $("#tags_input").val(option_value);
+                     }         
+                     if(option == "-1"){
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","none");
+                     }
+                }
+            </script>       
+        <script type="text/javascript" language="javascript" >
+                function setvalue(type){
+                    var option = $("#tags_select").val();
+                    if(type == "checkbox"){
+//                        alert("should be checkbox");
+//                        var value = $("#tags_checkbox").val();
+//                        alert(value);
+                        if(document.getElementById("tags_checkbox").checked){
+                            $("#"+option).val("yes");
+//                            alert($("#"+option).val());
+                        }else{
+                            $("#"+option).val("no");
+//                            alert($("#"+option).val());
+                        }
+//                        alert($("#"+option).val());
+                    }else if(type == "input"){
+//                        alert("should be inputfield");
+                        var value = $("#tags_input").val();
+//                        alert(value);
+                        $("#"+option).val(value);  
+//                        alert($("#"+option).val());
+                    }
+                }
+            </script>        
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; Options</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <tr >
+                        <th align="left">Option Name</th>
+                        <td>
+                            <select class="select" name="option_id" id="option_id" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->optionsList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->option_name . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left">Anesthesia Unit Rounding<font color="#FF0000">*</font></th>
+                        <td><select name="anesthesia_unit_rounding" id="anesthesia_unit_rounding" style= "width:100% ">
+                                <option value="always round up">Round Up</option>
+                                <option value="no rounding">Round Down</option>
+                            </select>
+                        </td>
+                        <th align="left">Anesthesia Billing Rate For Non-Par<font color="#FF0000">*</font></th><td><input type="text" name="anesthesia_billing_rate_for_non_par" id="anesthesia_billing_rate_for_non_par"  size="25"/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Patients Statements Interval</th>
+                        <td><select name="patient_statement_interval" id="patient_statement_interval" style= "width:100% ">
+                                <option value="15">15 Days</option>
+                                <option value="30">30 Days</option>
+                                <option value="45">45 Days</option>
+                            </select>
+                        </td>
+                        <th align="left">Number of days for delayed bill generation1</th><td><input type="text" name="number_of_days_for_delayed_bill_generation1" id="number_of_days_for_delayed_bill_generation1" size="25"/></td>
+                        <th align="left">Number of days for delayed bill generation2</th><td><input type="text" name="number_of_days_for_delayed_bill_generation2" id="number_of_days_for_delayed_bill_generation2" size="25"/></td>
+                  
+                        <!--th>End Date to Start Date</th><td><input type="checkbox" name="default_end_date_to_start_date[]" id="default_end_date_to_start_date"/></td>
+                        <th>Auto-populate Diagnosis Pointer</th><td><input type="checkbox" name="auto_populate_diagnosis_pointer[]" id="auto_populate_diagnosis_pointer"/></td-->
+                    </tr>
+                    <!--tr>
+                        <th>Signature on file for all Signatures</th><td><input type="checkbox" name="signature_on_file_for_all_signatures[]" id="signature_on_file_for_all_signatures"/></td>
+                        <th>Use DOS for all dates on the bill</th><td><input type="checkbox" name="use_DOS_for_all_dates[]" id="use_DOS_for_all_dates"/></td>
+                        <th>Yes value for assignmentd of benefits</th><td><input type="checkbox" name="yes_for_assingment_of_benefits[]" id="yes_for_assingment_of_benefits"/></td-->
+                    </tr>
+                    <tr >
+                        <!--th align="left">Patient Relationship to Insured</th>
+                        <td><select name="default_patient_relationship_to_insured" id="default_patient_relationship_to_insured" style="width:100%">
+                                <?php
+                                foreach ($this->relationshipList as $row) {
+                                    echo "<option value='" . $row['relationship'] . "'>" . $row['relationship'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left">Default Modifier</th>
+                        <td >
+                            <select class="select" name="default_modifier" id="default_modifier"  style= "width:100% ">
+
+                                <?php
+                                foreach ($this->modifierList as $row) {
+                                    echo "<option value='" . $row['modifier'] . "'>" . $row['modifier'] . ' ' . $row['description'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                        
+                    </tr>
+                     <tr >
+                        <th align="left">Number of days for delayed bill generation3</th><td><input type="text" name="number_of_days_for_delayed_bill_generation3" id="number_of_days_for_delayed_bill_generation3" size="25"/></td>
+                        <th align="left">Provider Invoice Rate</th><td><input type="text" name="provider_invoice_rate" id="provider_invoice_rate" size="25"/></td>      
+                        <th align="left">PIP Rate</th><td><input type="text" name="PIP_rate" id="PIP_rate" size="39" stytle="width:99%"/></td>
+                    </tr>
+                    <tr>
+                        <!--th align="left">Number of days after payment issued, but not received</th><td><input type="text" name="number_of_days_after_issued_but_not_received" id="number_of_days_after_issued_but_not_received"/></td>-->
+                        <!--th align="left">Number of days AR outstanding</th><td><input type="text" name="number_of_days_AR_outstanding" id="number_of_days_AR_outstanding"/></td-->
+                        <!--th align="left">Litigated claims follow up interval</th><td><input type="text" name="number_of_days_for_litigation_followup" id="number_of_days_for_litigation_followup"/></td-->
+                      
+                        
+                        <th align="left">Number of days without activities</th><td><input type="text" name="number_of_days_without_activities" id="number_of_days_without_activities" size="25"/></td>
+                        <!--th align="left">Default Place of Service</th>
+                        <td >
+                            <select class="select" name="default_place_of_service" id="default_place_of_service"  style= "width:100% ">
+                                <?php
+                                foreach ($this->placeofserviceList as $row) {
+                                    echo "<option value='" . $row['pos'] . "'>" . $row['description'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                         <th align="left">number_of_days_no_payment_issued</th><td><input type="text" name="number_of_days_no_payment_issued" id="number_of_days_no_payment_issued" size="25"/></td>
+                        
+                        <th align="left">anesthesia_billing_rate_for_par</th><td><input type="text" name="anesthesia_billing_rate_for_par" id="anesthesia_billing_rate_for_par" size="39" stytle="width:99%"/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">statement_I_1</th><td><input type="text" name="statement_I_1" id="statement_I_1" size="25"/></td>
+                        <th align="left">statement_I_2</th><td><input type="text" name="statement_I_2" id="statement_I_2" size="25"/></td>
+                        
+                        <th align="left">statement_I_3</th><td><input type="text" name="statement_I_3" id="statement_I_3" size="39" stytle="width:99%" /></td>
+                        <!--th align="left">Number of days the bill has not been generated</th><td><input type="text" name="number_of_days_bill_has_not_been_generated" id="number_of_days_bill_has_not_been_generated"/></td-->
+                        <!--th align="left">Provider Invoice Rate</th><td><input type="text" name="provider_invoice_rate" id="provider_invoice_rate"/!-></td-->
+                    </tr>
+                    <tr>
+                        <th align="left">statement_I_4</th><td><input type="text" name="statement_I_4" id="statement_I_4" size="25"/></td>
+                        <th align="left">statement_II_1</th><td><input type="text" name="statement_II_1" id="statement_II_1" size="25"/></td>                        
+                        <th align="left">statement_II_2</th><td><input type="text" name="statement_II_2" id="statement_II_2" size="39" stytle="width:99%"/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">statement_II_3</th><td><input type="text" name="statement_II_3" id="statement_II_3" size="25"/></td>
+                        <th align="left">statement_II_4</th><td><input type="text" name="statement_II_4" id="statement_II_4" size="25"/></td>
+                        
+                        <th align="left">statement_III_1</th><td><input type="text" name="statement_III_1" id="statement_III_1" size="39" stytle="width:99%"/></td>
+                    </tr>
+                      <tr>
+                        <th align="left">statement_III_2</th><td><input type="text" name="statement_III_2" id="statement_III_2" size="25"/></td>
+                        <th align="left">statement_III_3</th><td><input type="text" name="statement_III_3" id="statement_III_3" size="25"/></td>
+                          
+                        <th align="left">statement_III_4</th><td><input type="text" name="statement_III_4" id="statement_III_4" size="39" stytle="width:98%"/></td>
+                        
+                    </tr>
+                    <tr>
+                        <th align="left">Default REMARK for Installment Statements</th><td><input type="text" name="statement_V_1" id="statement_V_1" size="25" stytle="width:98%"/></td>
+                        <th align="left">number_of_days_include_in_ledger</th><td><input type="text" name="number_of_days_include_in_ledger" id="number_of_days_include_in_ledger" size="25"/></td>
+                         <th align="left">SI_send_to_patient</th>
+                         <td><select name="SI_send_to_patient" id="SI_send_to_patient" style= "width:100% ">
+                                <option value="0">NO</option>
+                                <option value="1">YES </option>
+                                
+                            </select>
+                         </td>
+                    </tr>
+                    <tr>
+                         <th align="left">SI_co_insurance</th>
+                         <td><select name="SI_co_insurance" id="SI_co_insurance" style= "width:100% ">
+                                <option value="0">NO</option>
+                                <option value="1">YES </option>
+                                
+                            </select>
+                        </td>
+                         <th align="left">SI_deductible</th>
+                         <td><select name="SI_deductible" id="SI_deductible" style= "width:100% ">
+                                <option value="0">NO</option>
+                                <option value="1">YES </option>
+                                
+                            </select>
+                        </td>
+                        
+                        <th align="left">SI_selfpay</th>
+                        <td><select name="SI_selfpay" id="SI_selfpay" style= "width:100% ">
+                                <option value="0">NO</option>
+                                <option value="1">YES </option>
+                                
+                            </select>
+                        </td>
+                    </tr>
+                      <tr>
+                        <th align="left">installment_statement_date</th><td><input type="text" name="installment_statement_date" id="installment_statement_date" size="39" stytle="width:98%"/></td>
+                        <th align="left">custom_label_1</th><td><input type="text" name="custom_label_1" id="custom_label_1" size="25"/></td>
+                        <th align="left">custom_label_2</th><td><input type="text" name="custom_label_2" id="custom_label_2" size="25"/></td>
+                    </tr>
+                      <tr>
+                        <th align="left">custom_label_3</th><td><input type="text" name="custom_label_3" id="custom_label_3" size="39" stytle="width:98%"/></td>
+                        <th align="left">custom_label_4</th><td><input type="text" name="custom_label_4" id="custom_label_4" size="25"/></td>
+                        <th align="left">default_pay_rate</th><td><input type="text" name="default_pay_rate" id="default_pay_rate" size="25"/></td>
+                    </tr>
+                    <tr >
+                        <th align="left">min_gap</th><td><input type="text" name="min_gap" id="min_gap" size="39" stytle="width:99%"/></td>
+                        <th align="left">autoposting</th><td><input type="text" name="autoposting" id="autoposting" size="39" stytle="width:99%"/></td>
+                        
+                        <!--<th align="left">Tags</th><td><input type="text" name="tags" id="tags" size="39" stytle="width:99%"/></td>-->                        
+                        <th align="left">Tags</th><td>
+                            <!--<input type="text" name="tags" id="tags" size="38"  />-->
+                            
+                            <select class="select" name="tags_select" id="tags_select"  style="width: 47%" onchange="javascript:showoptionfield();" >
+                         
+                            <option value="-1">Select</option>
+                            </select>
+                            <input type ="checkbox"  style="display:none" name="tags_checkbox" id="tags_checkbox" onchange="javascript:setvalue('checkbox');">
+                            <input type ="text"  style="display:none" name="tags_input" id="tags_input" size="17" onchange="javascript:setvalue('input');">
+                        </td>
+                        
+                    </tr>
+                    <tr >
+                        <th align="left">toomanyminutes</th><td><input type="text" name="toomanyminutes" id="toomanyminutes" size="39" stytle="width:99%"/></td>
+                    </tr>
+                    <tr>
+                     <th></th><td style="display:none">
+                         <input type ="text" name="addmark" id="addmark">
+                   
+                         </td>
+                     </tr>
+                    <tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" value="Update"/></td>
+                        <td colspan="1"><input type="submit" name="submit" value="Delete"/></td>
+                        <td colspan="6"><input type="submit" name="submit" value="New"/></td>
+                    </tr>                    
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+         <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <link rel="stylesheet" href="<?php echo $this->baseUrl ?>/styles/jquery.megamenu.css" type="text/css" media="screen" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script  type="text/javascript" language="JavaScript" src="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        <script type="text/javascript" language="javascript">
+            var paymentId = 0;
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                    function(data)
+                    {
+                        if(data!='no'&&data!=null) {
+                            var a=document.getElementById("relogin");
+                            a.click(); 
+                        }
+                    }
+                );
+                var count = parseInt(document.getElementById("paymentcount").value);
+                document.getElementById("paymentcount").value = count;
+                paymentId = count;
+                for(var i=count;i<10;i++){
+                    addtable();
+                }
+            });
+        </script>
+        <script type="text/javascript" language="javascript">
+            function addtable(){
+                paymentId = paymentId + 1;
+                $("#paymentcount").val(paymentId);
+                var paymentTable = document.getElementById("payment_table");
+                var newTr1 = document.createElement("tr");
+                var newTr2 = document.createElement("tr");
+                newTr1.id = "payment_" + paymentId;
+                newTr2.id = "payment_EOB_" + paymentId;
+                newTr2.style.display="none";
+                var newth1 = document.createElement("TH");
+                var newth2 = document.createElement("TH");
+                var newth3 = document.createElement("TH");
+                var newth4 = document.createElement("TH");
+                var newth5 = document.createElement("TH");
+                var newth6 = document.createElement("TH");
+                var newth7 = document.createElement("TH");
+                var newTd1 = document.createElement("TD");
+                var newTd2 = document.createElement("TD");
+                var newTd3 = document.createElement("TD");
+                var newTd4 = document.createElement("TD");
+                var newTd5 = document.createElement("TD");
+                var newTd6 = document.createElement("TD");
+                var newTd7 = document.createElement("TD");
+                var newth8 = document.createElement("TH");
+                var newthcount = document.createElement("TH");
+                newth1.innerHTML = "MRN";
+                newth2.innerHTML = "DOS";
+                newth3.innerHTML = "Received";
+                newth4.innerHTML = "Allowed";
+                newth5.innerHTML = "Not Allowed";
+                newth6.innerHTML = "Co-Insurance";
+                newth7.innerHTML = "Deducible";
+                newthcount.innerHTML = paymentId + ". ";
+                newTd1.innerHTML = "<input id=\"payment_MRN_" + paymentId + "\" name=\"payment_MRN_" + paymentId + "\" \>";
+                newTd2.innerHTML = "<input id=\"payment_DOS_" + paymentId + "\" name=\"payment_DOS_" + paymentId + "\" onkeyup=\"javascript:date('#payment_DOS_"+paymentId+"')\" \>";
+                newTd3.innerHTML = "<input id=\"payment_Received_" + paymentId + "\" name=\"payment_Received_" + paymentId + "\" \>";
+                newTd4.innerHTML = "<input id=\"payment_Allowed_" + paymentId + "\" name=\"payment_Allowed_" + paymentId + "\" onchange=\"javascript:checkAllow('allowed','"+paymentId+"')\"\>";
+                newTd5.innerHTML = "<input id=\"payment_Not_Allowed_" + paymentId + "\" name=\"payment_Not_Allowed_" + paymentId + "\" onchange=\"javascript:checkAllow('notAllowed','"+paymentId+"')\" \>";
+                newTd6.innerHTML = "<input id=\"payment_Co_Insurance_" + paymentId + "\" name=\"payment_Co_Insurance_" + paymentId + "\" \>";
+                newTd7.innerHTML = "<input id=\"payment_Deducible_" + paymentId + "\" name=\"payment_Deducible_" + paymentId + "\" \>";
+                newth8.innerHTML = "<button id=\"show_button_"+paymentId+"\" type=\"button\" onclick=\"javascript:showEob("+ paymentId +")\">Show</button>";
+                newth8.style.textAlign = "center";
+                paymentTable.appendChild(newTr1);
+                newTr1.appendChild(newthcount);
+                newTr1.appendChild(newth1);
+                newTr1.appendChild(newTd1);
+                newTr1.appendChild(newth2);
+                newTr1.appendChild(newTd2);
+                newTr1.appendChild(newth3);
+                newTr1.appendChild(newTd3);
+                newTr1.appendChild(newth4);
+                newTr1.appendChild(newTd4);
+                newTr1.appendChild(newth5);
+                newTr1.appendChild(newTd5);
+                newTr1.appendChild(newth6);
+                newTr1.appendChild(newTd6);
+                newTr1.appendChild(newth7);
+                newTr1.appendChild(newTd7);
+                newTr1.appendChild(newth8);
+                var newth21 = document.createElement("TH");
+                var newth22 = document.createElement("TH");
+                var newth23 = document.createElement("TH");
+                var newth24 = document.createElement("TH");
+                var newth25 = document.createElement("TH");
+                var newth26 = document.createElement("TH");
+                var newTd21 = document.createElement("TD");
+                var newTd22 = document.createElement("TD");
+                var newTd23 = document.createElement("TD");
+                var newTd24 = document.createElement("TD");
+                var newTd25 = document.createElement("TD");
+                var newthcount2 = document.createElement("TH");
+                newthcount2.innerHTML = paymentId + ". ";
+                newth21.innerHTML = "EOB Reduction";
+                newth22.innerHTML = "EOB Other Reduction";
+                newth23.innerHTML = "EOB Adjustment Reason";
+                newth24.innerHTML = "Payment Notes";
+                newth25.innerHTML = "Payment Internal Notes";
+                newth26.colSpan = "5";
+                newTd21.innerHTML = "<input id=\"payment_EOB_Reduction_" + paymentId + "\" name=\"payment_EOB_Reduction_" + paymentId + "\" \>";
+                newTd22.innerHTML = "<input id=\"payment_EOB_Other_Reduction_" + paymentId + "\" name=\"payment_EOB_Other_Reduction_" + paymentId + "\" \>";
+                newTd23.innerHTML = "<input id=\"payment_EOB_Adjustment_Reason_" + paymentId + "\" name=\"payment_EOB_Adjustment_Reason_" + paymentId + "\" \>";
+                newTd24.innerHTML = "<input id=\"payment_EOB_Notes_" + paymentId + "\" name=\"payment_EOB_Notes_" + paymentId + "\" \>";
+                newTd25.innerHTML = "<input id=\"payment_EOB_Internal_Notes_" + paymentId + "\" name=\"payment_EOB_Internal_Notes_" + paymentId + "\" \>";
+                paymentTable.appendChild(newTr2);
+                newTr2.appendChild(newthcount2);
+                newTr2.appendChild(newth21);
+                newTr2.appendChild(newTd21);
+                newTr2.appendChild(newth22);
+                newTr2.appendChild(newTd22);
+                newTr2.appendChild(newth23);
+                newTr2.appendChild(newTd23);
+                newTr2.appendChild(newth24);
+                newTr2.appendChild(newTd24);
+                newTr2.appendChild(newth25);
+                newTr2.appendChild(newTd25);
+                newTr2.appendChild(newth26);
+                if(paymentId%2==0){
+                    newTr1.style.backgroundColor = "#eeeeee";
+                    newTr2.style.backgroundColor = "#eeeeee";
+                    newth1.style.backgroundColor = "#EEEEEE";
+                    newth2.style.backgroundColor = "#EEEEEE";
+                    newth3.style.backgroundColor = "#EEEEEE";
+                    newth4.style.backgroundColor = "#EEEEEE";
+                    newth5.style.backgroundColor = "#EEEEEE";
+                    newth6.style.backgroundColor = "#EEEEEE";
+                    newth7.style.backgroundColor = "#EEEEEE";
+                    newTd1.style.backgroundColor = "#EEEEEE";
+                    newTd2.style.backgroundColor = "#EEEEEE";
+                    newTd3.style.backgroundColor = "#EEEEEE";
+                    newTd4.style.backgroundColor = "#EEEEEE";
+                    newTd5.style.backgroundColor = "#EEEEEE";
+                    newTd6.style.backgroundColor = "#EEEEEE";
+                    newTd7.style.backgroundColor = "#EEEEEE";
+                    newth21.style.backgroundColor = "#EEEEEE";
+                    newth22.style.backgroundColor = "#EEEEEE";
+                    newth23.style.backgroundColor = "#EEEEEE";
+                    newth24.style.backgroundColor = "#EEEEEE";
+                    newth25.style.backgroundColor = "#EEEEEE";
+                    newTd21.style.backgroundColor = "#EEEEEE";
+                    newTd22.style.backgroundColor = "#EEEEEE";
+                    newTd23.style.backgroundColor = "#EEEEEE";
+                    newTd24.style.backgroundColor = "#EEEEEE";
+                    newTd25.style.backgroundColor = "#EEEEEE";
+                    newth26.style.backgroundColor = "#EEEEEE";
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function showEob(id){
+                var eobId = "#payment_EOB_" + id;
+                var state = $(eobId).css("display");
+                if(state == "none"){
+                    $(eobId).css("display","");
+                    var buttonId = "#show_button_"+id;
+                    $(buttonId).text("Hide");
+                }
+                if(state!="none"){
+                    $(eobId).css("display","none");
+                    var buttonId = "#show_button_"+id;
+                    $(buttonId).text("Show");
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function addPaymentList(){
+                addtable();
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function jump(index){
+                $("#jump_index").val(index);
+                //alert(index);
+                document.getElementById('jump_submit').click();
+            }
+        </script>
+        <script type="text/javascript" language="javascipt">
+            function checkAllow(type,id){
+                //alert(type+id);
+                var mrn = $("#payment_MRN_"+id).val();
+                var dos = $("#payment_DOS_"+id).val();
+                var provider_id = $("#Provider_id").val();
+                if((mrn!=""&&mrn!=null)&&(dos!=""&&dos!=null)&&(provider_id!=""&&provider_id!=null)){
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/getclaiminfo/",{mrn:mrn,dos:dos,provider_id:provider_id},function(data){
+                            eval("data=" + data + ";");
+                            if(data.result != "error") {
+                                //alert(data.result);
+                                if(type=="allowed"){
+                                    var allowed = $("#payment_Allowed_"+id).val();
+                                    allowed = parseFloat(allowed);
+                                    $("#payment_Not_Allowed_"+id).val(parseFloat(data.result)-allowed);
+                                }else if(type=="notAllowed"){
+                                    var nallowed = $("#payment_Not_Allowed_"+id).val();
+                                    nallowed = parseFloat(nallowed);
+                                    $("#payment_Allowed_"+id).val(parseFloat(data.result)-nallowed);
+                                
+                                }
+                                
+                            }else{
+                                //alert(data.result);
+                            }
+                        }
+                    );
+                }else{
+                    //alert("Lack of related info");
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none;" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Mannual Batch Payment Posting</p>
+        </div>
+        <div class="table-div">
+            <form enctype="multipart/form-data"  method="post" >
+                <table id="payment_table" style="height:300px;overflow:scroll">
+                    <tr>
+                        <th align="center" colspan="15" style="background:#eeeeee">
+                            <p align="center"><b><big>Mannual Batch Payment Posting</big></b></p>
+                        </th>
+                        <th style="text-align:center;background:#eeeeee"><button type="button" onclick="javascript:addPaymentList()">More</button></th>
+                    </tr>
+                    <tr>
+                        <th colspan="2" style="text-align: center;background:#eeeeee">Provider:</th>
+                        <td colspan="2" style="text-align: center;background:#eeeeee">
+                            <select id="Provider_id" name="Provider_id">
+                                <option value="">Select</option>
+                                <?php
+                                    $state = $this->state;
+                                    if($state =="Look Up"||$state=="post"){
+                                        $provider_id = $this->providerId;
+                                        foreach($this->providerlist as $row){
+                                            if($row['id'] == $provider_id){
+                                                echo "<option value='" . $row['id'] . "' selected=\"selected\">" . $row['display'] . "</option>";
+                                            }else{
+                                                echo "<option value='" . $row['id'] . "'>" . $row['display'] . "</option>";
+                                            }
+                                        }
+                                    }else{
+                                        foreach($this->providerlist as $row){
+                                            echo "<option value='" . $row['id'] . "'>" . $row['display'] . "</option>";
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <th colspan="2" style="text-align: center;background:#eeeeee">Insurance:</th>
+                        <td colspan="2" style="text-align: center;background:#eeeeee">
+                            <select id="insurance" name="insurance">
+                                <option value="">Select</option>
+                                <?php
+                                    $state = $this->state;
+                                    if($state =="Look Up"||$state=="post"){
+                                        $insurance = $this->insurance;
+                                        foreach($this->insurancelist as $row){
+                                            if($row['name']==$insurance){
+                                                echo "<option value='" . $row['name'] . "' selected=\"selected\">" . $row['name'] . "</option>";
+                                            }else{
+                                                echo "<option value='" . $row['name'] . "'>" . $row['name'] . "</option>";
+                                            }
+                                        }
+                                    }else{
+                                        foreach($this->insurancelist as $row){
+                                            echo "<option value='" . $row['name'] . "'>" . $row['name'] . "</option>";
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <th colspan="2" style="text-align: center;background:#eeeeee">EOB File:</th
+                        <form enctype="multipart/form-data" method="POST">
+                        <td colspan="2" style="text-align: center;background:#eeeeee"><input type="file" style="width:80%;" id="eobFile" name="eobFile" /></td>
+                        </form>
+                        <th colspan="4" style="text-align: center;background:#eeeeee"></th>
+                    </tr>
+                    <?php
+                        $state = $this->state;
+                        $i=1;
+                        if($state =="Look Up" || $state=="post"){
+                            $payments = $this->payments;
+                            $count_pay = count($payments);
+                            if($count_pay>0){
+                                foreach($payments as $payment){
+                                    if($i%2==0){
+                                        echo "<tr id=\"payment_".$i."\">";
+                                        echo "<th style=\"background-color:#eeeeee;\">" . $i . "." ."</th>";
+                                        echo "<th style=\"background-color:#eeeeee;\">MRN</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_MRN_" . $i ."\" name=\"payment_MRN_" . $i . "\" value=\"" . $payment['MRN'] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">DOS</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_DOS_" . $i ."\" name=\"payment_DOS_" . $i . "\" value=\"" . $payment['DOS'] . "\" onkeyup =\"javascript:date('#payment_DOS_".$i."')\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">Received</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_Received_" . $i ."\" name=\"payment_Received_" . $i . "\" value=\"" . $payment['Received'] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">Allowed</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_Allowed_" . $i ."\" name=\"payment_Allowed_" . $i . "\" value=\"" . $payment['Allowed'] . "\" onchange=\"javascript:checkAllow('allowed','" . $i . "')\"/>" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">Not Allowed</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_Not_Allowed_" . $i ."\" name=\"payment_Not_Allowed_" . $i . "\" value=\"" . $payment['Not Allowed'] . "\" onchange=\"javascript:checkAllow('notAllowed','" . $i ."')\"/>" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">Co-Insurance</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_Co_Insurance_" . $i ."\" name=\"payment_Co_Insurance_" . $i . "\" value=\"" . $payment["Co Insurance"] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">Deducible</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_Deducible_" . $i ."\" name=\"payment_Deducible_" . $i . "\" value=\"" . $payment['Deducible'] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\"><button id=\"show_button_" . $i . "\" type=\"button\" onclick=\"javascript:showEob(" . $i . ")\">Show</button></th>";
+                                        echo "</tr>";
+                                        echo "<tr style=\"display:none\" id=\"payment_EOB_".$i."\">";
+                                        echo "<th  style=\"background-color:#eeeeee;\">" . $i . "." ."</th>";
+                                        echo "<th style=\"background-color:#eeeeee;\">EOB Reduction</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_EOB_Reduction_" . $i ."\" name=\"payment_EOB_Reduction_" . $i . "\" value=\"" . $payment['EOB Reduction'] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">EOB Other Reduction</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_EOB_Other_Reduction_" . $i ."\" name=\"payment_EOB_Other_Reduction_" . $i . "\" value=\"" . $payment['EOB Other Reduction'] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">EOB Asjustment Reason</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_EOB_Adjustment_Reason_" . $i ."\" name=\"payment_EOB_Adjustment_Reason_" . $i . "\" value=\"" . $payment['Adjustment Reason'] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">Payment Notes</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_EOB_Notes_" . $i ."\" name=\"payment_EOB_Notes_" . $i . "\" value=\"" . $payment['Notes'] . "\" />" ."</td>";
+                                        echo "<th style=\"background-color:#eeeeee;\">Payment Interal Notes</th>";
+                                        echo "<td style=\"background-color:#eeeeee;\"><input id=\"payment_EOB_Internal_Notes_" . $i ."\" name=\"payment_EOB_Internal_Notes_" . $i . "\" value=\"" . $payment['Other Notes'] . "\" />" ."</td>";
+                                        echo "<th  style=\"background-color:#eeeeee;\" colspan=\"5\"></th>";
+                                        echo "</tr>";
+                                        $i++;
+                                    }else{
+                                        echo "<tr id=\"payment_".$i."\">";
+                                        echo "<th style=\"\">" . $i . "." ."</th>";
+                                        echo "<th>MRN</th>";
+                                        echo "<td><input id=\"payment_MRN_" . $i ."\" name=\"payment_MRN_" . $i . "\" value=\"" . $payment['MRN'] . "\" />" ."</td>";
+                                        echo "<th>DOS</th>";
+                                        echo "<td><input id=\"payment_DOS_" . $i ."\" name=\"payment_DOS_" . $i . "\" value=\"" . $payment['DOS'] . "\" onkeyup =\"javascript:date('#payment_DOS_".$i."')\" />" ."</td>";
+                                        echo "<th>Received</th>";
+                                        echo "<td><input id=\"payment_Received_" . $i ."\" name=\"payment_Received_" . $i . "\" value=\"" . $payment['Received'] . "\" />" ."</td>";
+                                        echo "<th>Allowed</th>";
+                                        echo "<td><input id=\"payment_Allowed_" . $i ."\" name=\"payment_Allowed_" . $i . "\" value=\"" . $payment['Allowed'] . "\" onchange=\"javascript:checkAllow('allowed','" . $i . "')\" />" ."</td>";
+                                        echo "<th>Not Allowed</th>";
+                                        echo "<td><input id=\"payment_Not_Allowed_" . $i ."\" name=\"payment_Not_Allowed_" . $i . "\" value=\"" . $payment['Not Allowed'] . "\" onchange=\"javascript:checkAllow('notAllowed','" . $i . "')\" />" ."</td>";
+                                        echo "<th>Co-Insurance</th>";
+                                        echo "<td><input id=\"payment_Co_Insurance_" . $i ."\" name=\"payment_Co_Insurance_" . $i . "\" value=\"" . $payment["Co Insurance"] . "\" />" ."</td>";
+                                        echo "<th>Deducible</th>";
+                                        echo "<td><input id=\"payment_Deducible_" . $i ."\" name=\"payment_Deducible_" . $i . "\" value=\"" . $payment['Deducible'] . "\" />" ."</td>";
+                                        echo "<th><button id=\"show_button_" . $i . "\" type=\"button\" onclick=\"javascript:showEob(" . $i . ")\">Show</button></th>";
+                                        echo "</tr>";
+                                        echo "<tr style=\"display:none\" id=\"payment_EOB_".$i."\">";
+                                        echo "<th style=\"\">" . $i . "." ."</th>";
+                                        echo "<th>EOB Reduction</th>";
+                                        echo "<td><input id=\"payment_EOB_Reduction_" . $i ."\" name=\"payment_EOB_Reduction_" . $i . "\" value=\"" . $payment['EOB Reduction'] . "\" />" ."</td>";
+                                        echo "<th>EOB Other Reduction</th>";
+                                        echo "<td><input id=\"payment_EOB_Other_Reduction_" . $i ."\" name=\"payment_EOB_Other_Reduction_" . $i . "\" value=\"" . $payment['EOB Other Reduction'] . "\" />" ."</td>";
+                                        echo "<th>EOB Asjustment Reason</th>";
+                                        echo "<td><input id=\"payment_EOB_Adjustment_Reason_" . $i ."\" name=\"payment_EOB_Adjustment_Reason_" . $i . "\" value=\"" . $payment['Adjustment Reason'] . "\" />" ."</td>";
+                                        echo "<th>Payment Notes</th>";
+                                        echo "<td><input id=\"payment_EOB_Notes_" . $i ."\" name=\"payment_EOB_Notes_" . $i . "\" value=\"" . $payment['Notes'] . "\" />" ."</td>";
+                                        echo "<th>Payment Interal Notes</th>";
+                                        echo "<td><input id=\"payment_EOB_Internal_Notes_" . $i ."\" name=\"payment_EOB_Internal_Notes_" . $i . "\" value=\"" . $payment['Other Notes'] . "\" />" ."</td>";
+                                        echo "<th colspan=\"5\"></th>";
+                                        echo "</tr>";
+                                        $i++;
+                                    }
+                                }
+                            }
+                        }
+                    ?>
+
+                </table>
+                <?php
+                    if($state=="post"){
+                        echo '<input type="submit" name="submit" value="Looked Up" disabled="disabled" />&nbsp;&nbsp;&nbsp';
+                    }else{
+                        echo '<input type="submit" name="submit" value="Look Up" />&nbsp;&nbsp;&nbsp';
+                    }
+                ?>
+                <!--<input type="submit" name="submit" value="Look Up" />-->
+            <br />
+            <br />
+            <table id="result_table">
+                <tr>
+                    <th  colspan="12" style="background:#eeeeee;text-align: center"><b><big>Lookup Results</b></big></th>
+                </tr>
+                <tr>
+                    <th style="background:#eeeeee;width:4%;text-align: center"></th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Name</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">DOB</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">MRN</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">DOS</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">CS</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Total Charge</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Posting Amount</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Allowed Amount</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Amount Paid</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Balance Due</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Lookup Status</th>
+                </tr>
+                <?php
+                    $state = $this->state;
+                    if($state == "Look Up"||$state=="post"){
+                        $results = $this->results;
+                        $count = count($results);
+                        $i=1;
+                        if($count>0){
+                            foreach($results as $result){
+                                    echo "<tr>";
+                                if($i%2 == 1){
+                                    echo "<th style=\"width:4%;text-align:center\">" . $i . ": </th>";
+                                    echo "<th style=\"width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['postingAmount'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . (isset($result['allowed_amount'])?floatval($result['allowed_amount']):null) . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['amount_paid_bf'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['balance_due_bf'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                }else{
+                                    echo "<th style=\"background:#eeeeee;width:4%;text-align:center\">" . $i . ": </th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['postingAmount'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . (isset($result['allowed_amount'])?floatval($result['allowed_amount']):null) . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['amount_paid_bf'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['balance_due_bf'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                }
+                                echo "</tr>";
+                                $i++;
+                            }
+                        }
+                    }
+                ?>
+                <tr>
+                    <?php
+                        $state = $this->state;
+                        if($state=="Look Up"||$state=="post"){
+                            $total = $this->total;
+                            echo "<th style=\"text-align:center\">Total:</th>";
+                            echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" value=\"".$total."\"/></td>";
+                        }else{
+                            echo "<th style=\"text-align:center\">Total:</th>";
+                            echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" /></td>";
+                        }
+                    ?>
+                </tr>
+            </table>
+            <?php
+                if($state=="post"){
+                    echo '<input type="submit" name="submit" value="POSTED" disabled="disabled" />&nbsp;&nbsp;&nbsp';
+                }else{
+                    echo '<input type="submit" name="submit" value="POST" />&nbsp;&nbsp;&nbsp';
+                }
+            ?>
+            <input type="submit" name="submit" value="Check Manual Batch Log"/>
+            <br />
+            <br />
+            <table id="post_result_table">
+                <tr>
+                    <th  colspan="12" style="background:#eeeeee;text-align: center"><big><b>Post Results</b></big></th>
+                </tr>
+                <tr>
+                    <th style="background:#eeeeee;width:4%;text-align: center"></th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Name</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">DOB</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">MRN</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">DOS</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">CS</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Total Charge</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Posted Amount</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Allowed Amount</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Amount Paid</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Balance Due</th>
+                    <th style="background:#eeeeee;width:8%;text-align: center">Status</th>
+                </tr>
+                <?php
+                    $state = $this->state;
+                    if($state=="post"){
+                        $results = $this->post_results;
+                        $count = count($results);
+                        $i=1;
+                        if($count>0){
+                            foreach($results as $result){
+                                    echo "<tr>";
+                                if($i%2 == 1){
+                                    echo "<th style=\"width:4%;text-align:center\">" . $i . ": </th>";
+                                    echo "<th style=\"width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['posted_amount'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['allowed_amount'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['amount_paid'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['balance_due'] . "</th>";
+                                    echo "<th style=\"width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                }else{
+                                    echo "<th style=\"background:#eeeeee;width:4%;text-align:center\">" . $i . ": </th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\"><a><span onclick=\"javascript:jump(".($i-1).")\">" . $result['Name'] . "</span></a></th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOB'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['MRN'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['DOS'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['CS'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['total_charge'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['posted_amount'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['allowed_amount'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['amount_paid'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['balance_due'] . "</th>";
+                                    echo "<th style=\"background:#eeeeee;width:8%;text-align:center\">" . $result['status'] . "</th>";
+                                }
+                                echo "</tr>";
+                                $i++;
+                            }
+                        }
+                    }
+                ?>
+                <tr>
+                    <?php
+                        $state = $this->state;
+                        if($state=="post"){
+                            $total = $this->total;
+                            echo "<th style=\"text-align:center\">Total:</th>";
+                            echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" value=\"".$total."\"/></td>";
+                        }else{
+                            echo "<th style=\"text-align:center\">Total:</th>";
+                            echo "<td style=\"text-align:center;width:8%\"><input style='width:70%' type=\"text\" /></td>";
+                        }
+                    ?>
+                </tr>
+            </table>
+            <!--the display:none area-->
+            <td style="display:none"><input style="display:none" type="text" name="last_notes" id="last_notes" /></td>
+            <?php
+                $state = $this->state;
+                $i=1;
+                if($state =="Look Up"){
+                    $payments = $this->payments;
+                    $count_pay = count($payments);
+                    echo "<td style=\"display:none\"><input style=\"display:none\" type=\"text\" name=\"paymentcount\" id=\"paymentcount\" value=\"".$count_pay."\"/></td>";
+                }else{
+                    echo "<td style=\"display:none\"><input style=\"display:none\" type=\"text\" name=\"paymentcount\" id=\"paymentcount\" value=\"0\"/></td>";
+                }
+            ?>
+            <td style="display:none"><input style="display:none" type="text" name="jump_index" id="jump_index" /></td>
+            <td style="display:none"><input id="jump_submit" style="display:none" type="submit" name="submit"  value="JUMP"/></td>
+            
+            </form>
+        </div>
+    </body>
+</html>

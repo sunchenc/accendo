@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />        
+
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />       
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php // echo $this->baseUrl   ?>/styles/navigation.css" />
+
+        <link rel="stylesheet" href="<?php echo $this->baseUrl ?>/styles/jquery.megamenu.css" type="text/css" media="screen" />        
+
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery-1.4.2.min.js" type="text/javascript"></script>
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery.megamenu.js" type="text/javascript"></script>
+        <!-- 
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>        
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        -->
+        <link href="<?php echo $this->baseUrl ?>/colorselector/css/jquery-ui.css" rel="stylesheet" />
+        <!--
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        -->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/colorselector/lib/jquery-1.10.2/jquery-1.10.2.js"></script>
+        <!--
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        -->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-ui.js"></script>
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery.megamenu.js" type="text/javascript"></script>
+        <script type="text/javascript" language="Javascript">
+            $(document).ready(function () {
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                        function (data)
+                        {
+                            if (data != 'no' && data != null) {
+                                var a = document.getElementById("relogin");
+                                a.click();
+                            }
+                        }
+                );
+//           $.post("<?php echo $this->baseUrl ?>/biller/data/exceldiagnosiscodes/",
+//                                function(data){
+//                                    var myjson='';
+//                                    eval("myjson=" + data + ";");
+//                                    var availableTags_Excel = myjson.exist_data_excel;
+//                                    window.availableTags = availableTags_Excel;
+//                                    //alert('availableTags : ' + availableTags);
+//                                    $( "#add_diagnosis_code" ).autocomplete({
+//                                        source: availableTags
+//                                    });
+//                                }
+//                    );
+                $.post("<?php echo $this->baseUrl ?>/biller/data/completedxcodes/",
+                        function (data) {
+                            var myjson = '';
+                            eval("myjson=" + data + ";");
+                            var availableTags_Excel = myjson.exist_data_excel;
+                            window.availableTags = availableTags_Excel;
+                            //alert('availableTags : ' + availableTags);
+                            $("#add_diagnosis_code").autocomplete({
+                                source: availableTags
+                            },
+                            {
+                                max: 100,
+                            });
+                        }
+                );
+                $("#provider_id").change(function () {
+                    $('#import_or_new').val('new');
+                    $('#description').show();
+                    $('#description_label').show();
+                    var provider_id = $("#provider_id").val();
+                    if (provider_id) {
+                        $.post("<?php echo $this->baseUrl ?>/biller/data/allproviderhave/", {provider_id: provider_id},
+                        function (data) {
+                            var myjson = '';
+                            eval("myjson=" + data + ";");
+                            var availableTags = myjson.exist_data;
+                            window.availableTags = availableTags;
+                            //alert('availableTags : ' + availableTags);
+                            $("#diagnosis_code").autocomplete({
+                                source: availableTags
+                            });
+                        }
+                        );
+
+                    }
+                    //auto_complete();
+                });
+
+                $('#import_or_new').change(function (e) {
+                    var import_or_new = $("#import_or_new").val();
+                    $("#diagnosis_code").val();
+                    if (import_or_new == 'new') {
+                        $('#diagnosis_code').hide();
+                        $('#add_diagnosis_code').show();
+                        $('#description').attr("disabled", false);
+//                    $('#description_label').show();
+                    }
+                    else {
+                        $('#diagnosis_code').show();
+                        $('#add_diagnosis_code').hide();
+                        $('#description').attr("disabled", true);
+//                    auto_complete();
+                    }
+                });
+            });
+            function isaddexisting()
+            {
+                var provider_id = $("#provider_id").val();
+                var temp_diagnosis_code = $("#add_diagnosis_code").val();
+                if (window.availableTags.indexOf(temp_diagnosis_code) >= 0) {
+                    var temp_code = temp_diagnosis_code.split(" ");
+                    var add_diagnosis_code = temp_code[0];
+
+
+                    //                        alert("if");
+                    //                        alert(myjson.anesthesia_code);
+
+
+                    //                            alert("else");
+                    //                            alert(myjson.payment_expected);
+
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/diagnosiscodeexisting/", {provider_id: provider_id, add_diagnosis_code: add_diagnosis_code},
+                    function (data) {
+                        var myjson = '';
+                        eval("myjson=" + data + ";");
+                        var add_diagnosis_code = document.getElementById("add_diagnosis_code");
+
+                        add_diagnosis_code.style.borderColor = "#ffffff";
+
+                        $("#existing").hide();
+                        var myexist = myjson.existing;
+                        if (myexist)
+                        {
+                            add_diagnosis_code.style.borderColor = "#ff0000";
+
+                            $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+
+
+                    });
+                } 
+                //else {
+                //    $("#add_diagnosis_code").val('');
+                //}
+            }
+            function isexisting()
+            {
+                var provider_id = $("#provider_id").val();
+                var temp_diagnosis_code = $("#diagnosis_code").val();
+                if (window.availableTags.indexOf(temp_diagnosis_code) >= 0) {
+                    var temp_code = temp_diagnosis_code.split(" ");
+                    var add_diagnosis_code = temp_code[0];
+
+
+                    //                        alert("if");
+                    //                        alert(myjson.anesthesia_code);
+
+
+                    //                            alert("else");
+                    //                            alert(myjson.payment_expected);
+
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/diagnosiscodeexisting/", {provider_id: provider_id, add_diagnosis_code: add_diagnosis_code},
+                    function (data) {
+                        var myjson = '';
+                        eval("myjson=" + data + ";");
+                        var add_diagnosis_code = document.getElementById("add_diagnosis_code");
+
+                        add_diagnosis_code.style.borderColor = "#ffffff";
+
+                        $("#existing").hide();
+                        var myexist = myjson.existing;
+                        if (myexist)
+                        {
+                            add_diagnosis_code.style.borderColor = "#ff0000";
+
+                            $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+
+
+                    });
+                } else {
+                    $("#diagnosis_code").val('');
+                }
+            }
+        </script>
+        <script type = "text/javascript" language="javascript">
+            function auto_complete()
+            {
+                var diagnosiscode_id = $(diagnosis_code).val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/diagnosiscodeinfo/", {id: diagnosiscode_id}, function (data) {
+                    var myjson = '';
+                    eval("myjson=" + data + ";");
+                    $('#description').val(myjson.diagnosiscode_info[0].description);
+                });
+            }
+        </script>
+        <script>
+            $(function () {
+                var availableTags = <?php echo '["' . implode('", "', $this->exist_data) . '"]' ?>;
+                //alert('availableTags : ' + availableTags);
+                window.availableTags = availableTags;
+                $("#diagnosis_code").autocomplete({
+                    source: availableTags
+                });
+            });
+        </script>
+        <script>
+            $(function () {
+                var availableTags_Excel = <?php echo '["' . implode('", "', $this->exist_data_excel) . '"]' ?>;
+                //alert('availableTags : ' + availableTags);
+                window.availableTags_Excel = availableTags_Excel;
+                $("#add_diagnosis_code").autocomplete({
+                    source: availableTags_Excel
+                },
+                {
+                    max: 100,
+                });
+            });
+        </script>
+        <!--by Pandazhao -->
+<!--       <script type="text/javascript" language="Javascript">
+  $(document).ready(function()
+        {
+            $("#provider_id").change(function(){
+                var provider_id = $("#provider_id").val();
+                
+                if(provider_id){
+               $('#diagnosis_code option').remove();
+                    $('#diagnosis_code').append("<option value=\"\">Select</option>");
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/diagnosiscodelist/",{provider_id:provider_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                    
+                for(var i = 0;i<myjson.diagnosiscodeList.length;i++){
+                                $("#diagnosis_code").append("<option value='"+
+                                    myjson.diagnosiscodeList[i]['id']+
+                                    "'>"+myjson.diagnosiscodeList[i]['diagnosis_code']+
+//                                        " "+myjson.diagnosiscodeList[i]['diagnosis_code']+
+                                    "</option>");
+                            }
+                            
+                             });
+                             }
+                        }
+            );
+        });
+   </script>-->
+
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">System Management</a> &gt;Diagnosis Code</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <td style="display:none">
+                        <?php
+                        if ($this->newTypeMark == "icd9") {
+                            echo "<input type =\"text\" name=\"code_type\" id=\"code_type\" value=\"icd9\">";
+                        } else if ($this->newTypeMark == "icd10") {
+                            echo "<input type =\"text\" name=\"code_type\" id=\"code_type\" value=\"icd10\">";
+                        }
+                        ?>
+                    </td>
+                    <tr>
+                        <th align="center" colspan="100%" style="background:#eeeeee">
+                            <?php
+                            if ($this->newTypeMark == "icd9") {
+                                echo "<p align=\"center\"><b>ICD9 Diagnosis Code</b></p>";
+                            } else if ($this->newTypeMark == "icd10") {
+                                echo "<p align=\"center\"><b>ICD10 Diagnosis Code</b></p>";
+                            }
+                            ?>
+                        </th>
+                    </tr>  
+                    <tr >
+                        <th align="left" colspan="1" >Provider</th>
+                        <td  colspan="1" >
+                            <select class="select" name="provider_id" style= "width:100% " id="provider_id" onblur="javascript:changeprovider()">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--" . $row['street_address'] . "(" . $row['num'] . ")" . "</option>";
+                                }
+                                ?>
+                                <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNum['num']; ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Diagnosis Code<font color="#FF0000">*</font></th>
+
+                        <td>
+                            <select  class="select"  name="import_or_new" style= "width:100%" id="import_or_new">
+                                <option value='new'>New</option>
+                                <option value='import'>Import</option>
+                            </select>
+                            <input  style= "display:none;width:98%"  name="diagnosis_code" id="diagnosis_code"  onblur="javascript:isexisting()">
+                                <input   name="add_diagnosis_code" id="add_diagnosis_code" style="width:98%" onblur="javascript:isaddexisting()"/>
+                                <a name="existing" id="existing"  style='color:red;display:none' >existing</a>
+                        </td>
+                        <th align="left" name="description_label" id="description_label">Customized Description<font color="#FF0000"></font></th><td><input type="text" name="description" id="description" size="37"/></td>
+                    </tr>
+                    <tr >
+                        <td colspan="8"><input type="submit" name="next" value="Save"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

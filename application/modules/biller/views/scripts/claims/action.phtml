@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            function getVal(index){
+                var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                $("#id").val(td1[(index-1)*16+15].innerHTML);
+                document.getElementById("form1").submit();
+            }
+        </script>
+    </head>
+    <body>
+        <div id="navbar" >
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Today's Action Items</p>
+        </div>
+        <div class="table-div">
+            <form  name="form1" method="post" id="form1" >
+                <table id="table1">
+                    <tr>
+                        <th align="center" colspan="15" style="background:#eeeeee">
+                            <p align="center"><b><big>Today's Action Items</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+<!--                        <th width="10%" style="background:#eeeeee;text-align: center"><b>Name</b></th>-->
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Name"/></th>
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>MRN</b></th>-->
+                        
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOB"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="MRN"/></th>
+                        
+                        <!-- <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th>
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Issue</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Charge"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Paid"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="%"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Due"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Insurance"/></th>
+<!--                        <th width="17%" style="background:#eeeeee;text-align: center"><b>Facility</b></th>-->
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Rendering Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Referring Provider"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th>
+                                          
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th> -->
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Issue</b></th>-->
+                       <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Last"/></th>
+                        <th  width ="20%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Issue"/></th>
+                    </tr>
+                    
+                    <!-- Move the DOS between the MRN and Insurance 2012-09-14-->
+                    
+                    <?php
+                    $count = 1;
+                    foreach ($this->searchList as $row) {
+                        if ($count % 2 == 0) {
+                            echo "<tr><td width='10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal' onclick=\"javascript:getVal($count)\">" . "<a>" . substr($row['name'],0,20) . "</a>"."</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . date('m/d/Y', strtotime($row['DOB']))."</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['MRN'] . "</td>"; 
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . date('m/d/Y', strtotime($row['DOS'])) . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['total_charge'] . "</td>"; 
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['amount_paid'] . "</td>"; 
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['percentage'] . "</td>"; 
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['due'] . "</td>"; 
+                            echo "<td width='10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['payer'],0,15) . "</td>" ;         
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['provider_short_name'] . "</td>";
+                            echo "<td width='10%' style='text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['renderingprovider'],0,15) . "</td>" ;
+                            echo "<td width='10%' style='text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['referringprovider'],0,15) . "</td>" ;
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['facility_short_name']. "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['last'] . "</td>"; 
+                            echo "<td width ='20%'style='text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . $row['display'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td></tr>";
+                            $count = $count + 1;
+                        } else {
+                            echo "<tr><td width='10%' style='text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal' onclick=\"javascript:getVal($count)\">" . "<a>" . substr($row['name'],0,20) . "</a>" . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . date('m/d/Y', strtotime($row['DOB'])) . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['MRN'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . date('m/d/Y', strtotime($row['DOS'])) . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['total_charge'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['amount_paid'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">". $row['percentage'] . "</td>"; 
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['due'] . "</td>"; 
+                            echo "<td width='5%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['payer'],0,15) . "</td>";   
+                            echo "<td width='10%' style=\"font-weight:normal\">" . $row['provider_short_name'] . "</td>";
+                            echo "<td width='10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['renderingprovider'],0,15) . "</td>" ;
+                            echo "<td width='10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['referringprovider'],0,15) . "</td>" ;
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['facility_short_name'] . "</td>"; 
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['last'] . "</td>";
+                            echo "<td width='20%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . $row['display'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td></tr>";
+                            $count = $count + 1;
+                        }
+                    }
+                    ?>
+                    <tr>
+                        <th><input type="text" name="id"  id="id" style= "display:none"/></th>
+                        <th colspan="8"><input type="text" name="checkboxid"  id="checkboxid"size="20" value="10000" style= "display:none"/></th>
+                    </tr>
+                </table>
+            </form>
+
+        </div>
+    </body>
+</html>

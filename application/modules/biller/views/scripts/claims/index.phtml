@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/tab.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+
+        <script type="text/javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function()
+            {
+            });
+        </script>
+        <script type="text/javascript">
+            $(function(){
+                $(".content div:gt(0)").hide();
+                $(".title li").click(function(){       
+                    var tabIndex=$("#tab_index").val();
+                    var click_index=$(this).index();
+                    if(click_index!=0 && (click_index!=5))
+                        tabIndex=click_index-1;
+                    else if(click_index==5&&(tabIndex<3))
+                        tabIndex=parseInt(tabIndex,10)+1;
+                    else if(click_index==0&&(tabIndex>0))
+                        tabIndex=parseInt(tabIndex,10)-1;
+                    $(".title li").eq(tabIndex+1).attr("class","on").siblings().removeAttr("class");
+                    $(".content div").eq(tabIndex).show().siblings().hide();
+                    $("#tab_index").val(tabIndex);
+                })
+            })
+        </script>
+        <base target="mainFrame"/>
+    </head>
+    <body>
+        <div class="column">
+            <div class="title">
+                <ul>
+                    <li id="last" ><a href="javascript:void(0)"><span> last</span></a></li>
+                    <li id="patient" class="on"><a href="javascript:void(0)"><span>Patient</span></a></li>
+                    <li id="insurance"><a href="javascript:void(0)" ><span >insurance</span></a></li>
+                    <li id="services" ><a href="javascript:void(0)"><span>Services</span></a></li>
+                    <li id="claim"><a href="javascript:void(0)"><span> Claims followup</span></a></li>
+                    <li id="next" ><a href="javascript:void(0)"><span> next</span></a></li>
+
+                </ul>
+            </div>
+            <div class="content" id="content">
+                <div id="div_patient"><iframe width="100%" height="500px"  src="<?php echo $this->baseUrl ?>/biller/claims/patient/"></iframe></div>
+                <div id="div_test" class="on"><iframe width="100%" height="500px" src="<?php echo $this->baseUrl ?>/biller/claims/insurance/"></iframe> </div>
+                <div id="div_service"><iframe width="100%" height="500px" src="<?php echo $this->baseUrl ?>/biller/claims/services/"></iframe> </div>
+                <div ><iframe width="100%" height="500px" src="<?php echo $this->baseUrl ?>/biller/claims/claim/"></iframe> </div>
+            </div>
+            <div id="navigation">
+                <input type="text" name="tab_index"  id="tab_index" size="20"  value="0" style= "display:none"/>
+            </div>
+        </div>
+    </body>
+</html>

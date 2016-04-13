@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            $(document).ready(function()
+            {
+               $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+               
+               var role ="<?php echo $this->role ?>";
+                if(role=="guest"){
+                    var inputList = document.getElementsByTagName("input");
+                    for(var i = 0;i<inputList.length;i++){
+                        if(inputList[i].type=="submit"&&(inputList[i].value=="Statement I"||inputList[i].value=="Statement II"||inputList[i].value=="Statement III")){
+                            inputList[i].disabled="true";
+                        }
+                    }
+                }
+                
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/download/",
+                function(data)
+                {
+                    
+                    if(data!=''&&data!=null)
+                        window.open(data);//这个方法就直接把这个TXT以浏览器的方式打开了 
+                }
+            );
+            
+        
+            })
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function getVal(type){
+                var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                var checkedids=new Array();
+                var encounter_ids=new Array();
+                var statement_ids=new Array();
+                for(var i=0;i<table.rows.length;i++)
+                {
+                    if(td1[i*16].firstChild.checked)
+                    {
+                        var checkedid=i;
+                        var encounter_id=td1[i*16+13].innerHTML;
+                        var statement_id=td1[i*16+14].innerHTML;
+                        var statement_type=td1[i*16+15].innerHTML;
+                        //alert('statement_type = ' + statement_type);
+                        if((statement_type=='1'&&(type==1))||(statement_type=='2'&&(type==2))||(statement_type=='3'&&(type==3))||(statement_type=='4'&&(type==4))||(statement_type=='5'&&(type==5)))
+                        {
+                            checkedids.push(checkedid*13);
+                            statement_ids.push(statement_id);
+                            encounter_ids.push(encounter_id);
+                        }
+                    }
+                    $("#encounter_id").val(encounter_ids);
+                    $("#checkboxid").val(checkedids);
+                    $("#statement_id").val(statement_ids);
+                    
+                }
+            }
+        </script>
+
+        
+        <script type="text/javascript" language="Javascript" >    
+         
+            function checkNumber()
+            {          
+                var allCheck = document.getElementsByTagName("input");              
+                //var val = document.getElementById("printsecond");
+                var statementid,tempid,arr;
+                var s1_sum = 0, sel_s1_num = 0, s2_sum = 0,sel_s2_sum = 0;
+                var s3_sum = 0, sel_s3_num = 0, ins_sum = 0, sel_ins_sum = 0;
+                
+                var val_s1 = document.getElementById("printStatementI");
+                var val_s2 = document.getElementById("printStatementII");
+                var val_s3 = document.getElementById("printStatementIII");
+                var val_ins = document.getElementById("printinStallment");
+                
+                for(var i=0; i < allCheck.length; i++)
+                {
+                     if(allCheck[i].type=="checkbox")
+                     {
+                        tempid = allCheck[i].id; 
+                        arr = tempid.split('_');
+                        statementid = "Statementtype_" + arr[1]; 
+                        
+                        if (document.getElementById(statementid).innerHTML == 'Statement I')
+                        {                       
+                            s1_sum++;
+                            if(allCheck[i].checked == true)
+                            {
+                                sel_s1_num++;
+                            }
+                            
+                        }
+                       
+                        if (document.getElementById(statementid).innerHTML =='Statement II')
+                        {     
+                            s2_sum++;
+                            if( allCheck[i].checked == true)
+                             {
+                                sel_s2_sum++;
+                             }
+
+                        }
+                        
+                        if (document.getElementById(statementid).innerHTML == 'Statement III')
+                        {
+                           
+                            s3_sum++;
+                            if( allCheck[i].checked == true)
+                            {
+                                sel_s3_num = sel_s3_num + 1;
+                                //alert(sel_s3_sum);
+                            }
+                        
+                        }
+                        if (document.getElementById(statementid).innerHTML == 'Installment')
+                        {
+                            ins_sum++;
+                            if( allCheck[i].checked == true)
+                            {
+                                sel_ins_sum++;
+                            }
+                        }
+                        //alert(s1_sum);
+                     }                  
+                  }  
+                 
+                   val_s1.value = "Statement I ("+ sel_s1_num + " / "+ s1_sum + ")";
+                   val_s2.value = "Statement II ("+ sel_s2_sum + " / "+  s2_sum + ") ";
+                   val_s3.value = "Statement III ("+ sel_s3_num + " / "+  s3_sum + ") ";
+                   val_ins.value = "Installment ("+ sel_ins_sum + " / "+ ins_sum + ") ";   
+             }
+
+             
+            function check()
+            {     
+                var allCheck = document.getElementsByTagName("input");   
+                for(var i=0; i < allCheck.length; i++){
+                  
+                     if(allCheck[i].type=="checkbox")
+                     {
+                         if (allCheck[i].checked == true)
+                            allCheck[i].checked = false;
+                        else allCheck[i].checked = true;
+                     }
+                }          
+              } 
+            </script>
+        
+            <script type="text/javascript" language="Javascript" >    
+            function fun()
+            {
+                check();
+                checkNumber(); 
+            }
+        </script>
+        
+        <script type="text/javascript" language="Javascript" >
+            function getClaim(index){
+                
+                var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                $("#id").val(td1[(index-1)*16 + 13].innerHTML);
+                
+               
+                //alert(td1[(index-1)*16 + 13].innerHTML);
+                
+                document.getElementById("form1").submit();
+            }
+        </script>
+    </head>
+    <body onload="checkNumber();">
+          <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Patient Statements</p>
+        </div>
+        <iframe id="idown" style="display:none"></iframe>
+        <div class="table-div">
+            <form name="form1" method="post" id="form1">
+                <table id="table1">
+                    <tr>
+                        <th align="center" colspan="13" style="background:#eeeeee">
+                            <p align="center"><b><big>Statements</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="2%" style="text-align: center;background:#eeeeee"><b onclick="javascript:fun();">Sel</b></th>
+<!--                        <th width="10%" style="text-align: center;background:#eeeeee"><b>Name</b></th>-->
+                       <!-- <th width="10%" style="background:#eeeeee;text-align: center"><b>Name</b></th>-->
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Name"/></th>
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>MRN</b></th>-->
+                        
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOB"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="MRN"/></th>
+                        
+                        <!-- <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th>
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Issue</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Charge"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Paid"/></th>
+                        
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Insurance"/></th>
+<!--                        <th width="17%" style="background:#eeeeee;text-align: center"><b>Facility</b></th>-->
+                        <th  style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Rendering Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Referring Provider"/></th>
+                        <th width="5%"  style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th>
+                                          
+                        <th  style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Statement"/></th>
+                    </tr>
+                    <?php
+                    
+                    foreach($this->claimstatusList as $row)
+                    {
+                        echo $row['claim_status_display'];
+                    }
+                    
+                    $count = 1;
+                    foreach ($this->statementList as $row) {
+                        if ($count % 2 == 0) {
+                            echo "<tr><td width= '2%'style=\"background:#eeeeee;text-align:center;\"><input type=checkbox id= 'check_" . $count . "' checked=true onclick=\"checkNumber()\"></td>";
+                            echo "<td width= '10%' id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;background:#eeeeee;font-weight:normal' onclick=\"javascript:getClaim($count)\">" . "<a>" . substr($row['name'],0,20) . "</a>" . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['DOB'] ."</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['MRN'] . "</td>"; 
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['DOS'] . "</td>";
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['total_charge'] . "</td>"; 
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['amount_paid'] . "</td>"; 
+                            echo "<td width='10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['insurance_display'],0,15) . "</td>" ;         
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['provider_short_name'] . "</td>";
+                            echo "<td width='10%' style='text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['renderingprovider_name'],0,15) . "</td>" ;
+                            echo "<td width='10%' style='text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['referringprovider_name'],0,15) . "</td>" ;
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['facility_short_name']. "</td>";
+                            echo "<td  id='last_name' style=\"background:#eeeeee;font-weight:normal\">" . "<span id= 'Statementtype_" .$count ."'>". $row['statement_type'] .  "</span></td>";
+                            echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['statement_id'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['statement'] . "</td>";
+                            $count = $count + 1;
+                        } else {
+                            echo "<tr><td width= '2%' style=\"background:#eeeeee;text-align:center;\"><input type=checkbox id= 'check_" . $count . "' checked=true onclick=\"checkNumber()\"></td>";
+                            echo "<td width= '10%' id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap;font-weight:normal' onclick=\"javascript:getClaim($count)\">" . "<a>" . substr($row['name'],0,20) . "</a>" . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['DOB'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['MRN'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['DOS'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['total_charge'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['amount_paid'] . "</td>";
+                            echo "<td width='5%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['insurance_display'],0,15) . "</td>";   
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['provider_short_name'] . "</td>";
+                            echo "<td width='10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['renderingprovider_name'],0,15) . "</td>" ;
+                            echo "<td width='10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['referringprovider_name'],0,15) . "</td>" ;
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['facility_short_name'] . "</td>"; 
+                            echo "<td width= '15%' id='last_name' style=\"font-weight:normal\">" . "<span id= 'Statementtype_" .$count ."'>". $row['statement_type'] .  "</span></td>";
+                            echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td>";
+                            echo "<td style=\"display:none\">" . $row['statement_id'] . "</td></tr>";
+                            echo "<td style=\"display:none\">" . $row['statement'] . "</td></tr>";
+                            $count = $count + 1;
+                        }
+                    }
+                    ?>
+                    <tr>
+                        <td colspan="3"><input type="submit" name="statementI" id ="printStatementI" align="center" value="Statement I" onclick="javascript:getVal(1)" /></td>
+                        <td colspan="3"><input type="submit" name="statementII" id ="printStatementII" align="center" value="Statement II" onclick="javascript:getVal(2)" /></td>
+                        <td colspan="3"> <input type="submit" name="statementIII" id ="printStatementIII" align="center" value="Statement III" onclick="javascript:getVal(3)" /></td>
+                        <td colspan="3"> <input type="submit" name="installment" id ="printinStallment" align="center" value="Installment" onclick="javascript:getVal(5)" /></td>
+                        
+                        
+                        <td><input type="text" name="encounter_id"  id="encounter_id"size="20" style= "display:none"/></td>
+                        <td><input type="text" name="statement_id"  id="statement_id"size="20" style= "display:none"/></td>
+                        <th><input type="text" name="id"  id="id" style= "display:none"/></th>
+                        <td><input type="text" name="checkboxid"  id="checkboxid"size="20" value="10000" style= "display:none"/></td>
+                    </tr>
+                    
+                    <!--Add button for the bill log -->
+                    <tr>
+                          <td colspan="3"><input type ="submit"  name="sta1_log" id="statementI_log" align="center" value="Check Statement I LOG" onclick="javascript:" /></td>
+                          <td colspan="3"><input type ="submit"  name="sta2_log" id="statementII_log" align="center" value="Check Statement II LOG" onclick="javascript:" /></td>
+                          <td colspan="3"><input type ="submit"  name="sta3_log" id="statementIII_log" align="center" value="Check Statement III LOG" onclick="javascript:" /></td>
+                          <td colspan="3"><input type ="submit"  name="ins_log" id="installment_log" align="center" value="Check Installment LOG" onclick="javascript:" /></td>                         
+                    </tr>
+                    <table>
+                    <tr>
+                        <th width="25%" align="left" style="background:#eeeeee">Statement List</th>
+                        <td width="40%" style="background:#eeeeee">
+                            <select class="select" name="statement_dir" id="statement_dir"  style="width: 100%" >
+                                <option value="-1">Select</option>
+                                <?php
+                                $filelist=$this->filelist;
+                                $i=0;
+                                foreach ($filelist as  $row) {
+    
+                                    $i++;
+                                    echo "<option value='" .$row['path']. "'>" .$i.") ". $row['display'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                            
+                        </td>
+                        <th width="35%" size="100" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Open"/></th>                     
+                    </tr>
+                       
+                    </table>
+                      <!--Add button for the bill log -->
+                    
+                    
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

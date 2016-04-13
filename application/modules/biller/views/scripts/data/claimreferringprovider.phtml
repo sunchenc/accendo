@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+       <script type="text/javascript" language="Javascript" >
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+            
+            $("#provider_id").change(function(){
+            var provider_id = $("#provider_id").val();
+            $(".doc_line").remove();
+            if(provider_id){
+                $("#id option").remove();
+                $("#id").append("<option value=\"\">Select</option>");
+                $.post("<?php echo $this->baseUrl ?>/biller/data/referringlist/",{provider_id:provider_id},function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    for(var i = 0;i<myjson.referringproviderList.length;i++){
+                    $("#id").append("<option value='"+myjson.referringproviderList[i]['id']+"'>"+myjson.referringproviderList[i]['last_name']
+                        +","+myjson.referringproviderList[i]['first_name']+"</option>")
+                    }
+                    
+                });
+            }
+        });
+        }
+    );
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var id=$("#id").val();
+                var provider_id=$("#provider_id").val();
+                if(id.length!=0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/referringproviderinfo/",{id:id,provider_id:provider_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        //$("#provider_id").val(myjson.provider_id);
+                        $("#last_name").val(myjson.last_name);
+                        $("#first_name").val(myjson.first_name);
+                        $("#NPI").val(myjson.NPI);
+                        $("#status").val(myjson.status);
+                        $(".doc_line").remove();
+                        for(var i=0;i<myjson.rprovider_doc_list.length;i++)
+                        {   
+                            if (i%2 == 0){
+                                $("#doc_table").append("<tr class='doc_line' id='provider_doc_" + i + "' style = 'background:#FF0000'>" +
+                                        "<td width='33%' style='text-align: center' >" + "<a href = \"/accendo/public/" + myjson.rprovider_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.rprovider_doc_list[i]['date'] + "</a></td>" +
+                                        "<td width='33%' style='text-align: center'>" + myjson.rprovider_doc_list[i]['desc'] + "</td>" +
+                                        "<td width='34%' style='text-align: center'>" + myjson.rprovider_doc_list[i]['user'] + "</td>" +
+                                        "</tr>");
+                            }else{
+                                $("#doc_table").append("<tr class='doc_line' id='provider_doc_" + i + "' style = 'background:#FF0000'>" +
+                                        "<td width='33%' style='background:#eeeeee;text-align: center' >" + "<a href = \"/accendo/public/" + myjson.rprovider_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.rprovider_doc_list[i]['date'] + "</a></td>" +
+                                        "<td width='33%' style='background:#eeeeee;text-align: center'>" + myjson.rprovider_doc_list[i]['desc'] + "</td>" +
+                                        "<td width='34%' style='background:#eeeeee;text-align: center'>" + myjson.rprovider_doc_list[i]['user'] + "</td>" +
+                                        "</tr>");
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    $("#last_name").val('');
+                    $("#first_name").val('');
+                    $("#NPI").val('');
+                    $("#status").val('');
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claim Management</a> &gt; Referring Provider</p>
+        </div>
+        <div class="table-div" >
+            <form method="post"  action="" onsubmit="javascript:return check();">
+                <table>
+                    <tr >
+                        <th align="left">Provider</th>
+                        <td>
+                            <select class="select" name="provider_id" id="provider_id" style= "width:100%"    style= "width:92% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                       $tempnumber=$row['num']-$this->allNumRef['num'];
+                                     echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--". $row['street_address'] ."(" . $tempnumber . ")" ."</option>";
+                                }
+                                ?>
+                               <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumRef['num']; ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Referring Provider</th>
+                        <td>
+                            <select class="select" name="id" id="id" style= "width:100%" onchange="javascript:auto_complete()"  style= "width:92% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->referringproviderList as $row) {
+                                    echo "<option value='" . $row['rid'] . "'>" . $row['last_name'] . ", " . $row['first_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        
+                        <th  align="left">NPI</th><td><input type="text" name="NPI" style= "width:99%" id="NPI" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                       
+                        <th  align="left">status</th><td><input type="text" name="status" style= "width:30%" id="status" readonly= "true "/></td>
+                   
+                    </tr>
+                </table>
+                <br></br>
+                <br></br>  
+                <table id="doc_table">
+                    <tr>
+                        <th colspan="3"><p  style="text-align: center;font-size: 16px;">Documents</p></th>
+                    </tr>
+                    <tr>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Data and Time</th>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Description</th>
+                        <th width="34%" style="background:#eeeeee;text-align: center">User</th>
+                    </tr>
+                    
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

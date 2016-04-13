@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            $(document).ready(function() {
+
+         <?php $data=$this->data; ?>
+        <?php foreach ($this->fields as $key => $value): ?>
+$(<?echo '\'#'.$value. '\''?>).val(<?echo '\''.$data[$value].'\''?>);
+
+<?php endforeach; ?>
+
+            });
+        </script>
+    </head>
+
+    <body onload="test()">
+        <div id="navbar">
+            <p>Your Location: <a href="main.html" title="">First page</a> &gt; update company information</p>
+        </div>
+        <div class="table-div">
+            <form method="post" >  
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="title" colspan="4"><i>update company informatioin</i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th style="width:15%;">company name</th>
+                            <td><input type="text" name="billingcompany_name" id="billingcompany_name"/></td>
+                        </tr>
+                        <tr>
+                            <th>street address</th>
+                            <td><input type="text" name="street_address" id="street_address" /></td>
+                        </tr>
+                        <tr>
+                            <th>city</th>
+                            <td><input type="text" name="city"  id="city"/></td>
+                        </tr>
+                        <tr>
+                            <th>state</th>
+                            <td><input type="text" name="state" id="state"/></td>
+                        </tr>
+                        <tr>
+                            <th>phone number</th>
+                            <td><input type="text" name="phone_number" id="phone_number" /></td>
+                        </tr>
+                        <tr>
+                            <th>fax number</th>
+                            <td><input type="text" name="fax_number" id="fax_number" /></td>
+                        </tr>
+                        <tr>
+                            <th>notes</th>
+                            <td ><textarea rows="4" cols="25"  name="notes" id="notes"></textarea></td>
+                        </tr>
+                        <tr>
+                            <th colspan="2"><input type="reset" value="cancel" class="cmd" /> <input type="submit" value="save" class="cmd" /></th>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+            </form>
+
+        </div>
+    </body>
+</html>

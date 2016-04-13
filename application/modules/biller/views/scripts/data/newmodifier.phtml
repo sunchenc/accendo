@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+        $(document).ready(function(){           
+            $("#modifierexisting").val("");                                    
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+        </script>
+        <script type="text/javascript" language="Javascript">
+            function modifier_validate(){
+                var modifier = $("#modifier").val();
+                var last_char = modifier.substr(modifier.length - 1, modifier.length);
+                if(last_char == " "){
+                    modifier = modifier.substr(0,(modifier.length - 1));
+                    $("#modifier").val(modifier);                    
+                }
+                else(modifier.length>2)
+                {
+                    modifier = modifier.substr(0,2);
+                    $("#modifier").val(modifier);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="Javascript">
+            function unit_validate(){
+                var unit = $("#unit").val();
+                var last_char = unit.substr(unit.length - 1, unit.length);
+                if( last_char < "0" || last_char > "9" || last_char == " "){
+                    unit = unit.substr(0,unit.length - 1);
+                    $("#unit").val(unit);
+                }
+            }
+        </script>    
+                
+        <script type="text/javascript" language="Javascript">
+               
+                function modifier_isexisting(){
+                    var modifier = $("#modifier").val();
+                    var modifier_id = $("#modifier_id").val();
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/modifierexisting/",{modifier:modifier,modifier_id:modifier_id},
+                        function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        $("#modifier").css("border"," 1px solid #aaa");
+                        $("#existing").hide();                        
+                        $("#modifierexisting").val("");                                                
+                        if(myjson.ifexisting == "existing"){
+                            $("#modifierexisting").val("existing");                            
+                           $("#existing").show();
+                           $("#modifier").css("border","4px solid red");
+                           $("#modifier").focus();
+                        }
+                    });
+                }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Modifier</p>
+        </div>
+        <div class="table-div" >
+            <form enctype="multipart/form-data" method="post"  action="" >
+                <table>
+                    <tr >
+                        <th align="left">Modifier</th><td><input type="text" size="50" name="modifier" id="modifier" onkeyup="javascript:modifier_validate()" onblur="javascript:modifier_isexisting()"/>
+                        <a name="existing" id="existing"  style='color:red;display:none' >existing</a>
+                        </td>
+                        <th align="left">Description</th><td><input type="text" size="55" name="description" id="description" /></td>
+                        <th align="left">Unit</th><td><input type="text" size="55" name="unit" id="unit" onkeyup="javascript:unit_validate()"/></td>                      
+                    </tr>
+<!--                    <tr>
+                            <th align="left">Status<font color="#FF0000">*</font></th>
+                           <td>
+                            <select  class="select"  name="status"  style= "width:100%" id="status">
+                               <option value='active'>active</option>
+                               <option value='inactive'>inactive</option>
+                           </select>
+                           </td>
+                    </tr>-->
+                 
+                    <tr>
+                        <td ><input type="submit" name="submit" value="Save" /></td>
+                    </tr>
+                    <td style="display:none">
+                        <input type ="text" name="modifierexisting" id="modifierexisting">
+                    </td>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

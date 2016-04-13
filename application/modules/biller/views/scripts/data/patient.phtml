@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+         <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            ); 
+        });
+        </script>
+        <!-- add the listener to the ENTER-->
+        <script type="text/javascript" language="Javascript">
+            document.onkeydown=keyListener;
+            
+            function keyListener(e){    
+                e = e ? e : event;   
+                if(e.keyCode == 13){
+                    RefreshRows();    
+                }    
+            }
+   
+        </script>
+
+        <script type="text/javascript" language="Javascript" >
+            function getVal(){
+                var table = $("#table1");
+                var patient_ids=new Array();
+                var tableTrElement = $("#table1 tr");
+                var td1 = $("#table1 td");
+               
+                for(var i=0;i<tableTrElement.length-1;i++)
+                {
+                    if(td1[i*9].firstChild.checked)
+                    {
+                        var patient_id=td1[i*9+8].innerHTML;
+                        patient_ids.push(patient_id);
+                    }
+                }
+                $("#patient_id").val(patient_ids);
+            }
+        </script>
+        <script type="text/javascript">
+            function RefreshRows(){
+                $("#tbody1").empty();
+                var provider_id=$("#provider_id").val();
+                var last_name=$("#last_name").val();
+                var first_name=$("#first_name").val();
+                var dob=$("#DOS").val();
+                var MRN=$('#MRN').val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/patientsearch/",{provider_id:provider_id,last_name:last_name,first_name:first_name,DOS:dob,MRN:MRN},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var tableTrElement = $("#table1 tr");//得到表格所有行
+                    var len = tableTrElement.length;//得到总行数
+                    var tableElement = $("#table1");//得到表格对象
+                    var str="";
+                    for(var i=0;i<myjson.length;i++){
+                        str =str+ '<tr id='+i+'><td><input type="checkbox"/></td>'
+                            + '<td id="name" style=\"font-weight:normal\" >' + myjson[i]["last_name"]+ ","+ myjson[i]["first_name"]+ '</td>'
+                            + '<td id="MRN" style=\"font-weight:normal\">' + myjson[i]["account_number"] + '</td>'
+                        //                            + '<td id="DOB" style=\"font-weight:normal\">' + myjson[i]["DOB"] + '</td>'
+                            + '<td id="insurance_display" style=\"font-weight:normal\">' + myjson[i]["insurance_display"] + '</td>'
+                            + '<td id="facility_name" style=\"font-weight:normal\">' + myjson[i]["facility_name"] + '</td>'
+                            + '<td id="provider_name" style=\"font-weight:normal\">' + myjson[i]["provider_name"] + '</td>'
+                            + '<td id="renderingprovider_last_name" style=\"font-weight:normal\">' + myjson[i]["renderingprovider_last_name"] + '</td>'
+                        //                            + '<td id="sex" style=\"font-weight:normal\">' + myjson[i]['sex'].toUpperCase() + '</td>'
+                        //                            + '<td id="SSN" style=\"font-weight:normal\">' + myjson[i]["SSN"] + '</td>'
+                            + '<td id="DOS" style=\"font-weight:normal\">' + myjson[i]["start_date_1"] + '</td>'
+                        //                             + '<td id="claim_status" style=\"font-weight:normal\">' + myjson[i]["claim_status"] + '</td>'
+                            + '<td id="id" style=\"font-weight:normal\">' + myjson[i]["patient_id"] + '</td>'
+                            + '</tr>';
+                    }
+                    tableElement.append(str);
+                });
+            }
+            function DeleteRows(){
+                getVal();
+                var patient_id=$("#patient_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/patientdelete/",{patient_id:patient_id},
+                function(){
+                    var tableTrElement = $("#table1 tr");
+                    var td1 = $("#table1 td");
+                    for(var i=0;i<tableTrElement.length-1;i++)
+                    {
+                        if(td1[i*9].firstChild.checked)
+                        {
+                            $("tr[id=\'"+i+"\']").remove();
+                        }
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title=""> Data Management</a> &gt; Delete Patient</p>
+        </div>
+        <div class="table-div">
+            <form method="post" action="" >
+                <table>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr >
+                                    <th align="left">Provider:</th>
+                                    <td>
+                                        <select class="select" name="provider_id" id="provider_id">
+                                            <option value="">Select</option>
+                                            <?php
+                                            foreach ($this->providerList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] .
+                                                "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </td>
+                                    <th align="left">Last Name:</th><td><input type="text" name="last_name" id="last_name"size="10"/></td>
+                                    <th align="left">First Name:</th><td><input type="text" name="first_name" id="first_name" size="10"/></td>
+                                    <th align="left">MRN:</th><td><input type="text" name="MRN" id="MRN"   size="10"/></td>
+                                    <th align="left">DOS:</th><td><input type="text" name="DOS" id="DOS"   size="10"/></td>
+                                    <td><input type="button" name="search" value="Search" onclick="javascript:RefreshRows()"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="100%">
+                            <table id="table1">
+                                <thead>
+                                    <th width="4%" style="text-align: center"><b>Choose</b></th>
+                                    <th width="14%" style="text-align: center"><b>Name</b></th>
+                                    <th width="14%" style="text-align: center"><b>MRN</b></th>
+                                    <th width="14%" style="text-align: center"><b>Insurance</b></th>
+                                    <th width="14%" style="text-align: center"><b>Facility</b></th>
+                                    <th width="14%" style="text-align: center"><b>Provider</b></th>
+                                    <th width="14%" style="text-align: center"><b>Rendering Provider</b></th>
+                                    <th width="14%" style="text-align: center"><b>DOS</b></th>
+<!--                                    <th width="14%" style="text-align: center"><b>claimstatus</b></th>-->
+                                    <th width="10%" style="text-align: center"><b>id</b></th>
+                                </thead>
+                                <tbody id="tbody1">
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td><input type="text" name="patient_id"  id="patient_id"size="20" style= "display:none"/></td>
+                                    <td width="15%"><input type="button" name="delete" value="Delete" onclick="javascript:DeleteRows()"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

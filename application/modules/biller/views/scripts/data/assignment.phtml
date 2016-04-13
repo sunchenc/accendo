@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery.multiselect.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery-ui.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+<!--        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>-->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.8.js"></script>
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-ui.min.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.multiselect.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script type="text/javascript" language="Javascript">
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                $("#provider_id").multiselect();
+                $("#provider_id").change(function(){
+                    var provider_id = $("#provider_id").val();
+                    $("#provider_id_array").val(provider_id);
+                });
+            });
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var user_name=$("#user_name").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/system/userinfo/",{user_name:user_name},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var userfocusonprovider = myjson.userfocusonprovider;
+                    if(userfocusonprovider!=null){
+                        for(var i=0;i<userfocusonprovider.length;i++){
+                            $("#provider_id").multiselect("widget").find(":checkbox").each(function(){
+                                if(this.value==userfocusonprovider[i]['provider_id']){
+                                    this.click();
+                                }   
+                            });
+                        }
+                    }
+                    if(myjson.billingcompany_name!=null)
+                        $("#billingcompany_name").val(myjson.billingcompany_name);
+                    else
+                        $("#billingcompany_name").val('');
+                    if(myjson.role!=null){
+                        $("#role").val(myjson.role);
+                      if('guest'==myjson.role){
+                      document.getElementById("provider_display").style.visibility="visible"; 
+                        }else{
+                                    document.getElementById("provider_display").style.visibility="hidden"; 
+                        }
+                    }
+                });
+            }
+         function displayprovider(){
+             var role=$("#role").val();
+               if('guest'==role){
+                      document.getElementById("provider_display").style.visibility="visible"; 
+                }else{
+                            document.getElementById("provider_display").style.visibility="hidden"; 
+                }
+         }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">System Management</a> &gt; User Management</p>
+        </div>
+        <div class="table-div">
+            <form method="post">
+                <table >
+                    <tr>
+                        <th >Biller Name</th>
+                        <td >
+                            <select class="select" name="user_name" style= "width:100% " id="user_name" onchange="javascript:auto_complete()">
+                                <option value=''>Select</option>
+                                <?php
+                                foreach ($this->billerList as $row) {
+                                    echo "<option value='" . $row['biller_name'] . "'>" . $row['biller_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+
+                        </td>
+<!--                        <th >Billing Company</th>
+                        <td >
+                            <select class="select" name="billingcompany_name" style= "width:100% " id="billingcompany_name" >
+                                <option value=''>Select</option>
+                        <?php
+                        foreach ($this->billingcompanyList as $row) {
+                            echo "<option value='" . $row['billingcompany_name'] . "'>" . $row['billingcompany_name'] . "</option>";
+                        }
+                        ?>
+                            </select>
+                        </td>-->
+                        <th >Right</th>
+                        <td ><select name="role" id="role" style="width:90%" onchange="javascript:displayprovider()">
+                                <option value="biller">Biller</option>
+                                <option value="billingcompany">Billing Company</option>
+                                <!--                                <option value="admin">Admin</option>-->
+                                <option value="guest">Guest</option>
+                                <option value="super_admin">Super Admin</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr id="provider_display" style="visibility: hidden">
+                        <th style= "width:20% ">Provider</th>
+                        <td style= "width:20.5% ">
+                            <select class="select" name="provider_id" id="provider_id" multiple="multiple" style= "width:15%;scroll:overflow-x">
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+
+                    </tr>
+                    <tr>
+                        <td><input type="submit" name="submit" align="center" value="Update" /></td>
+                        <td><input type="submit" name="submit" align="center" value="Delete" /></td>
+                        <td><input type="submit" name="submit" align="center" value="New" /></td>
+                        <input type="text" name="provider_id_array" id="provider_id_array" style= "display: none "/>
+                        <td colspan="4"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

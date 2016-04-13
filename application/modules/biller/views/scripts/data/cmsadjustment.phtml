@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript">
+            $(document).ready(function()
+            {
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                    {
+                        if(data!='no'&&data!=null) {
+                            var a=document.getElementById("relogin");
+                            a.click(); 
+                        }
+                    }
+                );
+            $("#provider_id").change(function(){
+                    var provider_id = $("#provider_id").val();
+            
+            
+            $('#del_provider_id').val(provider_id);
+                    
+                }
+            );
+            }
+        );
+        </script>
+        <!-- by Pandazhao-->
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var cpt_code=$("#cpt_code").val();
+                var provider_id=$("#provider_id").val();
+                
+                $('#anesthesia_code_id').val('');
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+                $('#base_unit').val('');
+                $('#description').val('');
+                $('#expected_amount').val('');
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+                $('#charge').val('');
+                $.post("<?php echo $this->baseUrl ?>/biller/data/surgeryinfo/",{cpt_code:cpt_code,provider_id:provider_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                   // if(myjson.anesthesia_code!=''&&myjson.anesthesia_code!=null){
+                      
+                        //                        alert("if");
+                        //                        alert(myjson.anesthesia_code);
+                        $('#base_unit').val(myjson.base_unit);
+                        $('#description').val(myjson.description_cpt);
+                   
+                        $('#expected_amount').val(myjson.payment_expected);
+                        $('#description_anesthesia').val(myjson.description_anes);
+                        //                            alert("else");
+                        //                            alert(myjson.payment_expected);
+                        $('#charge').val(myjson.charge_amount);
+                        
+                   // }
+                  $('#modifier_1').val(myjson.modifier_1);
+                  $('#modifier_2').val(myjson.modifier_2);
+                    $('#anesthesia_code_id').val(myjson.anesthesia_code);
+                });
+            }
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete_1()
+            {
+                var cpt_code=$("#cpt_code").val();
+                var provider_id=$("#provider_id").val();
+                var anesthesia_code_id=  $('#anesthesia_code_id').val();
+                
+                //$('#anesthesia_code_id').val('');
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+                $('#base_unit').val('');
+//                $('#description').val('');
+//                $('#expected_amount').val('');
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               // $('#charge').val('');
+                $.post("<?php echo $this->baseUrl ?>/biller/data/surgeryinfoo/",{cpt_code:cpt_code,provider_id:provider_id,anesthesia_code_id:anesthesia_code_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    //if(myjson.anesthesia_code!=''&&myjson.anesthesia_code!=null){
+                      //  $('#anesthesia_code_id').val(myjson.anesthesia_code);
+                        //                        alert("if");
+                        //                        alert(myjson.anesthesia_code);
+                        $('#base_unit').val(myjson.base_unit);
+                        $('#description_anesthesia').val(myjson.description_anes);
+                    
+                         //$('#expected_amount').val(myjson.payment_expected);
+                      //  $('#description').val(myjson.description_cpt);
+                        
+                        //                            alert("else");
+                        //                            alert(myjson.payment_expected);
+                        //$('#charge').val(myjson.charge_amount);
+                   // }
+                 // $('#modifier_1').val(myjson.modifier_1);
+                //  $('#modifier_2').val(myjson.modifier_2);
+                });
+            }
+        </script>
+    </head>
+
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a href="<?php echo $this->baseUrl ?>/biller/index/main/" title="">Data Management</a> &gt; CMS Adjustment</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <tr >
+                        <th align="left" colspan="1" >Offset-X</th>
+                        <td  colspan="1" >
+                            <select class="select" name="offsetx" style= "width:80% " >
+                                <?php
+                                    $offsets = $this->offsets;
+                                    $i = -10;
+                                    for($i;$i<=10;$i=round($i+1,1))
+                                    {
+                                        if($offsets[0]==$i){
+                                            echo "<option val='".$i."' selected='selected'>".$i."</option>";
+                                        }else{
+                                            echo "<option val='".$i."'>".$i."</option>";
+                                        }
+                                    }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left">Offset-Y</th>
+                        <td colspan="1">
+                            <select class="select" name="offsety"  style= "width:80% ">
+                                <?php
+                                    $offsets = $this->offsets;
+                                    $i = -10;
+                                    for($i;$i<=10;$i=round($i+1,1))
+                                    {
+                                        if($offsets[1]==$i){
+                                            echo "<option val='".$i."' selected='selected'>".$i."</option>";
+                                        }else{
+                                            echo "<option val='".$i."' >".$i."</option>";
+                                        }
+                                    }
+                                ?>
+                              
+                            </select>
+                        </td>
+                        <td colspan="1"><input type="submit" name="submit" value="Update"/></td>
+                    </tr>
+                </table>
+            </form>
+
+        </div>
+    </body>
+</html>

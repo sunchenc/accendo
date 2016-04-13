@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+       <!--by Pandazhao -->
+       <script type="text/javascript" language="Javascript">
+      $(document).ready(function()
+            {
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+            });
+       </script>
+       <!-- by Pandazhao-->
+        <script type="text/javascript" language="Javascript" >
+            function mydisplay(name)
+            {
+                var status=$(name).val();
+                if(status.length == 1){
+                    if(status[0]=='b'||status[0]=='B')
+                        $(name).val('Bill-');
+                    else
+                        $(name).val('');
+                }
+//                else{
+//    
+//                    //var claimstatus =$('#claim_status').val();
+// 
+//                    var billstatusdisplay =$('#bill_status_display').val();
+// 
+//                    if(billstatusdisplay.length>0){
+//                        if(billstatusdisplay!='open'&&billstatusdisplay!='closed'&&billstatusdisplay!='inactive'){
+//                           $('#tosave').removeAttr('disabled');
+//                        }
+//                    }
+//                }
+                 isexisting()
+            }
+             function isexisting()
+            {
+                var provider_id=$("#provider_id").val();
+              
+                var bill_status_display=$("#bill_status_display").val();
+                
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+             
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/billstatusexisting/",{provider_id:provider_id,bill_status_display:bill_status_display},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var bill_status_display = document.getElementById("bill_status_display");
+                    bill_status_display.style.borderColor="#ffffff";
+                        $("#existing").hide();
+                        var myexist=myjson.existing;
+                        if(myexist)
+                        {
+                          bill_status_display.style.borderColor="#ff0000";
+                          $("#existing").show();
+                        }else{
+                            bill_status_display.style.borderColor="#ffffff";
+                          $("#existing").hide();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; Bill Status</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <tr >
+<!--                        <th align="left" colspan="1" >bill Status</th><td><input type="text" name="bill_status" id="bill_status" style= "width:99% "  onkeyup="javascript:mydisplay('#bill_status')"/></td> -->
+<!--                        <td  colspan="1" >
+                            <select class="select" name="status_id" style= "width:100% " id="status_id" onchange="javascript:changebillstatus()">
+                                <option value="">Select</option>
+                            </select>
+                        </td>-->
+<!--                        <th align="left">bill Status Display</th>
+                        <td>
+                            <select class="select" name="diagnosis_code" id="diagnosis_code" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                            </select>
+                        </td>-->
+                        <th align="right" colspan="1">Bill Status</th><td><input type="text" name="bill_status_display" id="bill_status_display" size="50" onkeyup="javascript:mydisplay('#bill_status_display')" onblur="javascript:isexisting()"/>   <a name="existing" id="existing"  style='color:red;display:none' >existing</a></td>
+                    </tr>
+                    <tr >
+                        <td colspan="2"><input type="submit" name="submit" id="tosave" value="Save" /></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

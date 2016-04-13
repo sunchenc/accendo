@@ -1,0 +1,2289 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/navigation.css" />
+        <link rel="stylesheet" href="<?php echo $this->baseUrl ?>/styles/jquery.megamenu.css" type="text/css" media="screen" />        
+        
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        
+        <!--Add drop down for mid section-->
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery-1.4.2.min.js" type="text/javascript"></script>
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery.megamenu.js" type="text/javascript"></script>        
+        <!--Add drop down for mid section-->
+        
+        <!-- Add for testing insurance UI >
+        <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+        <  -->
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+        <style>
+            table{ border:0;border-collapse:collapse;}
+            td{ font:normal 12px/17px Arial;padding:2px;width:100px;}
+            th{ font:bold 12px/17px Arial;text-align:left;padding:4px;border-bottom:1px solid #333;width:100px;}
+            .parent{ background:#58c5c7;cursor:pointer;}  /* 偶数行样式*/
+            .odd{ background:#FFFFEE;}  /* 奇数行样式*/
+            .selected{ background:#FF6500;color:#fff;}
+    
+        </style>
+        <script type="text/javascript">
+            var patientlogId=0;
+            var interactionlogId=0;
+            
+            $(document).ready(function() {
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                    function(data) {
+                        if(data!='no'&&data!=null) {
+                            var a=document.getElementById("relogin");
+                            a.click(); 
+                        }
+                    }
+                );
+                $('tr.parent').click(function(){   // 获取所谓的父行
+                    $(this) 
+			//.toggleClass("selected")   // 添加/删除高亮
+                        .siblings('.child_'+this.id).slideToggle();  // 隐藏/显示所谓的子行
+                });                               
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                    function(data) {
+                        if(data!='no'&&data!=null) {
+                            var a=document.getElementById("relogin");
+                            a.click(); 
+                        }
+                    }
+                );
+               var newclaimflag=( "<?php echo $this->new_claim_flag ?>"==1);
+                if(newclaimflag){
+                    $("#saveclaim").attr("disabled",true);
+                    $("#saveclaim").css("background","url('<?php echo $this->baseUrl ?>/images/tab_bg_3.png')");
+                }
+                    
+                else
+                    $("#saveclaim").removeAttr("disabled");
+                var role = "<?php echo $this->role; ?>";
+                if(role=='guest') {
+                    var inputList = document.getElementsByTagName("input");
+//                    var selectList = document.getElementsByTagName("select");
+//                    var textList = document.getElementsByTagName("textarea");
+//                    for(var i=0;i<textList.length;i++) {
+//                        textList[i].disabled = "true";
+//                    }
+                    for(var i = 0;i<inputList.length;i++) {
+                        if(inputList[i].type=='submit'&&(inputList[i].value=='Finish Claim'||inputList[i].value=='Save Claim')) {
+                            inputList[i].disabled="true";
+                            inputList[i].style.background="url(<?php echo $this->baseUrl; ?>/images/tab_bg_2.png)";
+                        } 
+//                        else {
+//                            if(inputList[i].type!='submit')
+//                                inputList[i].disabled="true";
+//                        }
+                    }
+//                    for(var i = 0;i<selectList.length;i++) {
+//                        selectList[i].disabled="true";
+//                    }
+                }
+                if("<?php echo $this->nullcheck ?>") {
+                    $("#<?php echo $this->nullcheck ?>").css("border","4px solid red");
+                    $("#<?php echo $this->nullcheck ?>").focus();
+                }
+                
+                //var primary_insurance_flag = false;
+                $.get("<?php echo $this->baseUrl ?>/biller/claims/insuranceinput/",function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    //refreshaccessbutton();                
+                    var array_count;
+                    //$('#insured_insurance_type_1').val('PRIMARY');
+                    $('#relationship_to_patient_1').val('self');
+                    
+                    array_count = myjson[0].array_count;
+                    
+                    //primary_insured_exist_flag = myjson[0].array_count.primary_insured_exist_flag;
+                   
+                    //if(primary_insured_exist_flag == 0) {
+                    //    alert("There's no Primary Insurance Now!");
+                    //}
+                    
+                    $("#insured_info_count").val(array_count.toString());
+                    $("#basic_count").val(array_count);
+                    //alert("array_count = " + array_count);
+                    for(var i = 0; i < array_count; i++) {
+                        ti = i+1;                        
+                        if(myjson[i] != null) {             
+                            var add_table_id ="insurance_tbody_"+ti;
+                            //alert("insurance_tbody_"+ti);
+                            var add_table = document.getElementById(add_table_id);
+                            add_table.style.display="";
+                           // if(ti > 1)
+                             //   $("#parent_row_"+ti).click();
+                        }
+                    //alert("-- 1");
+                    if(myjson[i].id!=null)
+                    {
+                        $("#id_"+ti).val(myjson[i].id);
+                    }
+                    if(myjson[i].last_name!=null)
+                        $("#last_name_"+ti).val(myjson[i].last_name);
+                    if(myjson[i].first_name!=null)
+                        $("#first_name_"+ti).val(myjson[i].first_name);
+                    if(myjson[i].DOB!=null)
+                        $("#DOB_"+ti).val(myjson[i].DOB);
+                    if(myjson[i].sex!=null)
+                        $("#sex_"+ti).val(myjson[i].sex);
+                    if(myjson[i].SSN!=null && myjson[i].SSN!=""){
+//                        alert(myjson[i].SSN);
+                        var role="<?php echo $this->role ?>";
+                        var imgclosestr = "#close_"+ti;
+                        if(role!='biller'){
+                             $(imgclosestr).show();
+                        }
+                        $("#SSN_"+ti).val(myjson[i].SSN);
+                         
+                    }else{
+//                        alert('aaaa');
+                        var ssnstr = "#SSN_"+ti;
+//                        alert(ssnstr);
+                        $(ssnstr).removeAttr("readonly");
+                        $(ssnstr).css("background-color","#fff");
+                    }
+                       
+                    if(myjson[i].street_address!=null)
+                        $("#street_address_"+ti).val(myjson[i].street_address);
+                    if(myjson[i].zip!=null)
+                        $("#zip_"+ti).val(myjson[i].zip);
+                    if(myjson[i].state!=null)
+                        $("#state_"+ti).val(myjson[i].state);
+                    if(myjson[i].city!=null)
+                        $("#city_"+ti).val(myjson[i].city);
+                    if(myjson[i].phone_number!=null)                   
+                        $("#phone_number_"+ti).val(myjson[i].phone_number);
+                    if(myjson[i].second_phone_number!=null)
+                        $("#second_phone_number_"+ti).val(myjson[i].second_phone_number);
+                     if(myjson.needsave==1){
+                    
+                       document.getElementById('ischanged').style.display="";
+                    }else{
+                       document.getElementById('ischanged').style.display="none";
+                    }
+                    //alert("-- 2");
+                    if(myjson[i].ID_number!=null)
+                    {
+                       var tp = document.getElementById("ID_number_title_"+ti);
+                       $("#ID_number_"+ti).val(myjson[i].ID_number);
+                       tp.innerHTML = myjson[i].ID_number;
+                    }
+                    if(myjson[i].policy_group_or_FECA_number!=null)
+                        $("#policy_group_or_FECA_number_"+ti).val(myjson[i].policy_group_or_FECA_number);
+                    if(myjson[i].notes!=null)
+                        $("#insurance_notes_"+ti).val(myjson[i].notes);
+                    if(myjson[i].insurance_type!=null)
+                     {
+                        if(myjson[i].insurance_type== 'primary')
+                        {
+                            primary_insurance_flag = true;
+                        }
+                        $("#insurance_type_"+ti).val(myjson[i].insurance_type);                      
+                     }
+                    
+                    //alert("-- 3");
+                    /*** <
+                    if(myjson[i].insured_insurance_type!=null)
+                    {                         
+                        var tp = document.getElementById("insurance_type_title_"+ti);
+                        var tpstr = myjson[i].insured_insurance_type;
+                        $("#insured_insurance_type_"+ti).val(tpstr.toUpperCase());   
+                        tp.innerHTML = tpstr.toUpperCase();
+                    }
+                    > */
+            
+                    if(myjson[i].employer_or_school_name!=null)
+                        $("#employer_or_school_name_"+ti).val(myjson[i].employer_or_school_name);  
+           
+                    //Add insured_insurance_expiration_date
+                    if(myjson[i].insured_insurance_expiration_date != null)
+                         $("#insured_insurance_expiration_date_"+ti).val(myjson[i].insured_insurance_expiration_date); 
+                                                          
+                    $("#insurance_id_"+ti).val(myjson[i].insurance_id);
+                   
+                   //alert("-- 4");
+                    if(myjson[i].insurance_display!=null)
+                    {
+                         var tp = document.getElementById("insurance_name_title_"+ti);
+                        $("#insurance_display_"+ti).val(myjson[i].insurance_display);
+                        tp.innerHTML = myjson[i].insurance_display;
+                    }
+                    
+                    if(myjson[i].insured_name!=null)
+                    {
+                         var tp = document.getElementById("insured_name_title_"+ti);
+                         tp.innerHTML = myjson[i].insured_name;                                                  
+                    }
+                    
+                    //alert("-- 5");
+                    //alert("insured_order_" + i + " from myjson " + myjson[i].insured_order);
+                    if(myjson[i].insured_order!=null)
+                     {                         
+                       //alert("Inside if: insured_order_" + i + " from myjson " + myjson[i].insured_order);  
+                       $("#insured_order_"+ti).val(myjson[i].insured_order);                       
+                     }
+                     //alert("-- 6");
+                     if(myjson[i].relationship_to_patient!=null)
+                     {
+                       $("#relationship_to_patient_"+ti).val(myjson[i].relationship_to_patient);
+                     }
+                     
+                    if(myjson[i].fax_number!=null)
+                        $("#fax_number_"+ti).val(myjson[i].fax_number);
+                    if(myjson[i].insurance_name!=null)
+                        $("#insurance_name_"+ti).val(myjson[i].insurance_name);
+                    if(myjson[i].insurance_street_address!=null)
+                        $("#insurance_street_address_"+ti).val(myjson[i].insurance_street_address);
+                    if(myjson[i].insurance_zip!=null)
+                        $("#insurance_zip_"+ti).val(myjson[i].insurance_zip);
+                    if(myjson[i].insurance_state!=null)
+                        $("#insurance_state_"+ti).val(myjson[i].insurance_state);
+                    if(myjson[i].insurance_city!=null)
+                        $("#insurance_city_"+ti).val(myjson[i].insurance_city);
+                    if(myjson[i].insurance_phone_number!=null)
+                        $("#insurance_phone_number_"+ti).val(myjson[i].insurance_phone_number);
+                    if(myjson[i].EDI_number!=null)
+                        $("#EDI_number_"+ti).val(myjson[i].EDI_number);
+                    if(myjson[i].anesthesia_bill_rate!=null)
+                        $("#anesthesia_bill_rate_"+ti).val(myjson[i].anesthesia_bill_rate);
+                    if(myjson[i].payer_type!=null)
+                        $("#payer_type_"+ti).val(myjson[i].payer_type);
+                    if(myjson[i].claim_submission_preference!=null)
+                        $("#claim_submission_preference_"+ti).val(myjson[i].claim_submission_preference);
+                    if(myjson[i].PID_interpretation!=null)
+                        $("#PID_interpretation_"+ti).val(myjson[i].PID_interpretation);
+                    if(myjson[i].navinet_web_support_number!=null)
+                        $("#navinet_web_support_number_"+ti).val(myjson[i].navinet_web_support_number);
+                    if(myjson[i].appeal!=null)
+                        $("#appeal_"+ti).val(myjson[i].appeal);
+                    if(myjson[i].reconsideration!=null)
+                        $("#reconsideration_"+ti).val(myjson[i].reconsideration);
+                    if(myjson[i].claim_filing_deadline!=null)
+                        $("#claim_filing_deadline_"+ti).val(myjson[i].claim_filing_deadline);
+                    if(myjson[i].EFT!=null)
+                        $("#EFT_"+ti).val(myjson[i].EFT);
+                    if(myjson[i].claim_status_lookup!=null)
+                        $("#claim_status_lookup_"+ti).val(myjson[i].claim_status_lookup);
+                    if(myjson[i].benefit_lookup!=null)
+                        $("#benefit_lookup_"+ti).val(myjson[i].benefit_lookup);
+                    if(myjson[i].anesthesia_bill_rate!=null)
+                        $("#anesthesia_bill_rate_"+i).val(myjson[i].anesthesia_bill_rate);
+                    if(myjson[i].anesthesia_crosswalk_overwrite!=null)
+                        $("#anesthesia_crosswalk_overwrite_"+ti).val(myjson[i].anesthesia_crosswalk_overwrite);
+                    if(myjson[i].fax_number!=null)
+                        $("#fax_number_"+ti).val(myjson[i].fax_number);
+                    if(myjson[i].notes!=null)
+                        $("#insurance_notes_"+ti).val(myjson[i].notes);
+                    //alert("-- 7");
+            }
+            //alert("--- 10");
+                    var biller = $("#billername").val();                 
+                    
+                    for(var i=0;i<myjson[i].one_off_paths.length;i++){
+                        var filename=myjson[i].one_off_paths[i];
+                        var filepath="<?php echo $this->baseUrl ?>/"+filename;
+                        var button_value=filename.substring(filename.lastIndexOf('/')+1,filename.lastIndexOf('.'));
+                        var    str = '<td><input type="button" value="'+button_value
+                            +'"onclick="javascript:window.open(\''+filepath+'\')"/></td>';
+                        $("#document_access tr").append(str);
+                    }                    
+                });  
+            });
+           
+        </script>
+        
+        <script type="text/javascript" language="javascript" >
+            function refreshaccessbutton()
+            {
+                $.get("<?php echo $this->baseUrl ?>/biller/claims/accessbuttonstatus/pageno/2",function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var td1 = $("#document_access td");
+                    if(td1.length>1)
+                        document.getElementById("document_access").deleteCell(1);
+                    var str='<td colspan="7">';
+                    str=str+mk_buttonadd_str(myjson.Insurance_path,"<?php echo $this->baseUrl ?>",'Insurance');
+                    for(var i=0;i<myjson.one_off_paths.length;i++){
+                        var filename=myjson.one_off_paths[i];
+                        str=str+mk_buttonadd_str(filename,"<?php echo $this->baseUrl ?>",'');
+                    }
+                    str+='</td>';
+                    $("#document_access").append(str);
+                });
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+             function dateformat(name){
+                  var time=$(name).val();
+                  if(time.length<10&&time.length!=0){
+                    var inputList = document.getElementsByTagName("input");
+                    for(var i = 0;i<inputList.length;i++){
+                        if(inputList[i].type=='submit'){
+                            inputList[i].disabled="true";
+                            inputList[i].style.background="url(<?php echo $this->baseUrl ?>/images/tab_bg_2.png)";
+                        } 
+                        
+                    }
+                  }else{
+                   var inputList = document.getElementsByTagName("input");
+                    for(var i = 0;i<inputList.length;i++){
+                        if(inputList[i].type=='submit'){
+                            inputList[i].removeAttribute("disabled");
+                            //inputList[i].enable="true";
+                            inputList[i].style.background="url(<?php echo $this->baseUrl ?>/images/tab_bg.png)";
+                        } 
+                        
+                    }
+                  
+                  }
+             }
+             function dateupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    // alert(time);
+                    if(len_time<10&&len_time!=0)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+               function SSNupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    //alert(time);
+                    if(len_time<11&&len_time!=0)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+            function getRealSSN(n){
+                var inputstr = "#SSN_"+n;
+                var imgclosestr = "#close_"+n;
+//                alert(imgclosestr);
+                var imgopenstr = "#open_"+n;
+//                alert(imgopenstr);
+                $.get("<?php echo $this->baseUrl ?>/biller/claims/showrealssn/",{"index":n},function (data) {
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var value = myjson.ssn.substring(0,11);
+                    $(inputstr).val(value);
+                    $(imgclosestr).hide();
+                    $(imgopenstr).show();
+                    $(inputstr).removeAttr("readonly");
+                    $(inputstr).css("background-color","#fff");
+                });
+            }
+            function zipupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    //alert(time);
+                    if(len_time<11&&len_time!=0&&len_time!=5)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+             function phoneupformat(name){
+                    // dateformat(name);
+                    var time=$(name).val();
+                    var len_time=time.length;
+                    //alert(time);
+                    if(len_time<13&&len_time!=0)
+                    {
+                            $(name).css("border","4px solid red");
+                            $(name).focus();
+                    }else{
+                            $(name).css("border"," 1px solid #aaa");
+                    }
+             }
+        function date1902(name)
+        {
+                 date(name);
+                 var time=$(name).val();
+                      if(time.length==10){
+                    
+                    var index=0;
+                    for(index=0;index<time.length;index++){
+                       var cur=time.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==2||index==5){
+                                   if(cur!='/'){
+                                        time=time.substr(0,index)+time.substr(index+1,time.length-index-1);
+                                        $(name).val(time);
+                                         return;
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        time=time.substr(0,index)+time.substr(index+1,time.length-index-1);
+                                        $(name).val(time);
+                                        tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+    
+                                         return;
+                                }
+                              
+                       }
+                    }
+                     
+                }
+                 if(time.length==10)
+                {
+                    var year=parseInt(time.substr(6,10));
+                    if(year>2037){
+                         newyear=time.substr(0,6);
+                          $(name).val(newyear);
+                     }
+                    if(year<1902){
+                         newyear=time.substr(0,6);
+                          $(name).val(newyear);
+                     }
+                        
+                     
+                        
+                }
+             // dateformat(name)  ;
+           }
+            function setCaretPosition(ctrl, pos){//设置光标位置函数
+                    if(ctrl.setSelectionRange)
+                    {
+                            ctrl.focus();
+                            ctrl.setSelectionRange(pos,pos);
+                    }
+                    else if (ctrl.createTextRange) {
+                            var range = ctrl.createTextRange();
+                            range.collapse(true);
+                            range.moveEnd('character', pos);
+                            range.moveStart('character', pos);
+                            range.select();
+                    }
+            }
+             function dateofDOB(name)
+             {
+                   date(name);
+                 var time=$(name).val();
+                  if(time.length==10){
+                    
+                    var index=0;
+                    for(index=0;index<time.length;index++){
+                       var cur=time.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==2||index==5){
+                                   if(cur!='/'){
+                                        time=time.substr(0,index)+time.substr(index+1,time.length-index-1);
+                                        $(name).val(time);
+                                         return;
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        time=time.substr(0,index)+time.substr(index+1,time.length-index-1);
+                                        $(name).val(time);
+                                        tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+    
+                                         return;
+                                }
+                              
+                       }
+                    }
+                     
+                }
+                 //$(name).val("nowtime");
+                 var myDate = new Date();
+                // var nowtime=myDate.toLocaleDateString();
+                 if(time.length==10)
+                {
+                    MM=time.substr(0,2);
+                    DD=time.substr(3,2);
+                    YY=time.substr(6,4);
+                    YY_NOW=myDate.getFullYear(); 
+                    MM_NOW=myDate.getMonth()+1;
+                    DD_NOW=myDate.getDate();
+                    if(MM_NOW<10){
+                        MM_NOW='0'+MM_NOW;
+                    }
+                    if(DD_NOW<10){
+                        DD_NOW='0'+DD_NOW;
+                    }
+                    nownomal=MM_NOW+'/'+DD_NOW+'/'+YY_NOW;
+                    CurGetTime=new Date(YY,MM,DD);
+                    NowGetTime=new Date(YY_NOW,MM_NOW,DD_NOW);
+                    if(CurGetTime>NowGetTime){
+                       // $(name).val(nownomal);
+                        $(name).val();
+                    }
+                    
+                        MM_Start=MM_NOW;
+                        DD_Start=DD_NOW;
+                        YY_Start=parseInt(YY_NOW)-110;
+                        nownomal=MM_NOW+'/'+DD_NOW+'/'+YY_NOW;
+                        startnomal=MM_Start+'/'+DD_Start+'/'+YY_Start;
+                        StartGetTime=new Date(YY_Start,MM_Start,DD_Start);
+                        NowGetTime=new Date(YY_NOW,MM_NOW,DD_NOW);
+                        if(StartGetTime>CurGetTime){
+                           $(name).val(startnomal);
+                        }
+                        if(NowGetTime<CurGetTime){
+                           $(name).val(nownomal);
+                        }
+                }
+             }
+        </script>
+        <script type="text/javascript">
+              function  addinsurancetable()
+              {   
+                  var temp;
+                  total_insured_count_now =  $("#insured_info_count").val();
+                  expired_insured_count_now =  $("#insured_expired_array_count").val();   
+                  now_table_number = total_insured_count_now - expired_insured_count_now;
+                  now_table_number++;
+                  add_table_id = "insurance_tbody_"+ now_table_number;
+//                  alert(now_table_number);
+                  var ssnstr = "#SSN_"+now_table_number; //使每一个新建的SSN 都变为可写的。
+                  $(ssnstr).removeAttr("readonly");
+                  $(ssnstr).css("background-color","#fff");
+                  var add_table = document.getElementById(add_table_id);
+                  add_table.style.display="";
+                  /*** <
+                  var pri_flag =0,sec_flag=0,ter_flag=0;
+                 
+                  for(var i = 1; i < now_table_number; i++)
+                  {
+                      if( $("#insured_insurance_type_"+i).val() == 'PRIMARY')
+                          pri_flag = 1;
+                      else if( $("#insured_insurance_type_"+i).val() == 'SECONDARY')
+                          sec_flag = 1;
+                      else if( $("#insured_insurance_type_"+i).val() == 'TERTIARY')
+                          ter_flag = 1;
+                  }
+                  
+                  if(pri_flag && !sec_flag && !ter_flag){
+                        $("#insured_insurance_type_"+now_table_number).val('SECONDARY');
+                        var temp = document.getElementById("insurance_type_title_"+now_table_number);
+                         temp.innerHTML = "SECONDARY";
+                  }
+                  else if(pri_flag && sec_flag && !ter_flag){
+                        $("#insured_insurance_type_"+now_table_number).val('TERTIARY');
+                        var temp = document.getElementById("insurance_type_title_"+now_table_number);
+                         temp.innerHTML = "TERTIARY";
+                  }
+                
+                  //else if(pri_flag && sec_flag && !ter_flag){
+                  //      $("#insured_insurance_type_"+now_table_number).val('TERTIARY');
+                  //      var temp = document.getElementById("insurance_type_title_"+now_table_number);
+                  //       temp.innerHTML = "SECONDARY";
+                  //}
+
+                  else if(pri_flag && sec_flag && ter_flag){
+                        $("#insured_insurance_type_"+now_table_number).val('OTHER');
+                        var temp = document.getElementById("insurance_type_title_"+now_table_number);
+                         temp.innerHTML = "OTHER";
+                  }
+                  > */
+                  //alert("flags are: "+pri_flag + "-" + sec_flag + "-" + ter_flag);
+                  //alert("now_table_number = " + now_table_number);
+                  $("#insured_order_"+now_table_number).val(0);
+                  //alert("#insured_order_"+now_table_number + " = " + $("#insured_order_"+now_table_number).val());
+                  total_insured_count_now++;
+                  $('#insured_info_count').val(total_insured_count_now);              
+              }
+              
+              function operateall()
+              {                        
+                $('tr.parent').click(); //
+              }
+               function opentable(table_name)
+              {
+                var temp_table_name =  $(table_name).val();          
+                if(temp_table_name == " + ")
+                    $(table_name).val(' - ');
+                else if(temp_table_name == " - ")
+                    $(table_name).val(' + ');
+              }
+              </script>
+        <script type="text/javascript">
+              
+              function ID_number_title_change(name)
+              {
+                  var tp = name.split('_');
+                  ti  = tp[2];
+                  var temp_value = $(name).val();
+                  var temp = document.getElementById("ID_number_title_"+ti);
+                         temp.innerHTML = temp_value;
+              }
+              
+              function insured_type_title_change(name)
+              {
+                  var tp = name.split('_');
+                  ti  = tp[3];                
+                  var temp_value = $(name).val();
+                  //$('#insurance_type_title_'.ti).innerHTML = temp_value;
+                  var temp = document.getElementById("insurance_type_title_"+ti);
+                         temp.innerHTML = temp_value;
+              }
+              
+              function insured_insurance_type_check(name)
+              {
+                  var tp = name.split('_');
+                  var temp;
+                  ti = tp[3];
+                  var tp_value = $(name).val();
+                  if(tp_value != 'OTHER' && tp_value != 'EXPIRED')
+                  {
+                      for(var i = 1; i < 5; i++)
+                      {
+                          if(i == ti)
+                              continue;
+                           //temp = document.getElementById("insred_insurance_type_"+i);
+                           temp = $("#insured_insurance_type_"+i).val();
+                           if(tp_value == temp)
+                               $("#insured_insurance_type_"+i).val('OTHER');
+                      }
+                  }
+              }
+              
+              function insured_name_title_change(name)
+             {
+               var tp = name.split('_');
+               ti = tp[2];
+               var temp = document.getElementById("insured_name_title_"+ti);
+               temp.innerHTML = $('#last_name_'+ti).val()+ ', '+ $('#first_name_'+ti).val();
+             }
+             
+             function insurance_name_title_change(name)
+             {
+               var tp = name.split('_');
+               ti = tp[2];
+               var temp = document.getElementById("insurance_name_title_"+ti);
+               var insurance_id_obj = document.getElementById("insurance_id_"+ti);
+               var index = insurance_id_obj.selectedIndex;
+               temp.innerHTML =  insurance_id_obj.options[index].text;       
+             }
+             
+             function insurance_change(name,num)
+             {
+                
+                 check_add(num);
+                 auto_complete_insurance(name);
+                 insurance_name_title_change(name);
+                 
+                 
+             }
+             
+             function insured_insurance_type_change(name)
+             {
+                 insured_type_title_change(name);
+                 insured_insurance_type_check(name);                
+             }
+              
+        </script>
+        
+         <script type="text/javascript" language="Javascript" >
+            function auto_complete_insurance(name)
+            {
+                var insurance_id=$(name).val();
+                var tp = name.split('_');
+                ti = tp[2];
+                if(insurance_id!=null)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/claiminsuranceinfo/",{insurance_id:insurance_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.insurance_name!=null)
+                            $("#insurance_name_"+ ti).val(myjson.insurance_name);
+                        if(myjson.fax_number!=null)
+                            $("#fax_number_" + ti).val(myjson.fax_number);
+                        if(myjson.insurance_street_address!=null)
+                            $("#insurance_street_address_" + ti).val(myjson.insurance_street_address);
+                        if(myjson.insurance_zip!=null)
+                            $("#insurance_zip_"+ ti).val(myjson.insurance_zip);
+                        if(myjson.insurance_state!=null)
+                            $("#insurance_state_" + ti).val(myjson.insurance_state);
+                        if(myjson.insurance_city!=null)
+                            $("#insurance_city_"+ti).val(myjson.insurance_city);
+                        if(myjson.insurance_phone_number!=null)
+                            $("#insurance_phone_number_"+ti).val(myjson.insurance_phone_number);
+                        if(myjson.EDI_number!=null)
+                            $("#EDI_number_" + ti).val(myjson.EDI_number);
+                        if(myjson.anesthesia_bill_rate!=null)
+                            $("#anesthesia_bill_rate_" + ti).val(myjson.anesthesia_bill_rate);
+                        if(myjson.payer_type!=null)
+                            $("#payer_type_" + ti).val(myjson.payer_type);
+                        /*******Add alert for insurance*******/
+                        if(myjson.alert!=null && myjson.alert!="")
+                            alert(myjson.insurance_name+": " +myjson.alert);
+                        /*******Add alert for insurance*******/
+                    }); 
+                    document.getElementById('ischanged').style.display="";
+                }
+                else if(insurance_id == "")
+                {
+                    $("#insurance_name_"+ti).val('');
+                    $("#fax_number_"+ ti).val('');
+                    $("#insurance_street_address_" + ti).val('');
+                    $("#insurance_zip_" + ti).val('');
+                    $("#insurance_state_" + ti).val('');
+                    $("#insurance_city_" + ti).val('');
+                    $("#insurance_phone_number_"+ ti).val('');
+                    $("#EDI_number_"+ti).val('');
+                    $("#anesthesia_bill_rate_" + ti).val('');
+                    $("#payer_type_" + ti).val('');
+                    $("#anesthesia_crosswalk_overwrite_" + ti).val('');
+                    $("#claim_submission_preference_" + ti).val('');
+                    $("#insurance_notes_" + ti).val('');
+                    myischanged();
+                }     
+                 
+            }
+            </script>
+        
+          <script type="text/javascript" language="javascript" >
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                var length=phone_number.length;
+                if(length==0||length==1||length==2||length==5||length==6||length==7||length==9||length==10||length==11||length==12){
+                    var charat=phone_number.charAt(length-1) ;
+                    if(charat<'0'||charat>'9'){
+                        phone_number=phone_number.substr(0,length-1);
+                        $(name).val(phone_number);
+                    }
+                    //alert(charat);
+                }
+                if(phone_number.length==1)
+                if(phone_number.length==1){
+                    if(phone_number=='0'||phone_number=='1'){
+                        phone_number='';
+                    }
+                 $(name).val(phone_number);
+                }
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+                 if(phone_number.length==13){
+                    //alert(phone_number);
+                    var index=0;
+                    for(index=0;index<phone_number.length;index++){
+                       var cur=phone_number.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==0){
+                                   if(cur!='('){
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,time.length-index-1);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        $(name).val(phone_number);
+                                         return;
+                                   }
+                               }else if(index==4){
+                                   if(cur!=')'){
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,time.length-index-1);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        $(name).val(phone_number);
+                                         return;
+                                   }
+                               } else if(index==8){
+                                   if(cur!='-'){
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,time.length-index-1);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        $(name).val(phone_number);
+                                         return;
+                                   }
+                               }
+                               else{
+                                        //alert(cur);
+                                        phone_number=phone_number.substr(0,index)+phone_number.substr(index+1,phone_number.length-index-1);
+                                        $(name).val(phone_number);
+                                        var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+    
+                                         return;
+                                }
+                              
+                       }
+                    }
+                     
+                }
+            }
+        </script>
+        
+        <script type="text/javascript" language="javascript" >
+            function zipcode(name)
+            {
+                var zip=$(name).val();
+//                var phone_number=$(name).val();
+                 var SSNlenght=zip.length;
+                var temp=zip.charAt(SSNlenght-1);
+                if(temp=='1'||temp=='2'||temp=='3'||temp=='4'||temp=='5'||temp=='6'||temp=='7'||temp=='8'||temp=='9'||temp=='0'){
+//                    alert(1)
+                }else{
+//                    alert(3);
+
+                       zip=zip.substr(0,SSNlenght-1);
+                      
+//                      
+//                   
+                }
+                if(zip.length==5)
+                {
+                   
+                }
+                if(zip.length==6)
+                {
+                    zip = zip.substr(0,5)+'-'+zip.substr(5,5);
+//                    $(name).val(zip);
+                }
+                if(zip.length>10)
+                {
+                    zip = zip.substr(0,10);
+//                    $(name).val(zip);
+                }
+                if(zip.length==10||zip.length==5){
+                    
+                    var index=0;
+                    for(index=0;index<zip.length;index++){
+                       var cur=zip.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==5){
+                                   if(cur!='-'){
+                                        zip=zip.substr(0,index)+zip.substr(index+1,zip.length-index-1);
+                                         $(name).val(zip);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        //$(name).val(SSN);
+                                        return;
+                                        
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        zip=zip.substr(0,index)+zip.substr(index+1,zip.length-index-1);
+                                        $(name).val(zip);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        
+                                        return;
+                                        
+                                }
+//                              
+                       }
+                    }
+                     
+                }
+                 $(name).val(zip);
+            }
+        </script>
+        
+        <script type="text/javascript" language="javascript" >
+           function ssn(name)
+            {
+                var SSN=$(name).val();
+                var SSNlenght=SSN.length;
+                var temp=SSN.charAt(SSNlenght-1);
+                if(temp=='1'||temp=='2'||temp=='3'||temp=='4'||temp=='5'||temp=='6'||temp=='7'||temp=='8'||temp=='9'||temp=='0'){
+//                    alert(1)
+                }else{
+//                    alert(3);
+
+                       SSN=SSN.substr(0,SSNlenght-1);
+                      
+//                      
+//                   
+                }
+                if(SSN.length==3)
+                {
+                    SSN=SSN+'-';
+                   
+                }
+                if(SSN.length==6)
+                {
+                    SSN=SSN+'-';
+//                    $(name).val(SSN);
+                }
+                if(SSN.length>11)
+                {
+                    SSN = SSN.substr(0,11);
+//                    $(name).val(SSN);
+                }
+                if(SSN.length==11){
+                    
+                    var index=0;
+                    for(index=0;index<SSN.length;index++){
+                       var cur=SSN.charAt(index) ;
+                              if(cur<'0'||cur>'9'){
+                               if(index==3||index==6){
+                                   if(cur!='-'){
+                                        SSN=SSN.substr(0,index)+SSN.substr(index+1,SSN.length-index-1);
+                                         $(name).val(SSN);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        //$(name).val(SSN);
+                                        return;
+                                        
+                                   }
+                               }else{
+                                        //alert(cur);
+                                        SSN=SSN.substr(0,index)+SSN.substr(index+1,SSN.length-index-1);
+                                        $(name).val(SSN);
+                                        var tempname=name.substr(1,name.length-1);
+//                                        //alert(tempname);
+                                        setCaretPosition(document.getElementById(tempname),index);
+                                        
+                                        return;
+                                        
+                                }
+//                              
+                       }
+                    }
+                     
+                }
+                 $(name).val(SSN);
+            }
+        </script>
+        
+        <script type="text/javascript" language="javascript" >
+            function zip2citystate(name)
+            {
+                var zip=$(name).val();
+                var tp = name.split('_');
+                ti = tp[1];
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#city_"+ti).val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#state_" + ti).val(myjson.state);
+                    }
+                );
+                }
+            }
+        </script>
+        
+        
+        <script type="text/javascript" language="Javascript" >
+              function auto_complete_patient(name)
+              {
+                  var select_value = $(name).val();
+                  if(select_value !="Self" && select_value !="self")
+                      return;
+                  var tp = name.split('_');
+                  ti = tp[3];
+                  var patient_id = $('#patient_id').val();
+                if(patient_id!=null)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/patientinfo/",{patient_id:patient_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                       
+                        if(myjson.last_name!=null)
+                            $("#last_name_" + ti).val(myjson.last_name);
+                        if(myjson.first_name!=null)
+                            $("#first_name_" + ti).val(myjson.first_name);
+                        if(myjson.DOB!=null)
+                            $("#DOB_" + ti).val(myjson.DOB);
+                        if(myjson.sex!=null)
+                            $("#sex_" + ti).val(myjson.sex);
+                        if(myjson.street_address!=null)
+                            $("#street_address_" + ti).val(myjson.street_address);
+                        if(myjson.zip!=null)
+                            $("#zip_" + ti).val(myjson.zip);
+                        if(myjson.city!=null)
+                            $("#city_" + ti).val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#state_" + ti).val(myjson.state);
+                        if(myjson.SSN!=null)
+                            $("#SSN_" + ti).val(myjson.SSN);
+                        if(myjson.phone_number!=null)
+                            $("#phone_number_" + ti).val(myjson.phone_number);
+                        if(myjson.second_phone_number!=null)
+                            $("#second_phone_number_" + ti).val(myjson.second_phone_number);
+                    }); 
+                } 
+              }
+        </script>
+        
+        
+        <script type="text/javascript">
+            
+            function finish_claim()
+            {
+                
+            }
+            
+                        
+            function bodyload()
+            {
+              //var tp = document.getElementById("insurance_type_title_1");
+              //alert(tp.innerHTML);
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            
+            function addtable5(){
+                interactionlogId = interactionlogId +1;
+                var count5 = document.getElementById("count5");
+                var interactionlogTd = document.getElementById("interactionlogTd");
+                var interactionlogDiv = document.getElementById("interactionlogDiv");
+                var interactionlogTable = document.getElementById("interactionlogTable");
+                count5.value = interactionlogId;
+                
+                /*if(interactionlogId==1){
+                    interactionlogTd.style.display ="";
+                    interactionlogDiv.style.display = "";
+                    interactionlogDiv.style.height ="25px";
+                }
+                if(interactionlogId ==2){
+                    interactionlogDiv.style.height = "50px";
+                }
+                if(interactionlogId == 3){
+                    interactionlogDiv.style.height = "75px";
+                }*/
+                var newTr= interactionlogTable.insertRow(0);
+                newTr.style.display="none";
+                newTr.id="tr"+interactionlogId+"";
+                var newth1 = document.createElement("TH");
+                var newtd1 = document.createElement("TD");
+                var newth2 = document.createElement("TH");
+                if(navigator.userAgent.indexOf("MSIE")!=-1){
+                    newth1.style.width="122px";
+                    newth1.colspan=1;
+                    newth2.style.width="124px";
+                }else{
+                    newth1.style.width="13.8%";
+                    newtd1.style.width="11%";
+                    //newth1.colspan=1;
+                    newth2.style.width="14%";
+                }
+                newth1.innerHTML ="Date And Time";
+                newth2.innerHTML ="Log";
+                newTr.appendChild(newth1,0);
+                newTr.appendChild(newtd1,1);
+                newTr.appendChild(newth2,2);
+                var newtd2 = newTr.insertCell(3);
+                if(navigator.userAgent.indexOf("MSIE")!=-1){
+                    newtd2.style.width="999px";
+                }else{
+                    newtd2.style.width="70%";
+                    newtd2.colspan = 5;
+                }
+                var newtd3 = document.createElement("TD");
+                newth1.style.display="none";
+                newth2.style.display="none";
+                newtd1.style.display="none";
+                newtd2.style.display="none";
+                newtd3.style.display="none";
+                newTr.appendChild(newtd3,4);
+                //newtd1.style.width="130px";
+                //newtd3.style.width="14%";
+                newtd1.innerHTML ="<input type=\"text\" name=\"date_and_time_"+interactionlogId+"\" id=\"date_and_time_"+interactionlogId+"\" onkeyup=\"javascript:dateandtime(\'#date_and_time_"+interactionlogId+"\')\" onfocus=\"javascript:dateandtimefocus("+interactionlogId+")\"/>";
+                newtd2.innerHTML ="<input type=\"text\" name=\"log_"+interactionlogId+"\" id=\"log_"+interactionlogId+"\" style=\"width:99%\"/>";               
+                newtd3.innerHTML ="<input type=\"text\" name=\"date_and_time_real_"+interactionlogId+"\" id=\"date_and_time_real_"+interactionlogId+"\">";
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function addlog(time,realtime,log)
+            {
+                addtable5();
+                $('#date_and_time_'+interactionlogId).val(time);
+                $('#date_and_time_real_'+interactionlogId).val(realtime);
+                $('#log_'+interactionlogId).val(log);
+                var hiddentime = hiddenshowtime();
+                $('#hidden_date_and_time_'+interactionlogId).val(hiddentime);
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function realtime(){
+            var today=new Date();
+            var year=today.getFullYear();
+            var month=today.getMonth()+1;
+            var day=today.getDate();
+            var hours = today.getHours();
+            var minutes = today.getMinutes();
+            var seconds = today.getSeconds();
+            var timeValue = (month<10?"0":"")+month+"/"+(day<10?"0":"")+day+"/"+year + " " + (hours<10?"0":"")+hours +":" + (minutes<10?"0":"")+minutes+":"+(seconds<10?"0":"")+seconds; 
+            return timeValue;
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+    function myischanged(){
+       // alert(1);
+       var id=0;
+    
+        document.getElementById('ischanged').style.display="";
+       $.get("<?php echo $this->baseUrl ?>/biller/claims/needsave/",
+             function(date){
+       });
+    }
+</script>
+        <script>
+            function check_add(num){
+                var basic_count = $("#basic_count").val();
+                total_insured_count_now =  $("#insured_info_count").val();
+                expired_insured_count_now =  $("#insured_expired_array_count").val();   
+                now_table_number = total_insured_count_now - expired_insured_count_now;
+                if(num == now_table_number && num>basic_count){
+                    add_table_id = "insurance_tbody_"+ now_table_number;
+                    var last_name_id = "#last_name_" +　now_table_number;
+                    var add_table = document.getElementById(add_table_id);
+                    var last_name = $(last_name_id).val();
+                    var first_name_id = "#first_name_" +　now_table_number;
+                    var first_name = $(first_name_id).val();
+                    var insured_id_id = "#ID_number_" + now_table_number;
+                    var insured_id = $(insured_id_id).val();
+                    var insurance_id_id = "#insurance_id_" + now_table_number;
+                    var insurance_id = $(insurance_id_id).val();
+                    var biller_name = $("#billername").val();
+                    var insurance_display;
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/insuranceinfo/",{insurance_id:insurance_id},
+                        function(data){
+                            var myjson='';
+                            eval("myjson=" + data + ";");
+                            insurance_display = myjson.insurance_display;
+                            //alert(insurance_display);
+                            if(last_name!=null && last_name!='' && first_name!=''  && first_name!=null && insured_id != '' && insured_id!=null && insurance_id !="" &&insurance_id!=null ){
+                            var time=realtime();
+                            var real_time = realtime();
+                            var log = biller_name + ": Added Insurance "+ insurance_display + "/" + insured_id +"/" + last_name + ", " + first_name ;
+                            addlog(time,real_time,log);
+                            }
+                        }
+                    );
+                }
+                
+                
+            }
+        </script>
+    </head>
+
+    <body  onload="bodyload();">
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div class="table-div" >
+            <form  method="post" action="" onsubmit="javascript:return check();">
+                <table width="100%">
+                    <tr class="navigation">
+                        <td colspan="8" style="background:#ffffff">
+                            <a href="#"><span> <input type="submit" name="submit" id="Previous"value="Previous"/></span></a>
+                            <a href="#"><span> <input type="submit"name="submit"id="Patient"value="Patient" /></span></a>
+                            <a href="#"><span> <input type="submit" name="submit"id="Insurance"value="Insurance" style="background:url('<?php echo $this->baseUrl ?>/images/tab_bg_3.png')"/></span></a>
+                            <a href="#"><span> <input type="submit"name="submit"id="Service"value="Service" /></span></a>
+                            <a href="#"><span> <input type="submit" name="submit"id="Claim"value="Claim" style="width:60px"/></span></a>
+                            <a href="#"><span> <input style="width:100px" type="submit"name="submit"id="Documents"value="Documents" /></span></a>
+                            <a href="#"><span> <input type="submit"name="submit"id="Next"value="Next" /></span></a>
+
+                           <!-- Fix the mid UI By Yu Lang-->           
+                            <span style="margin:0 0 0 30px"> 
+                             <div id="current">                                      
+                            <ul class="megamenu">
+                                 <li ><a href="javascript:void(0)" ><font color="FF0000" size="1px"><?php echo $this->cur_service_info['patient_name'] ?></font></a>&nbsp;<!--    </li>
+                                 <li>
+                                     <a href="javascript:void(0)" style="color:#FF0000;">=</a>-->
+                                     <div style="width: 840px; left:3px;">
+                                         <!-- <h3>Dropdown Example</h3> -->
+                                         <table border="1" cellpadding="0" cellspacing="0" id="tabular-content">
+                                             <tr>
+                                                <!-- <th style="width: 15px">Number</th> -->
+                                                 <th style="text-align:center">DOS</th>
+                                                 <th style="width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Charge</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Paid</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">%</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Due</th>
+                                                 <th style="width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Insurance</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Provider</th>
+                                                 <th style="width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Rendering Provider</th>
+                                                 <th style="width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Referring Provider</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Facility</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Last</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Claim Status</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Bill Status</th>
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Statement Status</th>
+                                                  <!--<th style="width: 100px">DOS</th> -->
+                                             </tr>
+                                             
+                                             <?php
+                                             $tmp_baseUrl = $this->baseUrl;
+                                             $tmp_claim_id = $this->cur_service_info['claim_id'];                                             
+                                             foreach($this->tmpList as $row)
+                                             {
+                                                
+                                                if( $row['claim_id'] == $tmp_claim_id )
+                                                {
+                                                    $rendering_provdier_name = $row['ren_last_name']. ', '. $row['ren_first_name'];
+                                                    $referring_provider_name = $row['ref_last_name'].', '.$row['ref_first_name'];
+                                                    
+                                                    echo "<tr><td style= 'background-color: rgb(150,230,230);'>";                                                  
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=insurance \">";
+                                                    echo $row['dos']."</a></td>";
+                                                     echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                     echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['amount_paid']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['balance_due']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['insurance_display']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo substr($rendering_provdier_name,0,15)."</td>" ;
+                                                    echo "<td style= 'width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($referring_provider_name,0,15)."</td>";
+                                                     echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['facility_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['last']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['claim_status'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['bill_status'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['statement_status'],0,30)."</a></td>";
+                                                    echo "<tr>";
+                                                }
+                                                else
+                                                {
+                                                    $rendering_provdier_name = $row['ren_last_name']. ', '. $row['ren_first_name'];
+                                                    $referring_provider_name = $row['ref_last_name'].', '.$row['ref_first_name'];
+                                                    
+                                                    echo "<tr><td>";
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=insurance \">";
+                                                    echo $row['dos']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['amount_paid']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['balance_due']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['insurance_display']."</a></td>";
+                                                     echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 26%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($rendering_provdier_name,0,15)."</td>" ;
+                                                    echo "<td style= 'width: 25%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($referring_provider_name,0,15)."</td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['facility_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['last']."</a></td>";
+                                                    echo "<td style= 'width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['claim_status'],0,30)."</a></td>";;
+                                                    echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['bill_status'],0,30)."</a></td>";;
+                                                    echo "<td style= 'width: 50%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['status_status'],0,30)."</a>";;
+                                                    echo "</td><tr>";
+                                                }
+                                             }
+                                             ?>
+                                         </table>
+                                     </div>
+                                 </li>
+                                 
+                                     |&nbsp;<?php echo $this->cur_service_info['gender'] ?>&nbsp;
+                                     |&nbsp;<?php echo $this->cur_service_info['DOB'] ?>&nbsp;
+                                     |&nbsp;<?php echo $this->cur_service_info['MRN'] ?>&nbsp;
+                                     |&nbsp;<?php echo $this->cur_service_info['DOS'] ?>&nbsp;
+                                     |&nbsp$<?php echo $this->cur_service_info['total_charge'] ?>&nbsp;
+                                
+                                    <br/><li>&nbsp;&nbsp;<?php echo $this->cur_service_info['secondary_cpt_code_1'] ?>&nbsp;
+                                    |&nbsp;<?php echo $this->cur_service_info['provider_short_name'] ?>&nbsp;
+                                    |&nbsp;<?php echo $this->cur_service_info['renderingprovider_name'] ?>&nbsp;
+                                    |&nbsp;<?php echo $this->cur_service_info['referingprovider_name'] ?>&nbsp;
+                                    |&nbsp;<li><a href="javascript:void(0)"><font color = "FF0000" size ="1px"><?php echo $this->cur_service_info['insurance_display'] ?></font></a>
+                                    <div style="width: 840px; left:3px;">
+                                         <!-- <h3>Dropdown Example</h3> -->
+                                         <table border="1" cellpadding="0" cellspacing="0" id="tabular-content">
+                                             <tr>
+                                                <!-- <th style="width: 15px">Number</th> -->
+<!--                                                 <th style="width: 30%;text-align:center">Name</th>-->
+                                                 <th style="width: 32%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Patient Name</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">DOB</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">MRN</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">DOS</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Charge</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Due</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">%</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Paid</th>
+                                                
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Insurance</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Provider</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Rendering Provider</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Referring Provider</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Facility</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Last</th>
+                                                 <th style="width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;text-align:center">Issue</th>
+                                                 
+                                                  <!--<th style="width: 100px">DOS</th> -->
+                                             </tr>
+                                             
+                                             <?php
+                                             $tmp_baseUrl = $this->baseUrl;
+                                             $tmp_claim_id = $this->cur_service_info['claim_id'];  
+                                             
+                                             foreach($this->taiList as $row)
+                                             {
+                                                
+                                                if( $row['claim_id'] == $tmp_claim_id )
+                                                {
+                                                    $rendering_provdier_name = substr($row['renderingprovider'],0,15) ;
+                                                    $referring_provider_name = substr($row['referringprovider'],0,15);
+                                                    
+                                                    echo "<tr><td style= 'width: 32%;background-color: rgb(150,230,230);'>";                                                  
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=insurance \">";
+                                                    echo substr($row['name'],0,20)."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo  date('m/d/Y', strtotime($row['DOB']))."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['MRN']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo date('m/d/Y', strtotime($row['DOS'])) ."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['amount_paid']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['due']."</td>" ;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['payer'],0,15) ."</td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap; background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['renderingprovider'],0,15) ."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['referringprovider'],0,15) ."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['facility_short_name'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['last'],0,30)."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;background-color: rgb(150,230,230);'>";
+                                                    echo substr($row['display'],0,30)."</a></td>";
+                                                    echo "<tr>";
+                                                }
+                                                else
+                                                {
+                                                     $rendering_provdier_name = substr($row['renderingprovider'],0,15) ;
+                                                    $referring_provider_name = substr($row['referringprovider'],0,15);
+                                                    
+                                                    echo "<tr><td style= 'width: 32%'>";
+                                                    echo "<a href=\"". $this->baseUrl."/biller/claims/dropdown?patient_id=".$row['patient_id']. " & encounter_id=".$row['encounter_id'] ." & type=insurance \">";
+                                                    echo  substr($row['name'],0,20)."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo date('m/d/Y', strtotime($row['DOB']))."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['MRN']."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo date('m/d/Y', strtotime($row['DOS'])) ."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['total_charge']."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['due']."</a></td>";
+                                                     echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['percentage']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo  $row['amount_paid']."</td>" ;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo  substr($row['payer'],0,15) ."</td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo $row['provider_short_name']."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['renderingprovider'],0,15) ."</a></td>";
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['referringprovider'],0,15)."</a></td>";;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['facility_short_name'],0,30)."</a></td>";;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['last'],0,30)."</a>";;
+                                                    echo "<td style= 'width: 1%;text-overflow:clip ; overflow:hidden; white-space:nowrap;'>";
+                                                    echo substr($row['display'],0,30)."</a>";;
+                                                    echo "</td><tr>";
+                                                }
+                                             }
+                                             ?>
+                                         </table>
+                                    </div>|&nbsp;
+                                    </li><li><?php echo $this->cur_service_info['insured_ID_number'] ?></li>
+                                  </li> </ul>    
+                                                                                                                                    
+                           </div>
+                           </span>
+                            <!-- Fix the mid UI By Yu Lang-->
+
+                            <a href="#"><span style="float:right;margin:2px 0px 0 0"> <input type="submit"name="submit"value="Finish Claim" style="width:80px"/></span></a>
+                            <a href="#"><span style="float:right;margin:2px 0px 0 0"> <input type="submit"name="submit"value="Save Claim"  id="saveclaim" style="width:80px"/></span></a>
+                            <a name="ischanged" id="ischanged"  style='color:red;display: none' ><span style="float:right;margin:-25px 5px 0 0;font-size: 50px;font-family:Times New Roman">.</span></a>
+
+                        </td>
+                    </tr>
+                   
+                    <!-- add for new insurance UI -->
+                      <!-- 收缩展开效果 -->
+                      <tr>
+                          <th colspan="7" style="background:#eeeeee"><p align="center"><b>Insured Information</b></p></th>
+                        <td ><input style="float:right" type="button"  value="ADD" id="" onclick="javascript:addinsurancetable()"/></td>
+                      </tr>
+                      
+                      <table>
+                        <!--
+                        <thead>
+			<tr><th>姓名</th><th>性别</th><th>暂住地</th></tr>
+                        </thead>
+                        -->
+                        <tbody style="display:" id="insurance_tbody_1">
+                                <tr class="parent" id="row_1">
+                                    <td colspan="3" ><span id="ID_number_title_1"></span><span>&nbsp;&nbsp;</span><span id ="insured_name_title_1"></span><span>&nbsp;</span><input type ="button" value =" - " id ="parent_row_1" onclick ="javascript:opentable('#parent_row_1')" /></td>
+                                    
+                                </tr>
+                                
+                               <tr class="child_row_1">
+                                     <th align="left" width="25%">Relation To Patient</th>
+                                     <td ><select name="relationship_to_patient_1" id="relationship_to_patient_1" onchange="javascript:auto_complete_patient('#relationship_to_patient_1');myischanged()" style= "width:100% ">
+                                        <option value="">Select</option>
+                                        <option value="self">Self</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    </td>                                       
+                               </tr>
+                                
+                               <tr class="child_row_1">
+                                    <th align="left" width="15%">Last Name</th><td ><input type="text" name="last_name_1" id="last_name_1" onchange ="javascript:insured_name_title_change('#last_name_1');myischanged()" onblur ="javascript:check_add(1)"/></td>
+                                    <th align="left" width="15%">First Name</th><td ><input type="text" name="first_name_1" id="first_name_1" onchange ="javascript:insured_name_title_change('#first_name_1');myischanged()" onblur ="javascript:check_add(1)"/></td>
+                                    <th align="left" width="28%">Date of Birth</th><td><input type="text" name="DOB_1" id="DOB_1" onkeyup="javascript:dateofDOB('#DOB_1')" onblur="javascript:dateupformat('#DOB_1')" onchange="javascript:myischanged()" /></td>
+                                    <th align="left" width="25%">Sex</th>
+                                    <td ><select name="sex_1" id="sex_1" style= "width:69% " onchange="javascript:myischanged()">
+                                        <option value="">Select</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                    </td> 
+                                </tr>
+                            
+                                <tr class="child_row_1">                                 
+                                        <th  align="left">Street Address</th><td><input type="text" name="street_address_1" id="street_address_1" onchange="javascript:myischanged()" /></td>
+                                        <th align="left">Zip Code</th><td><input type="text" name="zip_1"  id="zip_1"  onkeyup="javascript:zipcode('#zip_1')" onblur="javascript:zipupformat('#zip_1');javascript:zip2citystate('#zip_1')" onchange="javascript:myischanged()"/></td>
+                                        <th align="left">City</th><td><input type="text" name="city_1"  id="city_1"  onchange="javascript:myischanged()"/></td>
+                                        <th align="left">State</th><td><input type="text" name="state_1"  id="state_1"  onchange="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_1">                                 
+                                     <th align="left"><img src="<?php echo $this->baseUrl ?>/images/close.png" id="close_1" style="margin-bottom:3px;display:none" onclick="getRealSSN(1)"/><img src="<?php echo $this->baseUrl ?>/images/open.png" id="open_1" style="display:none;height:21px;margin-bottom:3px"/>SSN</th><td><input type="text" readonly="readonly" style="background-color:#EBEBEB" name="SSN_1"  id="SSN_1"  onkeyup="javascript:ssn('#SSN_1')" onblur="javascript:SSNupformat('#SSN_1')" onchange="javascript:myischanged()"  /></td>
+                                        <th  align="left">Phone Number</th><td><input type="text" name="phone_number_1" id="phone_number_1" onkeyup="javascript:phone('#phone_number_1')" onblur="javascript:phoneupformat('#phone_number_1')" onchange="javascript:myischanged()"/></td>
+                                        <th  align="left">Secondary Number</th><td><input type="text" name="second_phone_number_1"  id="second_phone_number_1" onkeyup="javascript:phone('#second_phone_number_1')" onblur="javascript:phoneupformat('#second_phone_number_1')" onchange="javascript:myischanged()"/></td>
+                            
+                                        <!--
+                                        <th align="left">Insured Insurance Type</th>
+                                          <td ><select name="insured_insurance_type_1" id="insured_insurance_type_1" style= "width:100% " onchange ="javascript:insured_insurance_type_change('#insured_insurance_type_1')">
+                                          <option value="">Select</option>
+                                           <option value="PRIMARY">PRIMARY</option>
+                                           <option value="SECONDARY">SECONDARY</option>
+                                           <option value="TERTIARY">TERTIARY</option>
+                                           <option value="EXPIRED">EXPIRED</option>
+                                           <option value="OTHER">OTHER</option>
+                                            </select>
+                                           </td>
+                                        -->
+                                </tr>
+                            
+                               <tr class="child_row_1">
+                                   <!--  
+                                        <th align="left">Insurance Type</th>
+                                            <td ><select name="insurance_type_1" id="insurance_type_1" style= "width:100% ">
+                                                <option value="">Select</option>
+                                                <option value="MEDICARE">MEDICARE</option>
+                                                <option value="MEDICAID">MEDICAID</option>
+                                                <option value="TRICARE">TRICARE</option>
+                                                <option value="CHAMPVA">CHAMPVA</option>
+                                                <option value="GROUP">GROUP</option>
+                                                <option value="FECA">FECA</option>
+                                                <option value="OTHER">OTHER</option>
+                                                </select>
+                                            </td>
+                                   -->
+                                        <th align="left">Insurance ID</th><td><input onblur ="javascript:check_add(1)" type="text" name="ID_number_1" id="ID_number_1" onchange ="javascript:ID_number_title_change('#ID_number_1');myischanged()" /></td>
+                                        <th align="left">Group Policy Number</th><td><input type="text" name="policy_group_or_FECA_number_1" id="policy_group_or_FECA_number_1" onchange="javascript:myischanged()" /></td>
+                                        <th align="left">Employer Name</th><td><input type="text" name="employer_or_school_name_1" id="employer_or_school_name_1" onchange="javascript:myischanged()" /></td>
+                                        <th align="left">Insured Expiration Date</th><td><input type="text" name="insured_insurance_expiration_date_1" id="insured_insurance_expiration_date_1"  onchange="javascript:myischanged()" onkeyup="javascript:date1902('#insured_insurance_expiration_date_1')" onblur="javascript:dateupformat('#insured_insurance_expiration_date_1')"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_1">                                 
+                                        <th align="left">Company Display Name</th>
+                                        <td>
+                                            <select class="select"  name="insurance_id_1" id="insurance_id_1"  onchange="javascript:insurance_change('#insurance_id_1',1);" style= "width:100%">
+                                            <option value="">Select Company Display Name</option>
+                                            <?php
+                                                foreach ($this->insuranceList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                                }
+                                            ?>
+                                            </select>
+                                            <input type="text" name="insurance_display_1"  id="insurance_display_1" style= "display:none "/>
+                                        </td>
+                                        <th align="left">Insurance Company Name</th><td ><input type="text" name="insurance_name_1" id="insurance_name_1" readonly= "true"/></td>
+                                        <th align="left">Insurance Phone Number</th><td ><input type="text" name="insurance_phone_number_1" id="insurance_phone_number_1" readonly= "true"/></td>
+                                        <th align="left">Fax Number</th><td><input type="text" name="fax_number_1" id="fax_number_1" readonly= "true "/></td>
+                                       
+                                </tr>
+                            
+                                <tr class="child_row_1">
+                                    
+                                     <th  align="left">Insurance Street Address</th><td><input type="text" name="insurance_street_address_1" id="insurance_street_address_1" readonly= "true "/></td>
+                                     <th align="left">Insurance City</th><td><input type="text" name="insurance_city_1" id="insurance_city_1"  readonly= "true "/></td>
+                                     <th align="left">Insurance State</th><td><input type="text" name="insurance_state_1" id="insurance_state_1"  readonly= "true "/></td>
+                                     <th align="left">Insurance Zip Code</th><td><input type="text" name="insurance_zip_1" id="insurance_zip_1"  readonly= "true "/></td> 
+                                     <!--<th align="left"></th><td><input type="text" name="insurance_zip" id="insurance_zip_1"  readonly= "true "/></td>-->
+                                </tr>
+                                <tr class="child_row_1">
+                                    
+                                    <th>Notes</th><td colspan="7"><textarea rows="2" name="insurance_notes_1" id="insurance_notes_1" style= "width:94.6%" onchange="javascript:myischanged()"></textarea></td>
+                                </tr>
+                                <tr style="display:none">
+                                    <th align="left"><input type="text" name="insured_order_1" id="insured_order_1" readonly= "true "/></th>
+                                    <th align="left"><input type="text" name="id_1" id="id_1" readonly= "true "/></th>
+                                </tr>
+                                
+                               </tbody>
+                        
+                        
+ 
+                        
+                             <tbody style="display:none" id="insurance_tbody_2">
+                                <tr class="parent" id="row_2"><td colspan="3" ><span id="ID_number_title_2"></span><span>&nbsp;</span><span id ="insured_name_title_2"></span><span>&nbsp;</span><input type ="button" value =" - " id ="parent_row_2" onclick ="javascript:opentable('#parent_row_2')"/></td></tr>
+                                
+                                 <tr class="child_row_2" >
+                                     <th align="left" width="25%">Relation To Patient</th>
+                                     <td ><select name="relationship_to_patient_2" onblur ="javascript:check_add(2)" id="relationship_to_patient_2" onchange="javascript:auto_complete_patient('#relationship_to_patient_2');myischanged();" style= "width:100% ">
+                                        <option value="">Select</option>
+                                        <option value="self">Self</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    </td>                                       
+                               </tr>
+                                
+                               <tr class="child_row_2">
+                                    <th align="left" width="15%">Last Name</th><td ><input onblur ="javascript:check_add(2)" type="text" name="last_name_2" id="last_name_2" onchange ="javascript:insured_name_title_change('#last_name_2');myischanged()" /></td>
+                                    <th align="left" width="15%">First Name</th><td ><input onblur ="javascript:check_add(2)" type="text" name="first_name_2" id="first_name_2" onchange ="javascript:insured_name_title_change('#first_name_2');myischanged()"/></td>
+                                    <th align="left" width="28%">Date of Birth</th><td><input type="text" name="DOB_2" id="DOB_2" onkeyup="javascript:dateofDOB('#DOB_2')" onblur="javascript:dateupformat('#DOB_2')" onchange="javascript:myischanged()" /></td>
+                                    <th align="left" width="25%">Sex</th>
+                                    <td ><select name="sex_2" id="sex_2" style= "width:69% " onchange="javascript:myischanged()">
+                                        <option value="">Select</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                    </td> 
+                                </tr>
+                            
+                                <tr class="child_row_2">                                 
+                                        <th  align="left">Street Address</th><td><input type="text" name="street_address_2" id="street_address_2"  onchange="javascript:myischanged()"/></td>
+                                        <th align="left">Zip Code</th><td><input type="text" name="zip_2"  id="zip_2"  onkeyup="javascript:zipcode('#zip_2')" onblur="javascript:zipupformat('#zip_2');javascript:zip2citystate('#zip_2')" onchange="javascript:myischanged()"/></td>
+                                        <th align="left">City</th><td><input type="text" name="city_2"  id="city_2" onchange="javascript:myischanged()" /></td>
+                                        <th align="left">State</th><td><input type="text" name="state_2"  id="state_2"  onchange="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_2">                                 
+                                        <th align="left"><img src="<?php echo $this->baseUrl ?>/images/close.png" id="close_2" style="margin-bottom:3px;display:none" onclick="getRealSSN(2)"/><img src="<?php echo $this->baseUrl ?>/images/open.png" id="open_2" style="display:none;height:21px;margin-bottom:3px"/>SSN</th><td><input type="text" readonly="readonly" style="background-color:#EBEBEB"  name="SSN_2"  id="SSN_2" onchange="javascript:myischanged()" onkeyup="javascript:ssn('#SSN_2')" onblur="javascript:SSNupformat('#SSN_2')"/></td>
+                                        <th  align="left">Phone Number</th><td><input type="text" name="phone_number_2" id="phone_number_2" onchange="javascript:myischanged()" onkeyup="javascript:phone('#phone_number_2')" onblur="javascript:phoneupformat('#phone_number_2')"/></td>
+                                        <th  align="left">Secondary Number</th><td><input type="text" name="second_phone_number_2"  id="second_phone_number_2" onchange="javascript:myischanged()" onkeyup="javascript:phone('#second_phone_number_2')" onblur="javascript:phoneupformat('#second_phone_number_2')"/></td>
+                                        <!--
+                                        <th align="left">Insured Insurance Type</th>                                        
+                                          <td ><select name="insured_insurance_type_2" id="insured_insurance_type_2" style= "width:100% "onchange ="javascript:insured_insurance_type_change('#insured_insurance_type_2')">
+                                          <option value="">Select</option>
+                                           <option value="PRIMARY">PRIMARY</option>
+                                           <option value="SECONDARY">SECONDARY</option>
+                                           <option value="TERTIARY">TERTIARY</option>
+                                           <option value="EXPIRED">EXPIRED</option>
+                                           <option value="OTHER">OTHER</option>
+                                            </select>
+                                           </td>
+                                        -->
+                                </tr>
+                               
+                                
+                               <tr class="child_row_2"> 
+                                   <!--
+                                            <th align="left">Insurance Type</th>
+                                            <td ><select name="insurance_type_2" id="insurance_type_2" style= "width:100% ">
+                                                <option value="">Select</option>
+                                                <option value="MEDICARE">MEDICARE</option>
+                                                <option value="MEDICAID">MEDICAID</option>
+                                                <option value="TRICARE">TRICARE</option>
+                                                <option value="CHAMPVA">CHAMPVA</option>
+                                                <option value="GROUP">GROUP</option>
+                                                <option value="FECA">FECA</option>
+                                                <option value="OTHER">OTHER</option>
+                                                </select>
+                                            </td>
+                                   -->
+                                        <th align="left">Insurance ID</th><td><input onblur ="javascript:check_add(2)" type="text" name="ID_number_2" id="ID_number_2" onchange ="javascript:ID_number_title_change('#ID_number_2');myischanged()" /></td>
+                                        <th align="left">Group Policy Number</th><td><input type="text" name="policy_group_or_FECA_number_2" id="policy_group_or_FECA_number_2" onchange="javascript:myischanged()" /></td>
+                                        <th align="left">Employer Name</th><td><input type="text" name="employer_or_school_name_2" id="employer_or_school_name_2" onchange="javascript:myischanged()"/></td>
+                                        <th align="left">Insured Expiration Date</th><td><input type="text" name="insured_insurance_expiration_date_2" id="insured_insurance_expiration_date_2" onkeyup="javascript:date1902('#insured_insurance_expiration_date_2')" onblur="javascript:dateupformat('#insured_insurance_expiration_date_2')" onchange="javascript:myischanged()"/></td>
+                                        
+                                </tr>
+                            
+                                 <tr class="child_row_2">                                 
+                                        <th align="left">Company Display Name</th>
+                                        <td>
+                                            <select class="select"  name="insurance_id_2" id="insurance_id_2"  onchange="javascript:insurance_change('#insurance_id_2',2)" style= "width:100% ">
+                                            <option value="">Select Company Display Name</option>
+                                            <?php
+                                                foreach ($this->insuranceList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                                }
+                                            ?>
+                                            </select>
+                                            <input type="text" name="insurance_display_2"  id="insurance_display_2" style= "display:none " onchange="javascript:myischanged()"/>
+                                        </td>
+                                        <th align="left">Insurance Company Name</th><td ><input type="text" name="insurance_name_2" id="insurance_name_2" readonly= "true"/></td>
+                                        <th align="left">Insurance Phone Number</th><td ><input type="text" name="insurance_phone_number_2" id="insurance_phone_number_2" readonly= "true"/></td>
+                                        <th align="left">Fax Number</th><td><input type="text" name="fax_number_2" id="fax_number_2" readonly= "true "/></td>
+                                       
+                                </tr>
+                            
+                                <tr class="child_row_2">
+                                     
+                                     <th  align="left">Insurance Street Address</th><td><input type="text" name="insurance_street_address_2" id="insurance_street_address_2" readonly= "true "/></td>
+                                     <th align="left">Insurance City</th><td><input type="text" name="insurance_city_2" id="insurance_city_2"  readonly= "true "/></td>
+                                     <th align="left">Insurance State</th><td><input type="text" name="insurance_state_2" id="insurance_state_2"  readonly= "true "/></td>
+                                    <th align="left">Insurance Zip Code</th><td><input type="text" name="insurance_zip_2" id="insurance_zip_2"  readonly= "true "/></td>       
+                                </tr>
+                                <tr class="child_row_2">
+                                                                           
+                                    <th>Notes</th><td colspan="7"><textarea rows="2" name="insurance_notes_2" id="insurance_notes_2" style= "width:94.6%" onchange="javascript:myischanged()"></textarea></td>
+                                </tr>
+                                 <tr style="display:none">
+                                    <th align="left"><input type="text" name="insured_order_2" id="insured_order_2" readonly= "true "/></th>
+                                    <th align="left"><input type="text" name="id_2" id="id_2" readonly= "true "/></th>
+                                </tr>
+                                
+                               </tbody>
+                        
+                              <tbody style="display:none" id="insurance_tbody_3">
+                               <tr class="parent" id="row_3"><td colspan="3" ><span id="ID_number_title_3"></span><span>&nbsp;</span><span id ="insured_name_title_3"></span><span>&nbsp;</span><input type ="button" value =" - " id ="parent_row_3" onclick ="javascript:opentable('#parent_row_3')"/></td></tr>
+                               
+                                <tr class="child_row_3">
+                                     <th align="left" width="25%">Relation To Patient</th>
+                                     <td ><select name="relationship_to_patient_3" onblur ="javascript:check_add(3)" id="relationship_to_patient_3" onchange="javascript:auto_complete_patient('#relationship_to_patient_3');myischanged()" style= "width:100% ">
+                                        <option value="">Select</option>
+                                        <option value="self">Self</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    </td>                                       
+                               </tr>
+                               
+                               <tr class="child_row_3">
+                                    <th align="left" width="15%">Last Name</th><td ><input onblur ="javascript:check_add(3)" type="text" name="last_name_3" id="last_name_3" onchange ="javascript:insured_name_title_change('#last_name_3');myischanged() " /></td>
+                                    <th align="left" width="15%">First Name</th><td ><input onblur ="javascript:check_add(3)" type="text" name="first_name_3" id="first_name_3" onchange ="javascript:insured_name_title_change('#first_name_3');myischanged() " /></td>
+                                    <th align="left" width="28%">Date of Birth</th><td><input type="text" name="DOB_3" id="DOB_3" onkeyup="javascript:dateofDOB('#DOB_3')" onblur="javascript:dateupformat('#DOB_3')" onchange ="javascript:myischanged()" /></td>
+                                    <th align="left" width="25%">Sex</th>
+                                    <td ><select name="sex_3" id="sex_3" style= "width:69% " onchange ="javascript:myischanged()">
+                                        <option value="">Select</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                    </td> 
+                                </tr>
+                            
+                                <tr class="child_row_3">                                 
+                                        <th  align="left">Street Address</th><td><input type="text" name="street_address_3" id="street_address_3" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Zip Code</th><td><input type="text" name="zip_3"  id="zip_3"   onkeyup="javascript:zipcode('#zip_3')" onblur="javascript:zipupformat('#zip_3');javascript:zip2citystate('#zip_3')" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">City</th><td><input type="text" name="city_3"  id="city_3" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">State</th><td><input type="text" name="state_3"  id="state_3" onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_3">                                 
+                                        <th align="left"><img src="<?php echo $this->baseUrl ?>/images/close.png" id="close_3" style="margin-bottom:3px;display:none" onclick="getRealSSN(3)"/><img src="<?php echo $this->baseUrl ?>/images/open.png" id="open_3" style="display:none;height:21px;margin-bottom:3px"/>SSN</th><td><input type="text" readonly="readonly" style="background-color:#EBEBEB"  name="SSN_3"  id="SSN_3"  onkeyup="javascript:ssn('#SSN_3')" onblur="javascript:SSNupformat('#SSN_3')" onchange ="javascript:myischanged()"/></td>
+                                        <th  align="left">Phone Number</th><td><input type="text" name="phone_number_3" id="phone_number_3" onkeyup="javascript:phone('#phone_number_3')" onblur="javascript:phoneupformat('#phone_number_3')" onchange ="javascript:myischanged()"/></td>
+                                        <th  align="left">Secondary Number</th><td><input type="text" name="second_phone_number_3"  id="second_phone_number_3" onkeyup="javascript:phone('#second_phone_number_3')" onblur="javascript:phoneupformat('#second_phone_number_3')" onchange ="javascript:myischanged()"/></td>
+                                        <!--
+                                        <th align="left">Insured Insurance Type</th>                                      
+                                          <td ><select name="insured_insurance_type_3" id="insured_insurance_type_3" style= "width:100% "onchange ="javascript:insured_insurance_type_change('#insured_insurance_type_3')">
+                                          <option value="">Select</option>
+                                           <option value="PRIMARY">PRIMARY</option>
+                                           <option value="SECONDARY">SECONDARY</option>
+                                           <option value="TERTIARY">TERTIARY</option>
+                                           <option value="EXPIRED">EXPIRED</option>
+                                           <option value="OTHER">OTHER</option>
+                                            </select>
+                                           </td>
+                                        -->
+                                </tr>
+                            
+                               <tr class="child_row_3">
+                                   <!--
+                                             <th align="left">Insurance Type</th>
+                                            <td ><select name="insurance_type_3" id="insurance_type_3" style= "width:100% ">
+                                                <option value="">Select</option>
+                                                <option value="MEDICARE">MEDICARE</option>
+                                                <option value="MEDICAID">MEDICAID</option>
+                                                <option value="TRICARE">TRICARE</option>
+                                                <option value="CHAMPVA">CHAMPVA</option>
+                                                <option value="GROUP">GROUP</option>
+                                                <option value="FECA">FECA</option>
+                                                <option value="OTHER">OTHER</option>
+                                                </select>
+                                            </td>
+                                   -->
+                                        <th align="left">Insurance ID</th><td><input onblur ="javascript:check_add(3)" type="text" name="ID_number_3" id="ID_number_3" onchange ="javascript:ID_number_title_change('#ID_number_3');myischanged()" /></td>
+                                        <th align="left">Group Policy Number</th><td><input type="text" name="policy_group_or_FECA_number_3" id="policy_group_or_FECA_number_3"  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Employer Name</th><td><input type="text" name="employer_or_school_name_3" id="employer_or_school_name_3" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Insured Expiration Date</th><td><input type="text" name="insured_insurance_expiration_date_3" id="insured_insurance_expiration_date_3" onchange ="javascript:myischanged()" onkeyup="javascript:date1902('#insured_insurance_expiration_date_3')" onblur="javascript:dateupformat('#insured_insurance_expiration_date_3')"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_3">                                 
+                                        <th align="left">Company Display Name</th>
+                                        <td>
+                                            <select class="select"  name="insurance_id_3" id="insurance_id_3"  onchange="javascript:insurance_change('#insurance_id_3',3)" style= "width:100% ">
+                                            <option value="">Select Company Display Name</option>
+                                            <?php
+                                                foreach ($this->insuranceList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                                }
+                                            ?>
+                                            </select>
+                                            <input type="text" name="insurance_display_3"  id="insurance_display_3" style= "display:none "/>
+                                        </td>
+                                        <th align="left">Insurance Company Name</th><td ><input type="text" name="insurance_name_3" id="insurance_name_3" readonly= "true"/></td>
+                                        <th align="left">Insurance Phone Number</th><td ><input type="text" name="insurance_phone_number_3" id="insurance_phone_number_3" readonly= "true"/></td>
+                                        <th align="left">Fax Number</th><td><input type="text" name="fax_number_3" id="fax_number_3" readonly= "true "/></td>
+                                       
+                                </tr>
+                            
+                                <tr class="child_row_3">
+                                     
+                                     <th  align="left">Insurance Street Address</th><td><input type="text" name="insurance_street_address_3" id="insurance_street_address_3" readonly= "true "/></td>
+                                     <th align="left">Insurance City</th><td><input type="text" name="insurance_city_3" id="insurance_city_3"  readonly= "true "/></td>
+                                     <th align="left">Insurance State</th><td><input type="text" name="insurance_state_3" id="insurance_state_3"  readonly= "true "/></td>
+                                      <th align="left">Insurance Zip Code</th><td><input type="text" name="insurance_zip_3" id="insurance_zip_3"  readonly= "true "/></td>             
+                                </tr>
+                               <tr class="child_row_3">
+                                  
+                                    <th>Notes</th><td colspan="7"><textarea rows="2" name="insurance_notes_3" id="insurance_notes_3" style= "width:94.6%" onchange ="javascript:myischanged()"></textarea></td>
+                                </tr>
+                                <tr style="display:none">
+                                    <th align="left"><input type="text" name="insured_order_3" id="insured_order_3" readonly= "true "/></th>
+                                    <th align="left"><input type="text" name="id_3" id="id_3" readonly= "true "/></th>
+                                </tr>
+                                
+                            </tbody>
+                        
+                           <tbody style="display:none" id="insurance_tbody_4">
+                                <tr class="parent" id="row_4"><td colspan="3" ><span id="ID_number_title_4"></span><span>&nbsp;</span><span id ="insured_name_title_4"></span><span>&nbsp;</span><input type ="button" value =" - " id ="parent_row_4" onclick ="javascript:opentable('#parent_row_4')"/></td></tr>
+                                
+                                <tr class="child_row_4">
+                                     <th align="left" width="25%">Relation To Patient</th>
+                                     <td ><select name="relationship_to_patient_4" onblur ="javascript:check_add(4)" id="relationship_to_patient_4" onchange="javascript:auto_complete_patient('#relationship_to_patient_4');myischanged()" style= "width:100% ">
+                                        <option value="">Select</option>
+                                        <option value="self">Self</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    </td>                                       
+                               </tr>
+                               <tr class="child_row_4">
+                                    <th align="left" width="15%">Last Name</th><td ><input onblur ="javascript:check_add(4)" type="text" name="last_name_4" id="last_name_4" onchange ="javascript:insured_name_title_change('#last_name_4');myischanged()" /></td>
+                                    <th align="left" width="15%">First Name</th><td ><input onblur ="javascript:check_add(4)" type="text" name="first_name_4" id="first_name_4" onchange ="javascript:insured_name_title_change('#first_name_4');myischanged()" /></td>
+                                    <th align="left" width="28%">Date of Birth</th><td><input type="text" name="DOB_4" id="DOB_4" onkeyup="javascript:dateofDOB('#DOB_4')" onblur="javascript:dateupformat('#DOB_4')" onchange ="javascript:myischanged()"/></td>
+                                    <th align="left" width="25%">Sex</th>
+                                    <td ><select name="sex_4" id="sex_4" style= "width:69% " onchange ="javascript:myischanged()">
+                                        <option value="">Select</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                    </td> 
+                                </tr>
+                            
+                                <tr class="child_row_4">                                 
+                                        <th  align="left">Street Address</th><td><input type="text" name="street_address_4" id="street_address_4" onchange ="javascript:myischanged()" /></td>
+                                        <th align="left">Zip Code</th><td><input type="text" name="zip_4"  id="zip_4"  onkeyup="javascript:zipcode('#zip_4')" onblur="javascript:zipupformat('#zip_4');javascript:zip2citystate('#zip_4')" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">City</th><td><input type="text" name="city_4"  id="city_4" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">State</th><td><input type="text" name="state_4"  id="state_4" onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_4">                                 
+                                        <th align="left"><img src="<?php echo $this->baseUrl ?>/images/close.png" id="close_4" style="margin-bottom:3px;display:none" onclick="getRealSSN(4)"/><img src="<?php echo $this->baseUrl ?>/images/open.png" id="open_4" style="display:none;height:21px;margin-bottom:3px"/>SSN</th><td><input type="text" readonly="readonly" style="background-color:#EBEBEB"  name="SSN_4"  id="SSN_4"  onkeyup="javascript:ssn('#SSN_4')" onblur="javascript:SSNupformat('#SSN_4')" onchange ="javascript:myischanged()"/></td>
+                                        <th  align="left">Phone Number</th><td><input type="text" name="phone_number_4" id="phone_number_4" onkeyup="javascript:phone('#phone_number_4')" onblur="javascript:phoneupformat('#phone_number_4')" onchange ="javascript:myischanged()"/></td>
+                                        <th  align="left">Secondary Number</th><td><input type="text" name="second_phone_number_4"  id="second_phone_number_4" onkeyup="javascript:phone('#second_phone_number_4')" onblur="javascript:phoneupformat('#second_phone_number_4')" onchange ="javascript:myischanged()"/></td>
+                                        <!--
+                                        <th align="left">Insured Insurance Type</th>
+                                          <td ><select name="insured_insurance_type_4" id="insured_insurance_type_4" style= "width:100% "onchange ="javascript:insured_insurance_type_change('#insured_insurance_type_4')">
+                                          <option value="">Select</option>
+                                           <option value="PRIMARY">PRIMARY</option>
+                                           <option value="SECONDARY">SECONDARY</option>
+                                           <option value="TERTIARY">TERTIARY</option>
+                                           <option value="EXPIRED">EXPIRED</option>
+                                           <option value="OTHER">OTHER</option>
+                                            </select>
+                                           </td>
+                                        -->
+                                </tr>
+                            
+                                <tr class="child_row_4"> 
+                                    <!--
+                                             <th align="left">Insurance Type</th>
+                                            <td ><select name="insurance_type_4" id="insurance_type_4" style= "width:100% ">
+                                                <option value="">Select</option>
+                                                <option value="MEDICARE">MEDICARE</option>
+                                                <option value="MEDICAID">MEDICAID</option>
+                                                <option value="TRICARE">TRICARE</option>
+                                                <option value="CHAMPVA">CHAMPVA</option>
+                                                <option value="GROUP">GROUP</option>
+                                                <option value="FECA">FECA</option>
+                                                <option value="OTHER">OTHER</option>
+                                                </select>
+                                            </td>
+                                    -->
+                                        <th align="left">Insurance ID</th><td><input onblur ="javascript:check_add(4)" type="text" name="ID_number_4" id="ID_number_4" onchange ="javascript:ID_number_title_change('#ID_number_4');myischanged()" /></td>
+                                        <th align="left">Group Policy Number</th><td><input type="text" name="policy_group_or_FECA_number_4" id="policy_group_or_FECA_number_4" onchange ="javascript:myischanged()" /></td>
+                                        <th align="left">Employer Name</th><td><input type="text" name="employer_or_school_name_4" id="employer_or_school_name_4" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Insured Expiration Date</th><td><input type="text" name="insured_insurance_expiration_date_4" id="insured_insurance_expiration_date_4" onkeyup="javascript:date1902('#insured_insurance_expiration_date_4')" onblur="javascript:dateupformat('#insured_insurance_expiration_date_4')" onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_4">                                 
+                                        <th align="left">Company Display Name</th>
+                                        <td>
+                                            <select class="select"  name="insurance_id_4" id="insurance_id_4"  onchange="javascript:insurance_change('#insurance_id_4',4)" style= "width:100% ">
+                                            <option value="">Select Company Display Name</option>
+                                            <?php
+                                                foreach ($this->insuranceList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                                }
+                                            ?>
+                                            </select>
+                                            <input type="text" name="insurance_display_4"  id="insurance_display_4" style= "display:none " onchange ="javascript:myischanged()"/>
+                                        </td>
+                                        <th align="left">Insurance Company Name</th><td ><input type="text" name="insurance_name_4" id="insurance_name_4" readonly= "true"/></td>
+                                        <th align="left">Insurance Phone Number</th><td ><input type="text" name="insurance_phone_number_4" id="insurance_phone_number_4" readonly= "true"/></td>
+                                        <th align="left">Fax Number</th><td><input type="text" name="fax_number_4" id="fax_number_4" readonly= "true "/></td>
+                                      
+                                </tr>
+                            
+                                <tr class="child_row_4">
+                                    
+                                     <th  align="left">Insurance Street Address</th><td><input type="text" name="insurance_street_address_4" id="insurance_street_address_4" readonly= "true "/></td>
+                                     <th align="left">Insurance City</th><td><input type="text" name="insurance_city_4" id="insurance_city_4"  readonly= "true "/></td>
+                                     <th align="left">Insurance State</th><td><input type="text" name="insurance_state_4" id="insurance_state_4"  readonly= "true "/></td>
+                                      <th align="left">Insurance Zip Code</th><td><input type="text" name="insurance_zip_4" id="insurance_zip_4"  readonly= "true "/></td>             
+                                   
+                                </tr>
+                                <tr class="child_row_4">
+                                     
+                                    <th>Notes</th><td colspan="7"><textarea rows="2" name="insurance_notes_4" id="insurance_notes_4" style= "width:94.6%" onchange ="javascript:myischanged()"></textarea></td>
+                                </tr>
+                                 <tr style="display:none">
+                                    <th align="left"><input type="text" name="insured_order_4" id="insured_order_4" readonly= "true "/></th>
+                                    <th align="left"><input type="text" name="id_4" id="id_4" readonly= "true "/></th>
+                                </tr>
+                                
+                           </tbody>
+                            <tbody style="display:none" id="insurance_tbody_5">
+                                <tr class="parent" id="row_5"><td colspan="3" ><span id="ID_number_title_5"></span><span>&nbsp;</span><span id ="insured_name_title_5"></span><span>&nbsp;</span><input type ="button" value =" - " id ="parent_row_5" onclick ="javascript:opentable('#parent_row_5')"/></td></tr>
+                                
+                                <tr class="child_row_5">
+                                     <th align="left" width="25%">Relation To Patient</th>
+                                     <td ><select name="relationship_to_patient_5" onblur ="javascript:check_add(5)" id="relationship_to_patient_5" onchange="javascript:auto_complete_patient('#relationship_to_patient_5');myischanged()" style= "width:100% ">
+                                        <option value="">Select</option>
+                                        <option value="self">Self</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    </td>                                       
+                               </tr>
+                               <tr class="child_row_5">
+                                    <th align="left" width="15%">Last Name</th><td ><input onblur ="javascript:check_add(5)" type="text" name="last_name_5" id="last_name_5" onchange ="javascript:insured_name_title_change('#last_name_5');myischanged()" /></td>
+                                    <th align="left" width="15%">First Name</th><td ><input onblur ="javascript:check_add(5)" type="text" name="first_name_5" id="first_name_5" onchange ="javascript:insured_name_title_change('#first_name_5');myischanged()" /></td>
+                                    <th align="left" width="28%">Date of Birth</th><td><input type="text" name="DOB_5" id="DOB_5" onkeyup="javascript:dateofDOB('#DOB_5')" onblur="javascript:dateupformat('#DOB_5')" onchange ="javascript:myischanged()"/></td>
+                                    <th align="left" width="25%">Sex</th>
+                                    <td ><select name="sex_5" id="sex_5" style= "width:69% "onchange ="javascript:myischanged()">
+                                        <option value="">Select</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                    </td> 
+                                </tr>
+                            
+                                <tr class="child_row_5">                                 
+                                        <th  align="left">Street Address</th><td><input type="text" name="street_address_5" id="street_address_5" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Zip Code</th><td><input type="text" name="zip_5"  id="zip_5"  onkeyup="javascript:zipcode('#zip_5')" onblur=" javascript:zipupformat('#zip_5'); javascript:zip2citystate('#zip_5')" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">City</th><td><input type="text" name="city_5"  id="city_5"  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">State</th><td><input type="text" name="state_5"  id="state_5"  onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_5">                                 
+                                        <th align="left"><img src="<?php echo $this->baseUrl ?>/images/close.png" id="close_5" style="margin-bottom:3px;display:none" onclick="getRealSSN(5)"/><img src="<?php echo $this->baseUrl ?>/images/open.png" id="open_5" style="display:none;height:21px;margin-bottom:3px"/>SSN</th><td><input type="text" readonly="readonly" style="background-color:#EBEBEB"  name="SSN_5"  id="SSN_5"  onkeyup="javascript:ssn('#SSN_5')"  onblur="javascript:SSNupformat('#SSN_5')" onchange ="javascript:myischanged()"/></td>
+                                        <th  align="left">Phone Number</th><td><input type="text" name="phone_number_5" id="phone_number_5" onkeyup="javascript:phone('#phone_number_5')" onblur="javascript:phoneupformat('#phone_number_5')" onchange ="javascript:myischanged()"/></td>
+                                        <th  align="left">Secondary Number</th><td><input type="text" name="second_phone_number_5"  id="second_phone_number_5" onkeyup="javascript:phone('#second_phone_number_5')"  onblur="javascript:phoneupformat('#second_phone_number_5')" onchange ="javascript:myischanged()"/></td>
+                                        <!--
+                                        <th align="left">Insured Insurance Type</th>
+                                          <td ><select name="insured_insurance_type_4" id="insured_insurance_type_4" style= "width:100% "onchange ="javascript:insured_insurance_type_change('#insured_insurance_type_4')">
+                                          <option value="">Select</option>
+                                           <option value="PRIMARY">PRIMARY</option>
+                                           <option value="SECONDARY">SECONDARY</option>
+                                           <option value="TERTIARY">TERTIARY</option>
+                                           <option value="EXPIRED">EXPIRED</option>
+                                           <option value="OTHER">OTHER</option>
+                                            </select>
+                                           </td>
+                                        -->
+                                </tr>
+                            
+                                <tr class="child_row_5"> 
+                                    <!--
+                                             <th align="left">Insurance Type</th>
+                                            <td ><select name="insurance_type_4" id="insurance_type_4" style= "width:100% ">
+                                                <option value="">Select</option>
+                                                <option value="MEDICARE">MEDICARE</option>
+                                                <option value="MEDICAID">MEDICAID</option>
+                                                <option value="TRICARE">TRICARE</option>
+                                                <option value="CHAMPVA">CHAMPVA</option>
+                                                <option value="GROUP">GROUP</option>
+                                                <option value="FECA">FECA</option>
+                                                <option value="OTHER">OTHER</option>
+                                                </select>
+                                            </td>
+                                    -->
+                                        <th align="left">Insurance ID</th><td><input onblur ="javascript:check_add(5)" type="text" name="ID_number_5" id="ID_number_5" onchange ="javascript:ID_number_title_change('#ID_number_5');myischanged()" /></td>
+                                        <th align="left">Group Policy Number</th><td><input type="text" name="policy_group_or_FECA_number_5" id="policy_group_or_FECA_number_5" onchange ="javascript:myischanged()"  /></td>
+                                        <th align="left">Employer Name</th><td><input type="text" name="employer_or_school_name_5" id="employer_or_school_name_5" onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Insured Expiration Date</th><td><input type="text" name="insured_insurance_expiration_date_5" id="insured_insurance_expiration_date_5" onkeyup="javascript:date1902('#insured_insurance_expiration_date_5')" onblur="javascript:dateupformat('#insured_insurance_expiration_date_5')" onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_5">                                 
+                                        <th align="left">Company Display Name</th>
+                                        <td>
+                                            <select class="select"  name="insurance_id_5" id="insurance_id_5"  onchange="javascript:insurance_change('#insurance_id_5',5)" style= "width:100% ">
+                                            <option value="">Select Company Display Name</option>
+                                            <?php
+                                                foreach ($this->insuranceList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                                }
+                                            ?>
+                                            </select>
+                                            <input type="text" name="insurance_display_5"  id="insurance_display_5" style= "display:none " onchange ="javascript:myischanged()"/>
+                                        </td>
+                                        <th align="left">Insurance Company Name</th><td ><input type="text" name="insurance_name_5" id="insurance_name_5" readonly= "true"/></td>
+                                        <th align="left">Insurance Phone Number</th><td ><input type="text" name="insurance_phone_number_5" id="insurance_phone_number_5" readonly= "true"/></td>
+                                        <th align="left">Fax Number</th><td><input type="text" name="fax_number_5" id="fax_number_5" readonly= "true "/></td>
+                                      
+                                </tr>
+                            
+                                <tr class="child_row_5">
+                                    
+                                     <th  align="left">Insurance Street Address</th><td><input type="text" name="insurance_street_address_5" id="insurance_street_address_5" readonly= "true "/></td>
+                                     <th align="left">Insurance City</th><td><input type="text" name="insurance_city_5" id="insurance_city_5"  readonly= "true "/></td>
+                                     <th align="left">Insurance State</th><td><input type="text" name="insurance_state_5" id="insurance_state_5"  readonly= "true "/></td>
+                                      <th align="left">Insurance Zip Code</th><td><input type="text" name="insurance_zip_5" id="insurance_zip_5"  readonly= "true "/></td>             
+                                   
+                                </tr>
+                                <tr class="child_row_5">
+                                     
+                                    <th>Notes</th><td colspan="7"><textarea rows="2" name="insurance_notes_5" id="insurance_notes_5" style= "width:94.6%" onchange ="javascript:myischanged()"></textarea></td>
+                                </tr>
+                                 <tr style="display:none">
+                                    <th align="left"><input type="text" name="insured_order_5" id="insured_order_5" readonly= "true "/></th>
+                                    <th align="left"><input type="text" name="id_5" id="id_5" readonly= "true "/></th>
+                                </tr>
+                                
+                           </tbody>
+                           <tbody style="display:none" id="insurance_tbody_6">
+                                <tr class="parent" id="row_6"><td colspan="3" ><span id="ID_number_title_6"></span><span>&nbsp;</span><span id ="insured_name_title_6"></span><span>&nbsp;</span><input type ="button" value =" - " id ="parent_row_6" onclick ="javascript:opentable('#parent_row_6')"/></td></tr>
+                                
+                                <tr class="child_row_6">
+                                     <th align="left" width="25%">Relation To Patient</th>
+                                     <td ><select name="relationship_to_patient_6" onblur ="javascript:check_add(6)" id="relationship_to_patient_6" onchange="javascript:auto_complete_patient('#relationship_to_patient_6');myischanged()" style= "width:100% ">
+                                        <option value="">Select</option>
+                                        <option value="self">Self</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    </td>                                       
+                               </tr>
+                               <tr class="child_row_6">
+                                    <th align="left" width="15%">Last Name</th><td ><input onblur ="javascript:check_add(6)" type="text" name="last_name_6" id="last_name_6" onchange ="javascript:insured_name_title_change('#last_name_6');myischanged()" /></td>
+                                    <th align="left" width="15%">First Name</th><td ><input onblur ="javascript:check_add(6)" type="text" name="first_name_6" id="first_name_6" onchange ="javascript:insured_name_title_change('#first_name_6');myischanged()" /></td>
+                                    <th align="left" width="28%">Date of Birth</th><td><input type="text" name="DOB_6" id="DOB_6" onkeyup="javascript:dateofDOB('#DOB_6')" onblur="javascript:dateupformat('#DOB_6')"  onchange ="javascript:myischanged()"/></td>
+                                    <th align="left" width="25%">Sex</th>
+                                    <td ><select name="sex_6" id="sex_6" style= "width:69% " onchange ="javascript:myischanged()">
+                                        <option value="">Select</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                    </td> 
+                                </tr>
+                            
+                                <tr class="child_row_6">                                 
+                                        <th  align="left">Street Address</th><td><input type="text" name="street_address_6" id="street_address_6"  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Zip Code</th><td><input type="text" name="zip_6"  id="zip_6"  onkeyup="javascript:zipcode('#zip_6')" onblur="javascript:zipupformat('#zip_6');javascript:zip2citystate('#zip_6')"  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">City</th><td><input type="text" name="city_6"  id="city_6"  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">State</th><td><input type="text" name="state_6"  id="state_6"  onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_6">                                 
+                                        <th align="left"><img src="<?php echo $this->baseUrl ?>/images/close.png" id="close_6" style="margin-bottom:3px;display:none" onclick="getRealSSN(6)"/><img src="<?php echo $this->baseUrl ?>/images/open.png" id="open_6" style="display:none;height:21px;margin-bottom:3px"/>SSN</th><td><input type="text" readonly="readonly" style="background-color:#EBEBEB"  name="SSN_6"  id="SSN_6"  onkeyup="javascript:ssn('#SSN_6')" onblur="javascript:SSNupformat('#SSN_6')"  onchange ="javascript:myischanged()"/></td>
+                                        <th  align="left">Phone Number</th><td><input type="text" name="phone_number_6" id="phone_number_6" onkeyup="javascript:phone('#phone_number_6')" onblur="javascript:phoneupformat('#phone_number_6')" onchange ="javascript:myischanged()" /></td>
+                                        <th  align="left">Secondary Number</th><td><input type="text" name="second_phone_number_6"  id="second_phone_number_6" onkeyup="javascript:phone('#second_phone_number_6')" onblur="javascript:phoneupformat('#second_phone_number_6')"  onchange ="javascript:myischanged()"/></td>                                        
+                                </tr>
+                            
+                                <tr class="child_row_6">                                     
+                                        <th align="left">Insurance ID</th><td><input onblur ="javascript:check_add(6)" type="text" name="ID_number_6" id="ID_number_6" onchange ="javascript:ID_number_title_change('#ID_number_6');myischanged()" /></td>
+                                        <th align="left">Group Policy Number</th><td><input type="text" name="policy_group_or_FECA_number_6" id="policy_group_or_FECA_number_6"  onchange ="javascript:myischanged()" /></td>
+                                        <th align="left">Employer Name</th><td><input type="text" name="employer_or_school_name_6" id="employer_or_school_name_6"  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Insured Expiration Date</th><td><input type="text" name="insured_insurance_expiration_date_6" id="insured_insurance_expiration_date_6" onkeyup="javascript:date1902('#insured_insurance_expiration_date_6')" onblur="javascript:dateupformat('#insured_insurance_expiration_date_6')"  onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class="child_row_6">                                 
+                                        <th align="left">Company Display Name</th>
+                                        <td>
+                                            <select class="select"  name="insurance_id_6" id="insurance_id_6"  onchange="javascript:insurance_change('#insurance_id_6',6)" style= "width:100% ">
+                                            <option value="">Select Company Display Name</option>
+                                            <?php
+                                                foreach ($this->insuranceList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] . "</option>";
+                                                }
+                                            ?>
+                                            </select>
+                                            <input type="text" name="insurance_display_6"  id="insurance_display_6" style= "display:none " onchange ="javascript:myischanged()"/>
+                                        </td>
+                                        <th align="left">Insurance Company Name</th><td ><input type="text" name="insurance_name_6" id="insurance_name_6" readonly= "true"/></td>
+                                        <th align="left">Insurance Phone Number</th><td ><input type="text" name="insurance_phone_number_6" id="insurance_phone_number_6" readonly= "true"/></td>
+                                        <th align="left">Fax Number</th><td><input type="text" name="fax_number_6" id="fax_number_6" readonly= "true "/></td>
+                                      
+                                </tr>
+                            
+                                <tr class="child_row_6">
+                                    
+                                     <th  align="left">Insurance Street Address</th><td><input type="text" name="insurance_street_address_6" id="insurance_street_address_6" readonly= "true "/></td>
+                                     <th align="left">Insurance City</th><td><input type="text" name="insurance_city_6" id="insurance_city_6"  readonly= "true "/></td>
+                                     <th align="left">Insurance State</th><td><input type="text" name="insurance_state_6" id="insurance_state_6"  readonly= "true "/></td>
+                                      <th align="left">Insurance Zip Code</th><td><input type="text" name="insurance_zip_6" id="insurance_zip_6"  readonly= "true "/></td>             
+                                   
+                                </tr>
+                                <tr class="child_row_6">
+                                     
+                                    <th>Notes</th><td colspan="7"><textarea rows="2" name="insurance_notes_6" id="insurance_notes_6" style= "width:94.6%" onchange ="javascript:myischanged()"></textarea></td>
+                                </tr>
+                                 <tr style="display:none">
+                                    <th align="left"><input type="text" name="insured_order_6" id="insured_order_6" readonly= "true "/></th>
+                                    <th align="left"><input type="text" name="id_6" id="id_6" readonly= "true "/></th>
+                                </tr>
+                                
+                           </tbody>
+                   
+                              
+                       <?php 
+                       
+                        $array_count = $this->cur_service_info['insured_expired_array_count'];                       
+                        //$array_count = 0;
+//                         //$dd = 2;
+                        for ($i = 0;$i < $array_count;$i++){
+                            $ti = $i + 4;
+                        ?>
+                        <tbody style="display:none" id=<?php echo "insurance_tbody_".$ti;?>>
+                               <tr class="parent" id="<?php echo "row_".$ti;?>"><td colspan="3" ><span id ="<?php echo "ID_number_title_".$ti;?>"></span><span>&nbsp;</span><span id="<?php echo "insured_name_title_".$ti;?>"></span><span>&nbsp;</span><span id ="<?php echo "name_title_".$ti;?>"></span><span>&nbsp;</span><input type ="button" value =" - " id ='<?php echo "parent_row_".$ti;?>' onclick ="javascript:opentable('<?php echo "#parent_row_".$ti;?>')"/></td></tr>
+                               <!--
+                               <tr class="parent" id="<?php echo "row_".$ti;?>"><td colspan="3" ><span id ="<?php echo "insurance_type_title_".$ti;?>">OTHER</span><span>&nbsp;</span><span id ="<?php echo "ID_number_title_".$ti;?>"></span><span>&nbsp;</span><span id="<?php echo "insured_name_title_".$ti;?>"></span><span>&nbsp;</span><span id ="<?php echo "name_title_".$ti;?>"></span><span>&nbsp;</span><input type ="button" value =" - " id ='<?php echo "parent_row_".$ti;?>' onclick ="javascript:opentable('<?php echo "#parent_row_".$ti;?>')"/></td></tr>
+                               -->
+                               
+                               
+                               <tr class='<?php echo "child_row_".$ti;?>'>
+                                     <th align="left" width="25%">Relation To Patient</th>
+                                     <td ><select name="<?php echo "relationship_to_patient_".$ti;?>" onblur ="javascript:check_add(<?php echo $ti; ?>)"id="<?php echo "relationship_to_patient_".$ti;?>" onchange="javascript:auto_complete_patient('<?php echo "#relationship_to_patient_".$ti;?>');myischanged()" style= "width:100% ">
+                                        <option value="">Select</option>
+                                        <option value="self">Self</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    </td>                                       
+                               </tr>
+                               
+                               
+                               <tr class=<?php echo "child_row_".$ti;?>>
+                                    <th align="left" width="15%">Last Name</th><td ><input onblur ="javascript:check_add(<?php echo $ti; ?>)"type="text" name='<?php echo "last_name_".$ti;?>' id='<?php echo "last_name_".$ti;?>' onchange ="javascript:insured_name_title_change('<?php echo "#last_name_".$ti;?>');myischanged()" /></td>
+                                    <th align="left" width="15%">First Name</th><td ><input onblur ="javascript:check_add(<?php echo $ti; ?>)" type="text" name='<?php echo "first_name_".$ti;?>' id='<?php echo "first_name_".$ti;?>' onchange ="javascript:insured_name_title_change('<?php echo "#first_name_".$ti;?>')myischanged()" /></td>
+                                    <th align="left" width="28%">Date of Birth</th><td><input type="text" name='<?php echo "DOB_".$ti;?>' id= '<?php echo "DOB_".$i;?>' onkeyup="javascript:dateofDOB('<?php echo "#DOB_".$i;?>')" onblur="javascript:dateupformat('<?php echo "#DOB_".$i;?>')"  onchange ="javascript:myischanged()"/></td>
+                                    <th align="left" width="25%">Sex</th>
+                                    <td ><select name='<?php echo "sex_".$i;?>' id= '<?php echo "sex_".$i;?>' style= "width:100% "  onchange ="javascript:myischanged()">
+                                        <option value="">Select</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                    </td> 
+                                </tr>
+                            
+                                <tr class=<?php echo "child_row_".$ti;?>>                                 
+                                        <th  align="left">Street Address</th><td><input type="text" name='<?php echo "street_address_".$ti;?> ' id= '<?php echo "street_address_".$ti;?> '  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Zip Code</th><td><input type="text" name='<?php echo "zip_".$ti;?>' id='<?php echo "zip_".$ti;?>'  onkeyup="javascript:zipcode('<?php echo "#zip_".$ti;?>')"  onchange ="javascript:myischanged()" onblur="javascript:zipupformat('<?php echo "#zip_".$ti;?>');javascript:zip2citystate('<?php echo "#zip_".$ti;?>')"/></td>
+                                        <th align="left">City</th><td><input type="text" name='<?php echo "city_".$ti;?>'  id= '<?php echo "city_".$ti;?>'  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">State</th><td><input type="text" name='<?php echo "state_".$ti;?>'  id='<?php echo "state_".$ti;?>'   onchange ="javascript:myischanged()" /> /></td>
+                                </tr>
+                            
+                                 <tr class=<?php echo "child_row_".$ti;?>>                                 
+                                        <th align="left">SSN</th><td><input type="text" name='<?php echo "SSN_".$ti;?>'  id='<?php echo "SSN_".$ti;?>'  onkeyup="javascript:ssn('<?php echo "#SSN_".$ti;?>')"  onchange ="javascript:myischanged()" onblur="javascript:SSNupformat('<?php echo "#SSN_".$ti;?>')"/></td>
+                                        <th  align="left">Phone Number</th><td><input type="text" name='<?php echo "phone_number_".$ti;?>' id='<?php echo "phone_number_".$ti;?>' onkeyup="javascript:phone('<?php echo "#phone_number_".$ti;?>')"  onchange ="javascript:myischanged()" onblur="javascript:phoneupformat('<?php echo "#phone_number_".$ti;?>')"/></td>
+                                        <th  align="left">Secondary Number</th><td><input type="text" name='<?php echo "second_phone_number_".$ti;?>'  id='<?php echo "second_phone_number_".$ti;?>' onkeyup="javascript:phone('<?php echo "#second_phone_number_".$ti;?>')" onchange ="javascript:myischanged()" onblur="javascript:phoneupformat('<?php echo "#second_phone_number_".$ti;?>')"/></td>
+                                        <!--
+                                        <th align="left">Insured Insurance Type</th>
+                                          <td ><select name="<?php echo "insured_insurance_type_".$ti;?> " id="<?php echo "insured_insurance_type_".$ti;?>" style= "width:100% " onchange ="javascript:insured_insurance_type_change('<?php echo "#insured_insurance_type_".$ti;?>')">
+                                          <option value="">Select</option>
+                                           <option value="PRIMARY">PRIMARY</option>
+                                           <option value="SECONDARY">SECONDARY</option>
+                                           <option value="TERTIARY">TERTIARY</option>
+                                           <option value="EXPIRED">EXPIRED</option>
+                                           <option value="OTHER">OTHER</option>
+                                            </select>
+                                           </td>
+                                        -->
+                                </tr>
+                            
+                                <tr class='<?php echo "child_row_".$ti;?>'> 
+                                    <!--
+                                            <th align="left">Insurance Type</th>
+                                            <td ><select name="" id="" style= "width:100% ">
+                                                <option value="">Select</option>
+                                                <option value="MEDICARE">MEDICARE</option>
+                                                <option value="MEDICAID">MEDICAID</option>
+                                                <option value="TRICARE">TRICARE</option>
+                                                <option value="CHAMPVA">CHAMPVA</option>
+                                                <option value="GROUP">GROUP</option>
+                                                <option value="FECA">FECA</option>
+                                                <option value="OTHER">OTHER</option>
+                                                </select>
+                                            </td>
+                                    -->
+                                        <th align="left">Insurance ID</th><td><input onblur ="javascript:check_add(<?php echo $ti; ?>)" type="text" name='<?php echo "ID_number_".$ti;?>' id= '<?php echo "ID_number_".$ti;?>' onchange ="javascript:ID_number_title_change('<?php echo "#ID_number_".$ti;?>');myischanged()" /></td>
+                                        <th align="left">Group Policy Number</th><td><input type="text" name='<?php echo "policy_group_or_FECA_number_".$ti;?>' id='<?php echo "policy_group_or_FECA_number_".$ti;?>'  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Employer Name</th><td><input type="text" name='<?php echo "employer_or_school_name_".$ti;?>' id='<?php echo "employer_or_school_name_".$ti;?>'  onchange ="javascript:myischanged()"/></td>
+                                        <th align="left">Insured Expiration Date</th><td><input type="text" name='<?php echo "insured_insurance_expiration_date_".$ti;?>' id='<?php echo "insured_insurance_expiration_date_".$ti;?>' onkeyup="javascript:date1902('<?php echo "#insured_insurance_expiration_date_".$ti;?>')" onblur="javascript:dateupformat('<?php echo "#insured_insurance_expiration_date_".$ti;?>')"  onchange ="javascript:myischanged()"/></td>
+                                </tr>
+                            
+                                 <tr class=<?php echo "child_row_".$ti;?>>                                 
+                                        <th align="left">Company Name</th>
+                                        <td>
+                                            <select class="select"  name= '<?php echo "insurance_id_".$ti;?>' id= '<?php echo "insurance_id_".$ti;?>'onchange="javascript:insurance_change('<?php echo "#insurance_id_".$ti;?>',<?php echo $ti;?>)" style= "width:100% ">
+                                            <option value="">Select Company</option>
+                                            <?php
+                                                foreach ($this->insuranceList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['insurance_name'] . "</option>";
+                                                }
+                                            ?>
+                                            </select>
+                                            <input type="text" name='<?php echo "insurance_name_".$ti;?>'  id='<?php echo "insurance_name_".$ti;?>'  style= "display:none"  onchange ="javascript:myischanged()"/>
+                                        </td>
+                                        <th align="left">Insurance Phone Number</th><td ><input type="text" name='<?php echo "insurance_phone_number_".$ti;?>' id='<?php echo "insurance_phone_number_".$ti;?>'readonly= "true"/></td>
+                                        <th align="left">Fax Number</th><td><input type="text" name='<?php echo "fax_number_".$ti;?>' id='<?php echo "fax_number_".$ti;?>'readonly ="true"/></td>
+                                        <th align="left">Crosswalk Overwrite</th><td><input type="text" name='<?php echo "anesthesia_crosswalk_overwrite_".$ti;?>' id= '<?php echo "anesthesia_crosswalk_overwrite_".$ti;?>'readonly= "true "/></td>
+                                </tr>
+                            
+                                <tr class=<?php echo "child_row_".$ti;?>>
+                                     <th  align="left">Insurance Street Address</th><td><input type="text" name='<?php echo "insurance_street_address_".$ti;?>' id='<?php echo "insurance_street_address_".$ti;?>'readonly= "true "/></td>
+                                     <th align="left">Insurance City</th><td><input type="text" name='<?php echo "insurance_city_".$ti;?> ' id= '<?php echo "insurance_city_".$ti;?> ' readonly= "true "/></td>
+                                     <th align="left">Insurance State</th><td><input type="text" name='<?php echo "insurance_state_".$ti;?>' id='<?php echo "insurance_state_".$ti;?>' readonly= "true "/></td>
+                                     <th align="left">Insurance Zip Code</th><td><input type="text" name='<?php echo "insurance_zip_".$ti;?>' id='<?php echo "insurance_zip_".$ti;?>'  readonly= "true "/></td>             
+                                </tr>   
+                               
+                                 <tr style="display:none">
+                                    <th align="left"><input type="text" name='<?php echo "insured_order_".$ti;?>' id='<?php echo "insured_order_".$ti;?>' readonly= "true "/></th>
+                                    <th align="left"><input type="text" name="<?php echo "id_".$ti;?>" id="<?php echo "id_".$ti;?>" readonly= "true "/></th>
+                                </tr>
+                                
+                               
+                              </tbody>
+                            <?php }?>           
+                     <tr>
+                       
+                        <th colspan ="6">&nbsp</th>
+                        <td style ="display:none"><input type="text"  name ="insured_info_count" id="insured_info_count"/></td>
+                        <td style ="display:none"><input type="text"  name ="basic_count" id="basic_count"/></td>
+                        <td style ="display:none"><input type="text"  value ="<?php echo $this->cur_service_info['patient_id'];?>" name ="patient_id" id="patient_id"/></td>
+                        <td style ="display:none"><input type="text"  value ="<?php echo $this->cur_service_info['insured_expired_array_count'];?>" name ="insured_expired_array_count" id="insured_expired_array_count"/></td> 
+                        <!--<td><input type="button"  value="ADD" id="" onclick="javascript:addinsurancetable()"/></td>  -->                   
+                        <!--<td><input type="button"  value="Operater All" id="" onclick="javascript:operateall()"/></td> -->    
+                     </tr>
+                        
+                    <tr>
+                        <th colspan="7"  style="display:none;background:#eeeeee;text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Patient Logs</th>
+                        <td style="display:none;text-align:right;background:#eeeeee;"><input type="button"  value="MORE" id="" onclick="javascript:addtable5()"/><input type="button"  value="LESS" id="" onclick="javascript:deletetable6()"/></td>
+                    </tr>
+
+
+                    <input type ="text" style="display:none" id="count5" name="count5"></input>
+                    <td id="interactionlogTd" style="display:none" colspan="8" >
+                        <div id="interactionlogDiv" style="display:none;overflow: scroll;overflow-x: hidden;height: 60px">
+                            <table id="interactionlogTable">
+                            </table>
+                        </div>
+                    </td>
+                   </table>                 
+                    <!-- add for new insurance UI -->
+                    <!--
+                    <tr id="document_access">
+                        <td align="right"><input  type="button" name="upload" id="upload"value="Document Input" onclick= "javascript:window.open( '<?php echo $this->baseUrl ?>/biller/claims/upload/pageno/2 ','upload',
+                            'height=220,width=500,status=no,toolbar=no,menubar=no,location=no,scrollbars=no') "/></td></tr>
+                    -->
+                </table>
+                <table>
+                    <th></th><td style="display:none"><input type="text" name="billername" id="billername" value=<?php echo $this->user_name; ?> /></td>
+                    <th></th><td style="display:none"><input type="text" name="new_patient_flag" id="new_patient_flag" /> </td>
+                    <th></th><td style="display:none"><input type="text" name="cur_count" id="cur_count" /> </td>
+                    
+                    <?php
+                    
+                    ?>
+                </table>    
+            </form>
+        </div>
+        
+     <script type="text/javascript">
+      jQuery(function(){       
+            jQuery(".megamenu").megamenu();
+      });
+      </script>
+        
+        
+    </body>
+</html>

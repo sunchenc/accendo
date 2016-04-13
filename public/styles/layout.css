@@ -1,0 +1,346 @@
+
+body {
+    margin: 0;
+    padding: 0 0 2px 0;
+    font: 11px Arial;
+    color: #333;
+    background: #fff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #333;
+}
+a:visited {
+    color: #666;
+}
+a:hover {
+    color: #f60;
+}
+input {
+    padding: 1px 1px;
+    font: 12px Arial;
+}
+select{
+    padding: 1px 1px;
+    font: 12px Arial;
+}
+textarea{
+    padding: 1px 1px;
+    font: 12px Arial;
+}
+input.login {
+    height: 20px;
+}
+input.cmd {
+    padding: 1px 4px 0;
+    cursor: pointer;
+}
+input,select,textarea {
+    margin: 0 0;
+}
+h3 {
+    font-size: 14px;
+}
+#login {
+    margin: 60px auto 0;
+    width: 300px;
+    border: 1px solid #68a;
+    color: #333;
+    background: #fff;
+}
+#login h3 {
+    margin: 1px 0 0 1px;
+    font-size: 14px;
+    line-height: 28px;
+    color: #047;
+    background: #B2D2EB;
+    border-bottom: 1px solid #68a;
+}
+#login p {
+    margin: 5px;
+    line-height: 24px;
+    height: 24px;
+}
+#login input.login {
+    width: 200px;
+    border: 1px solid #ccc;
+}
+#login input.cmd {
+    background: #CEE1EF;
+    border: 1px solid #68a;
+}
+#login p label {
+    display: block;
+    float: left;
+    width: 60px;
+    text-align: right;
+}
+p.text {
+    text-align: left;
+}
+
+#top {
+    padding: 10px 20px;
+    height: 42px;
+    color: #000;
+    background: #CEE1EF;
+    border-bottom: 1px solid #8ab;
+}
+h1 {
+    line-height: 42px;
+    font-size: 16px;
+    color: #047;
+    background: transparent;
+}
+#toplink {
+    position: absolute;
+    top:10px;
+    right:20px;
+}
+#toplink2 {
+    position: absolute;
+    top:30px;
+    right:20px;
+}
+#menu {
+    width: 180px;
+}
+#menu p {
+    text-align: center;
+    line-height: 36px;
+}
+ul#a {
+    margin: 0 12px;
+    text-align: left;
+    list-style: none;
+    font-size: 12px;
+}
+li.a {
+    margin: 5px 0 10px;
+    padding: 0 8px;
+    line-height: 24px;
+    border: 1px solid #ccc;
+    color: #000;
+    background: #fff;
+}
+ul.b {
+    margin: 2px 0 5px;
+    list-style: inside;
+    line-height: 20px;
+    font-size: 10px;
+}
+li.hover {
+    background: #f4F1FF;
+}
+a.a {
+    font-weight: bold;
+    color: #333;
+    background: transparent;
+    text-decoration: none;
+}
+a.a:visited {
+    color: #333;
+}
+a.a:hover {
+    color: #047;
+    background: #FFFCE2;
+}
+
+#navbar {
+    padding: 8px;
+    color: #333;
+    background: #F3F8E6 url(../images/admin/navbg.gif) repeat-y right;
+}
+#navbar p span {
+    display: block;
+    float: right;
+}
+#navbar select {
+    font-size: 12px;
+}
+
+.table-div {
+    margin: 0 2px;
+    line-height: 18px;
+}
+.table-div table {
+    margin: 0px 0;
+    width: 100%;
+    font: 12px Arial;
+    /*    font-size: 12px;*/
+}
+.table-div table,.table-div table td {
+    padding: 2px 2px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    color: #333;
+    background: #f9f9f9;
+    text-align: left;
+    font: 12px Arial ;
+    font-weight:bold;
+}
+.table-div table th {
+    padding: 2px 2px;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+    color: #333;
+    background: #f9f9f9;
+    text-align:right;
+    font: 12px Arial ;
+    font-weight:bold;
+}
+.table-div table thead th {
+    color: #333;
+    background: #e6e6e6;
+    font: 12px Arial;
+}
+.table-div table th.title {
+    padding-left: 10px;
+    text-align: right;
+    font: 12px Arial;
+}
+.table-div input.cmd {
+    color: #000;
+    background: #ddd;
+    border: 1px solid #aaa;
+    vertical-align:baseline;
+    font: 12px Arial;
+}
+.nomal_input_button{
+    color: #000;
+    background: #ddd;
+    border: 2px solid gray;
+    margin: 0px;
+    margin-left: 30%;
+    padding:0px;
+    height:20px;
+    width:40%;
+    
+    vertical-align:baseline;
+    font: 12px Arial;
+}
+#accessbutton td{
+    border: 0px ;
+}
+#tbaccessbutton {
+    border: 0px ;
+    margin: 0;
+}
+.error {
+    color: #e00;
+}
+#showside {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 7px;
+    height: 57px;
+}
+.hidden:link,.hidden:visited {
+    background: url(../images/admin/3d.gif) no-repeat right top;
+}
+.hidden:hover {
+    background: url(../images/admin/3d.gif) no-repeat left top;
+}
+#showside span {
+    display: none;    
+}
+.show:link,.show:visited {
+    background: url(../images/admin/3d.gif) no-repeat right -57px;
+}
+.show:hover {
+    background: url(../images/admin/3d.gif) no-repeat left -57px;
+}
+/* other */
+.pad {
+    padding-left:23px;
+}
+* html .pad {
+    padding-left: 30px;
+}
+/*Message css*/
+.centerDiv{
+    margin:5px 0px 10px 0px;
+    border: #CCCCCC 1px solid;
+    padding:20px 180px 20px 180px;
+    clear:both;
+}
+
+.centerDiv .tishik{
+    clear:both;
+    text-align:center;
+    border:1px #999999 dashed;
+    height:160px;
+}
+
+.centerDiv .tishiyu{
+    margin-bottom:20px;
+    margin-top:20px;
+    font-weight:bold;
+    color:#666666;
+}
+
+.centerDiv .tishichar{
+    height:20px;
+    padding-left:5px;
+    color:#FFFFFF;
+    text-align:left;
+    background:url(../images/tishi.gif) repeat-x;
+}
+
+
+
+
+
+/* pages */
+.pages {
+    float: right;
+    font: 1em Arial, Helvetica, sans-serif;
+}
+.pages a, .pages span {
+    display: block;
+    float: left;
+    padding: 0.2em 0.4em;
+    margin-right: 0.4em;
+    border: 1px solid #fff;
+    background: #fff;
+}
+
+.pages span.current {
+    border: 1px solid #333;
+    font-weight: bold;
+    background: #333;
+    color: #fff;
+}
+
+.pages a:link,.pages a:visited {
+    color: #333;
+    border: 1px solid #333;
+    text-decoration: none;
+}
+
+.pages a:hover {
+    color: #666;
+    border-color: #666;
+}
+
+.pages span.nextprev,.pages span.stat {
+    border: 1px solid #ddd;
+    color: #999;
+}
+
+* html .pages a.nextprev,.pages span.nextprev,.pages span.stat {
+    padding: 0.25em 0.5em 0.2em 0.5em;
+}
+
+div.nextprev {font-size: 14px;text-align: right;color: #666;border-top: 1px solid #f3f3f3;padding: 5px;}
+div.nextprev span.prev {float: left;}
+a{
+    text-decoration: underline;
+    color: #72ACE3;
+}

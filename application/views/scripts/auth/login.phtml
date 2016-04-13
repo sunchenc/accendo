@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Accendo</title>
+	<link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+	<script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl?>/scripts/jquery.js"></script>
+	<script type="text/javascript" language="Javascript" >
+//	function	ChangImg()
+//	{
+//		var checkcode = $("#imgcode").get(0);
+//		var dt = new Date();
+//		checkcode.src = "<{$baseUrl}>/admin/auth/imgcode/t=" + dt;
+//	}
+
+	</script>
+	<style type="text/css">
+	<!--
+	  body {
+	      text-align: center;
+	      background: #CEE1EF;
+	  }
+	-->
+	</style>
+</head>
+
+<body>
+<div id="login">
+<form method="post" action="<?php echo $this->baseUrl?>/auth/login/">
+
+    <h3>User Login</h3>
+	<p class="text" ><label for="name" >Username:</label><input type="text" name="user_name" id="name" class="login" /></p>
+	<p class="text" ><label for="psw">Password:</label><input type="password" name="password" id="psw" class="login" /></p>
+        <!--
+	<p class="text" style="height:40px;"><label for="psw">验证码:</label><input type="text" name="imgcode" id="psw"  class="login" style="width:60px" /><img id="imgcode" style="margin-bottom:-5px;cursor:pointer;" onclick="javascript:ChangImg()"   src="<{$baseUrl}>/admin/auth/imgcode/">&nbsp;点击图,换图片</p>
+-->
+	<p><input type="reset" value="Reset" class="cmd" /><input type="submit" value="Login" class="cmd" /></p>
+</form>
+</div>
+</body>
+</html>

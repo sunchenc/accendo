@@ -1,0 +1,454 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />        
+        <link href="<?php echo $this->baseUrl ?>/styles/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />       
+<!--        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/navigation.css" />-->
+
+        <link rel="stylesheet" href="<?php echo $this->baseUrl ?>/styles/jquery.megamenu.css" type="text/css" media="screen" />        
+
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery-1.4.2.min.js" type="text/javascript"></script>
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery.megamenu.js" type="text/javascript"></script>
+        <!-- 
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>        
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        -->
+        <link href="<?php echo $this->baseUrl ?>/colorselector/css/jquery-ui.css" rel="stylesheet" />
+        <!--
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        -->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/colorselector/lib/jquery-1.10.2/jquery-1.10.2.js"></script>
+        <!--
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+        -->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-ui.js"></script>
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery.megamenu.js" type="text/javascript"></script>
+        <!--<script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.11.2.min.js"></script>-->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/bootstrap.min.js"></script>
+        <!--by Pandazhao -->
+        <script type="text/javascript" language="Javascript">
+            $(document).ready(function ()
+            {
+                //验证时间是否过期
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                        function (data)
+                        {
+                            if (data != 'no' && data != null) {
+                                var a = document.getElementById("relogin");
+                                a.click();
+                            }
+                        }
+                );
+                $.get("<?php echo $this->baseUrl ?>/biller/data/selectprovider/", function (data) {
+                    var myjson = '';
+                    eval("myjson=" + data + ";");
+                    var type = myjson.type;
+                    if(type == "icd10"){
+                        $("#icd10_provider_id").val(myjson.provider_id);
+                        $("#icd10_provider_id").change();
+                    }else{
+                        $("#provider_id").val(myjson.provider_id);
+                        $("#provider_id").change();
+                    }
+                }
+
+                );
+                //如果provider_id改变，则修改diagnosid_code和description
+                $("#provider_id").change(function () {
+                    var provider_id = $("#provider_id").val();
+                    if (provider_id == 0) {
+                        $('#del_provider_id_span').show();
+                    }
+                    else {
+                        $('#del_provider_id_span').hide();
+                    }
+                    $('#del_provider_id').val(provider_id)
+                    if (provider_id) {
+//                    $('#diagnosis_code option').remove();
+//                    $("#description").val('');
+//                    $('#diagnosis_code').append("<option value=\"\">Select</option>");
+//                    $.post("<?php echo $this->baseUrl ?>/biller/data/diagnosiscodelist/",{provider_id:provider_id},
+//                        function(data){
+//                            var myjson='';
+//                            eval("myjson=" + data + ";");
+//                            for(var i = 0;i<myjson.diagnosiscodeList.length;i++){
+//                                $("#diagnosis_code").append("<option value='"+myjson.diagnosiscodeList[i]['id']+"'>"+myjson.diagnosiscodeList[i]['diagnosis_code']+"</option>");
+//                                }
+//                        }
+//                    );
+                        //alert('aaa');
+                        $.post("<?php echo $this->baseUrl ?>/biller/data/providerhas/", {provider_id: provider_id},
+                        function (data) {
+                            var myjson = '';
+                            eval("myjson=" + data + ";");
+                            var availableTags = myjson.diagnosiscodeList;
+                            window.availableTags = availableTags;
+                            //alert('availableTags : ' + availableTags);
+                            $("#diagnosis_code").autocomplete({
+                                source: availableTags
+                            },
+                            {mustMatch: true,
+                                autoFill: true}
+                            );
+                        }
+                        );
+                    }
+//                auto_complete();
+                }
+                );
+                
+                //如果icd10_provider_id改变，则修改icd10_diagnosid_code和icd10_description
+                $("#icd10_provider_id").change(function () {
+                    var provider_id = $("#icd10_provider_id").val();
+//                    alert(provider_id);
+//                    if(provider_id == -1){
+//                        $('#status').val('active');
+//                    }
+                    if (provider_id == 0) {
+                        $('#icd10_del_provider_id_span').show();
+                    }
+                    else {
+                        $('#icd10_del_provider_id_span').hide();
+                    }
+                    $('#icd10_del_provider_id').val(provider_id)
+                    if (provider_id) {
+//                    $('#diagnosis_code option').remove();
+//                    $("#description").val('');
+//                    $('#diagnosis_code').append("<option value=\"\">Select</option>");
+//                    $.post("<?php echo $this->baseUrl ?>/biller/data/diagnosiscodelist/",{provider_id:provider_id},
+//                        function(data){
+//                            var myjson='';
+//                            eval("myjson=" + data + ";");
+//                            for(var i = 0;i<myjson.diagnosiscodeList.length;i++){
+//                                $("#diagnosis_code").append("<option value='"+myjson.diagnosiscodeList[i]['id']+"'>"+myjson.diagnosiscodeList[i]['diagnosis_code']+"</option>");
+//                                }
+//                        }
+//                    );
+                        $.post("<?php echo $this->baseUrl ?>/biller/data/providerhasicd10/", {provider_id: provider_id},
+                        function (data) {
+                            var myjson = '';
+                            eval("myjson=" + data + ";");
+                            //$("#status").val(myjson.status);
+                            var availableTags = myjson.diagnosiscodeList;
+                            window.availableTags = availableTags;
+                            //alert('availableTags : ' + availableTags);
+                            $("#icd10_diagnosis_code").autocomplete({
+                                source: availableTags
+                            },
+                            {mustMatch: true,
+                                autoFill: true}
+                            );
+                        }
+                        );
+                    }
+//                auto_complete();
+                }
+                );
+                
+            });
+        </script>
+        <!-- by Pandazhao-->
+<!--        <script type="text/javascript" language="Javascript" >
+            //js函数，实现当选定diagnosis_code时，显示对应的description
+            function auto_complete()
+            {
+                var id = $("#diagnosis_code").val();
+
+                $.post("<?php echo $this->baseUrl ?>/biller/data/diagnosiscodeinfo/", {id: id},
+                function (data) {
+                    var myjson = '';
+                    eval("myjson=" + data + ";");
+                    $("#id").val(myjson.diagnosiscode_info[0].id);
+                    $("#diagnosiscode_code").val(myjson.diagnosiscode_info[0].id);
+                    $("#description").val(myjson.diagnosiscode_info[0].description);
+                });
+            }
+        </script>    -->
+        <script>
+            $(function () {
+                var availableTags = <?php echo '["' . implode('", "', $this->diagnosiscodeList) . '"]' ?>;
+                //alert('availableTags : ' + availableTags);
+                window.availableTags = availableTags;
+                $("#diagnosis_code").autocomplete({
+                    source: availableTags
+                },
+                {mustMatch: true,
+                    autoFill: true}
+                );
+            });
+        </script>
+        <script type="text/javascript" language="Javascript">
+            function checkCode(codePlace){
+                var temp_diagnosis_code = $("#" + codePlace).val();
+                if (!(window.availableTags.indexOf(temp_diagnosis_code) >= 0)) {
+                    $("#" + codePlace).val('');
+                }
+            }
+        <script>
+            $(function(){
+                $("#icd10_diagnosis_code").blur(function(){
+                    var icd10 = $("#icd10_diagnosis_code").val();
+                    //alert(icd10_id);
+                    var provider_id = $("#icd10_provider_id").val();
+                    if(icd10){
+                        //icd10 为真的时候，才进行操作
+                      var diagnosis_codes=icd10.split(/\s+/);
+                      var diagnosis_code = diagnosis_codes[0];
+                      $.post("<?php echo $this->baseUrl ?>/biller/data/diacheckstatus/", {'provider_id': provider_id,'diagnosis_code':diagnosis_code},function(){
+                          //provider_id 是否为0，只是查询数据库时候不一样。
+                           var myjson = '';
+                           eval("myjson=" + data + ";");
+                           $('#status').val(myjson.status);
+                      })
+                    }
+                    
+                });
+                
+               
+            });
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Diagnosis Code</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <td style="display:none">
+                        <input type ="text" name="code_type" id="code_type" value="icd9">
+                    </td>
+                    <tr>
+                        <th align="center" colspan="100%" style="background:#eeeeee">
+                            <p align="center"><b>ICD9 Diagnosis Code</b></p>
+                        </th>
+                    </tr>  
+                    <tr >
+                        <th align="left" colspan="1" >Provider</th>
+                        <td  colspan="1" >
+                            <select class="select" name="provider_id" style= "width:60% " id="provider_id" >
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--" . $row['street_address'] . "(" . $row['num'] . ")" . "</option>";
+                                }
+                                ?>
+                                <option value="0">ALL&nbsp;&nbsp;(<?php echo ($this->allNum['num']); ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Diagnosis Code</th>
+                        <td>
+
+                            <input type = "text"  name="diagnosis_code" id="diagnosis_code" onblur="javascript:checkCode('diagnosis_code')">
+<!--                            <select class="select" name="diagnosis_code" id="diagnosis_code" onchange="javascript:auto_complete()" style= "width:100% ">
+                               <option value="">Select</option>
+                                <?php
+                                foreach ($this->diagnosiscodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->diagnosis_code . "</option>";
+                                }
+                                ?>
+                           </select>-->
+                        </td>
+                        <th align="left" colspan="2">Customized Description</th><td><input type="text" name="customized_description" id="customized_description" size="35"/></td>
+                        <div class="ui-widget"><!--
+                         <label for="tags">Tags: </label>
+                         <input id="tags">
+                       </div>-->
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" value="Update"/></td>
+                        <td colspan="1">
+                            <span id='del_provider_id_span' style='display:none'>&nbsp;from&nbsp;
+                                <select class="select"  name="del_provider_id" style= "" id="del_provider_id" >
+                                    <?php
+                                    foreach ($this->providerList as $row) {
+                                        echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "</option>";
+                                    }
+                                    ?>
+
+                                    <option value="0">ALL</option>
+                                </select>
+                            </span>
+                            <input type="submit" name="submit" value="Delete"/>
+                        </td>
+                        <td colspan="3"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div class="table-div">
+<!--            <table>
+            <tr>
+                <th align="center" colspan="6" style="background:#eeeeee">
+                    <p align="center"><b>Provider Information</b></p>
+                </th>
+            </tr>  
+            </table>-->
+
+            <form action="" method="post" name="Option">
+                <table>
+                    <td style="display:none">
+                        <input type ="text" name="code_type" id="code_type" value="icd10">
+                    </td>
+                    <tr>
+                        <th align="center" colspan="100%" style="background:#eeeeee">
+                            <p align="center"><b>ICD10 Diagnosis Code</b></p>
+                        </th>
+                    </tr>  
+                    <tr >
+                        <th align="left" colspan="1" >Provider</th>
+                        <td  colspan="1" >
+                            <select class="select" name="icd10_provider_id" style= "width:60% " id="icd10_provider_id" >
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->icd10_providerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--" . $row['street_address'] . "(" . $row['num'] . ")" . "</option>";
+                                }
+                                ?>
+                                <option value="0">ALL&nbsp;&nbsp;(<?php echo ($this->icd10_allNum['num']); ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Diagnosis Code</th>
+                        <td>
+
+                            <input type = "text"  name="icd10_diagnosis_code" id="icd10_diagnosis_code" onblur="javascript:checkCode('icd10_diagnosis_code')">
+<!--                            <select class="select" name="diagnosis_code" id="diagnosis_code" onchange="javascript:auto_complete()" style= "width:100% ">
+                               <option value="">Select</option>
+                                <?php
+                                foreach ($this->icd10_diagnosiscodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->diagnosis_code . "</option>";
+                                }
+                                ?>
+                           </select>-->
+                        </td>
+                        <th align="left" colspan="2">Customized Description</th><td><input type="text" name="icd10_customized_description" id="icd10_customized_description" size="35"/></td>
+                        <tr>
+                            <th align="left">Status</th>
+                            <td>
+                             <select  class="select"  name="status"  style= "width:60%" id="status">
+                                <option value='active'>active</option>
+                                <option value='inactive'>inactive</option>
+                            </select>
+                            </td>
+                        </tr>
+                        <div class="ui-widget"><!--
+                         <label for="tags">Tags: </label>
+                         <input id="tags">
+                       </div>-->
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" value="Update"/></td>
+                        <td colspan="1">
+                            <span id='icd10_del_provider_id_span' style='display:none'>&nbsp;from&nbsp;
+                                <select class="select"  name="icd10_del_provider_id" style= "" id="icd10_del_provider_id" >
+                                    <?php
+                                    foreach ($this->icd10_providerList as $row) {
+                                        echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "</option>";
+                                    }
+                                    ?>
+
+                                    <option value="0">ALL</option>
+                                </select>
+                            </span>
+                            <!--<input type="submit" name="submit" value="Delete"/>-->
+                            <input type="button" name="delete" id="delete" value="Delete" onclick="deleteFac()"/>
+                        </td>
+                        <div class="modal fade" id="login-modal">
+                            <div class="modal-dialog modal-lg">
+                                 <div class="modal-content">
+                                     <div class="modal-header">
+                                         <button class="close" data-dismiss="modal">&times</button>
+                                         <h4 style="color:red">This Insurance can not be deleted as the claims below are still associated with the Insurance !</h4>
+                                     </div>
+                                      <div class="modal-body">
+                                           <div class="container-fluid">
+                                               <div class="row">
+                                                   <div class="col-md-3"><strong>Last Name</strong></div>
+                                                   <div class="col-md-3"><strong>First Name</strong></div>
+                                                   <div class="col-md-3"><strong>DOS</strong></div>
+                                                   <div class="col-md-3"><strong>Provider</strong></div>
+                                               </div>
+                                               <div id="detail">
+
+                                               </div>
+
+                                           </div>
+                                          <br>
+                                          <div id="more" style="float:right">More...</div>
+                                      </div>
+                                      <div class="modal-footer">
+                                         <button class="btn btn-default" data-dismiss="modal">
+                                            Close
+                                         </button>
+                                      </div>
+                                 </div>
+                            </div>
+                        </div>
+                        
+                        <script>
+                            function deleteFac(){
+                               var icd10 = $("#icd10_diagnosis_code").val();
+                               //alert('icd10_diagnosis_code ' + icd10);
+                               var diagnosis_codes=icd10.split(/\s+/);
+                               var diagnosis_code = diagnosis_codes[0];
+                               var status = $("#status").val();
+                               var del_provider_id = $("#icd10_del_provider_id").val();
+                               //alert(status);
+                               //alert(diagnosis_code);
+                               var provider_id = $("#icd10_provider_id").val();
+                                $.post("<?php echo $this->baseUrl ?>/biller/data/deletediagnosis",{'provider_id':provider_id,'status':status,'diagnosis_code':diagnosis_code,'del_provider_id':del_provider_id},function(data){
+                                    var myjson='';
+                                    eval("myjson=" + data + ";");
+                                    var flag = myjson.flag;
+                                    var status = myjson.status;
+                                    if(status==1){
+                                        alert('you can not delete an active insurance');
+                                    }else{
+                                            if(flag==1){
+                                                //alert('can not delete');
+                                                var patientinfoArray = myjson.patientinfoArray;
+                                                //alert(typeof(patientinfoArray));
+                                                //showdetail.style.display="";
+
+                                               
+                                                $("#login-modal").modal('show');
+                                                var len = patientinfoArray.length;
+                                                //alert(len);
+                                                if(len>10){
+                                                    len = 10;
+                                                }else{
+                                                    $("#more").hide();
+                                                }
+                                                for (var i=0;i<len;i++){
+                                                    $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-3\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['providername']+"</div></div>");
+                                                }
+                                                $('#login-modal').on('hide.bs.modal',function(){
+                                                    $("#detail").children().remove(); //删除所有子元素
+                                                });
+                                            }else{
+                                               alert('delete successfully');
+                                               window.location.href="<?php echo $this->baseUrl ?>/biller/data/diagnosiscode"; 
+                                            }
+                                    }
+                           
+
+                                });
+                            }
+                        </script>
+                        <td colspan="3"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+                </table>
+            </form>
+
+        </div>
+    </body>
+</html>

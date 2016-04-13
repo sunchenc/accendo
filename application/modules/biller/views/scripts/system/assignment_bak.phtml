@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var user_name=$("#user_name").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/userinfo/",{user_name:user_name},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    if(myjson.billingcompany_name!=null)
+                        $("#billingcompany_name").val(myjson.billingcompany_name);
+                    else
+                        $("#billingcompany_name").val('');
+                    if(myjson.role!=null)
+                        $("#role").val(myjson.role);
+                });
+            }
+
+        </script>
+    </head>
+
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; Patient Statement</p>
+        </div>
+        <div class="table-div">
+            <form >
+                <table >
+                    <tr>
+                        <td colspan="6">
+                            <p align="center"><b>Right Assignment</b></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th >Biller Name</th>
+                        <td >
+                            <select class="select" name="user_name" style= "width:100% " id="user_name" onchange="javascript:auto_complete()">
+                                <option value=''>Select</option>
+                                <?php
+                                foreach ($this->billerList as $row) {
+                                    echo "<option value='" . $row['user_name'] . "'>" . $row['user_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+
+                        </td>
+                        <th >Billing Company</th>
+                        <td >
+                            <select class="select" name="billingcompany_name" style= "width:100% " id="billingcompany_name" >
+                                <option value=''>Select</option>
+                                <?php
+                                foreach ($this->billingcompanyList as $row) {
+                                    echo "<option value='" . $row['billingcompany_name'] . "'>" . $row['billingcompany_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+
+                        </td>
+                        <th >Right</th>
+                        <td ><select name="role" id="role" style="width:100%">
+                                <option value="biller">Biller</option>
+                                <option value="billingcompany">Billing Company</option>
+                                <option value="admin">Admin</option>
+                                <option value="guest">Guest</option>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td ><input type="submit" name="next" value="Update" /></td>
+                        <td colspan="5"></td>
+                    </tr>
+
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

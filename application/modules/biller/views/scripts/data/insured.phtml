@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+        })
+        </script>
+        <script type="text/javascript" language="Javascript">
+            document.onkeydown=keyListener;
+            
+            function keyListener(e){    
+                e = e ? e : event;   
+                if(e.keyCode == 13){
+                    RefreshRows();    
+                }    
+            }
+   
+        </script>
+        
+        
+        <script type="text/javascript" language="Javascript" >
+            function getVal(){
+                var table = $("#table1");
+                var patient_ids=new Array();
+                var insured_ids=new Array();
+                var tableTrElement = $("#table1 tr");
+                var td1 = $("#table1 td");
+                for(var i=0;i<tableTrElement.length-1;i++)
+                {
+                    if(td1[i*10].firstChild.checked)
+                    {
+                        var patient_id=td1[i*10+8].innerHTML;
+                        var insured_id=td1[i*10+9].innerHTML;
+                         patient_ids.push(patient_id);
+                         insured_ids.push(insured_id);
+                    }
+                }
+                $("#patient_id").val(patient_ids );
+                $("#insured_id").val(insured_ids);
+              
+            }
+        </script>
+        <script type="text/javascript">
+            function RefreshRows(){
+                $("#tbody1").empty();
+                var MSN=$("#MSN").val();
+                
+                $.post("<?php echo $this->baseUrl ?>/biller/data/insuredsearch/",{MSN:MSN},
+                function(data){
+                    var myjson='';
+                    $("#error_no").show();
+                    $("#error_not_can").hide();
+                    //$("#error_not_can").show();
+                    eval("myjson=" + data + ";");
+                    var tableTrElement = $("#table1 tr");//得到表格所有行
+                    var len = tableTrElement.length;//得到总行数
+                    var tableElement = $("#table1");//得到表格对象
+                     var length=myjson.length-1;
+                      
+                    var str="";
+                    if(data!=null){
+                         $("#error_no").hide();
+                        for(var i=0;i<myjson.length-1;i++){
+                            if(myjson[i]["exist"]){
+                                //;color:red
+                            str =str+ '<tr id='+i+'><td><input type="checkbox" disabled="true" /></td>'
+                                + '<td id="patient_name" style=\"font-weight:normal\" >' + myjson[i]["plast_name"] +','+ myjson[i]["pfirst_name"] + '</td>'
+                                + '<td id="MSN" style=\"font-weight:normal\">' + myjson[i]["MSN"] + '</td>'
+                                + '<td id="patientDOB" style=\"font-weight:normal\">' + myjson[i]["patientDOB"] + '</td>'
+                                + '<td id="insure_name" style=\"font-weight:normal\">' +  myjson[i]["ilast_name"] +','+ myjson[i]["ifirst_name"] + '</td>'
+                                + '<td id="insureDOB" style=\"font-weight:normal\">' + myjson[i]["insureDOB"] + '</td>'
+    //                             + '<td id="SSN" style=\"font-weight:normal\">' + myjson[i]["SSN"] + '</td>'
+                                + '<td id="insurance_ID" style=\"font-weight:normal\">' + myjson[i]["insurance_ID"] + '</td>'
+                                + '<td id="insurance_display" style=\"font-weight:normal\">' + myjson[i]["insurance_display"] + '</td>'
+                                + '<td id="id" style=\"font-weight:normal\">' + myjson[i]["patient_id"] + '</td>'
+                                 + '<td id="id_insured" style=\"font-weight:normal\">' + myjson[i]["insured_id"] + '</td>'
+                                + '</tr>';
+                    }else{
+                        str =str+ '<tr id='+i+'><td><input type="checkbox" /></td>'
+                                + '<td id="patient_name" style=\"font-weight:normal\" >' + myjson[i]["plast_name"] +','+ myjson[i]["pfirst_name"] + '</td>'
+                                + '<td id="MSN" style=\"font-weight:normal\">' + myjson[i]["MSN"] + '</td>'
+                                + '<td id="patientDOB" style=\"font-weight:normal\">' + myjson[i]["patientDOB"] + '</td>'
+                                + '<td id="insure_name" style=\"font-weight:normal\">' +  myjson[i]["ilast_name"] +','+ myjson[i]["ifirst_name"] + '</td>'
+                                + '<td id="insureDOB" style=\"font-weight:normal\">' + myjson[i]["insureDOB"] + '</td>'
+    //                             + '<td id="SSN" style=\"font-weight:normal\">' + myjson[i]["SSN"] + '</td>'
+                                + '<td id="insurance_ID" style=\"font-weight:normal\">' + myjson[i]["insurance_ID"] + '</td>'
+                                + '<td id="insurance_display" style=\"font-weight:normal\">' + myjson[i]["insurance_display"] + '</td>'
+                                + '<td id="id" style=\"font-weight:normal\">' + myjson[i]["patient_id"] + '</td>'
+                                + '<td id="id_insured" style=\"font-weight:normal\">' + myjson[i]["insured_id"] + '</td>'
+                                + '</tr>';
+                         }
+                     }
+                       
+                            
+                        length=i;
+                        tableElement.append(str);
+                    }
+                    
+                        if(myjson[length]["ilast_name"]==1){
+                           
+                           $("#error_not_can").show();
+                            
+                        }else{
+                            $("#error_not_can").hide();
+                        }
+//                        if(myjson[0]["ilast_name"]==null){
+//                             $("#error_not_can").hide();
+//                        }
+                        
+//                    else{
+//                    
+//                            $("#error_no").show();
+//                    }
+                });
+            }
+            function DeleteRows(){
+                 var truthBeTold=false;
+                 getVal();
+                 var patient_id=$("#patient_id").val(); 
+                 var insured_id=$("#insured_id").val();
+                 if(patient_id[0]!=null){
+                     var truthBeTold =confirm("The selected insured/insurance will be permanently deleted from this patient, please confirm");
+                 }else{
+                     alert("No insured/insurance checked");
+                 }
+               if(truthBeTold){
+                   
+                   
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/insureddelete/",{patient_id:patient_id,insured_id:insured_id},
+                    function(){
+                        var tableTrElement = $("#table1 tr");
+                        var td1 = $("#table1 td");
+                        for(var i=0;i<tableTrElement.length-1;i++)
+                        {
+                            if(td1[i*10].firstChild.checked)
+                            {
+                                $("tr[id=\'"+i+"\']").remove();
+                            }
+                        }
+                    });
+                  }
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title=""> Data Management</a> &gt; Delete Patient Insurance</p>
+        </div>
+        <div class="table-div">
+           
+
+            <form action="" method="post" name="Service">
+                <table>
+                    <tr>
+                        <td>
+                            <table>
+                                <th  style= "width:30% ">MRN</th><td style= "width:45% "><input type="text" name="MSN" id="MSN" style= "width:98% "/></td> 
+                                <th style= "width:20% "></th>
+                                
+                                <td><input type="button" name="search" value="Search"  onclick="javascript:RefreshRows()" /></td>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        
+                    </tr>
+                    <tr>
+                        
+                        <td style="align:center" ><a name="error_no" id="error_no"  style='text-align: center;color:red;display:none' >No patient matches this MRN</a></td>
+                    </tr>
+                    <tr>
+                        <td style="align:center" ><a name="error_not_can" id="error_not_can"  style='text-align: center;color:red;display:none' >No insurance can be deleted as every patient insurance is used by at least one claim by this patient</a></td>
+                    </tr>
+                    <tr>
+                        <td width="100%">
+                            <table id="table1">
+                                <thead>
+                                    <th width="4%" style="text-align: center"><b>Choose</b></th>
+                                    <th width="11%" style="text-align: center"><b>Patient Name</b></th>
+<!--                                    <th width="11%" style="text-align: center"><b>First Name</b></th>-->
+                                    <th width="14%" style="text-align: center"><b>MRN</b></th>
+                                    <th width="14%" style="text-align: center"><b>DOB</b></th>
+                                    <th width="14%" style="text-align: center"><b>Insured Name</b></th>
+                                    <th width="14%" style="text-align: center"><b>DOB</b></th>
+                                    <th width="14%" style="text-align: center"><b>Insurance ID</b></th>
+                                    <th width="14%" style="text-align: center"><b>Insurance display name</b></th>
+                                    <th width="14%" style="text-align: center"><b>patient ID</b></th>
+                                    <th width="14%" style="text-align: center"><b>insured ID</b></th>
+                                  
+                                </thead>
+                                <tbody id="tbody1">
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td width="15%"><input type="button" name="delete" value="Delete" onclick="javascript:DeleteRows()" /></td>
+                                  
+                                    <td><input type="text" name="patient_id"  id="patient_id" size="20" style="display:none"/> </td>   
+                                     <td><input type="text" name="insured_id"  id="insured_id" size="20" style="display:none"/> </td> 
+                                </tr>
+                            </table>
+                    </tr>
+                </table>
+            </form>
+
+        </div>
+    </body>
+</html>

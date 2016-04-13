@@ -1,0 +1,85 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Document Input</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                
+                $("#file_type").change(function(){
+                    if($(this).val().toLowerCase()=="one-off")
+                        $("#one-off").css("display","inline");
+                    else
+                        $("#one-off").css("display","none");
+                });
+                $(window).unload(function(){
+                    try {
+                        window.opener.refreshaccessbutton();
+                    } catch (e) {
+                    }
+                    window.self.close();
+                });
+
+            });
+        </script>
+    </head>
+    <body >
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div class="table-div">
+            <form enctype="multipart/form-data"  method="POST" >
+                <table>
+                    <tr>
+                        <td>
+                            <p ><b><center><h1>Document Input</h1></center></b></p>
+                            <p><center ><div id="current"><?php echo $this->cur_service_info['patient_name'] ?>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $this->cur_service_info['MRN'] ?>&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <?php echo $this->cur_service_info['DOS'] ?>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $this->cur_service_info['insurance'] ?> </div> </center></p>
+                            <table>
+                                <tr >
+                                    <th align="left" style= "width:50% ">Document Type:</th> <td><select name="file_type" id="file_type"  style= "width:60% ">
+                                            <option value="">Select</option>
+                                            <?php
+                                            foreach ($this->file_type_list as $key => $value) {
+                                                echo "<option value='" . $value . "'>" . $key . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr id="one-off"style= "display:none">
+                                    <th align="left" style= "width:50% ">Input One-Off File Name:</th><td><input type="text" name="one_off_name"  id="one_off_name"size="30"/></td>
+                                </tr>
+                                <tr >
+                                    <th align="left">Select File:</th><td width="100%">
+                                        <input type="hidden" name="MAX_FILE_SIZE" value="100000000" />
+                                        <input name="uploadedfile" type="file" id="uploadedfile" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <td align="center"><p align="center"> <input type="submit"  id="upload"name="upload" value="Upload" /></p></td>
+                                    <td><input type="text" name="pageno"  id="pageno"size="20"  value="<?php echo $this->pageno ?>" style= "display:none "/>
+                                        <input type="text" name="dir"  id="dir"size="40"  value="<?php echo $this->dir ?>" style= "display:none "/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

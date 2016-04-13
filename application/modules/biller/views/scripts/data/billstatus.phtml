@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script  type="text/javascript" LANGUAGE="JavaScript" SRC="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+       <!--by Pandazhao -->
+       <script type="text/javascript" language="Javascript">
+      $(document).ready(function()
+            {
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+            });
+       </script>
+       <!-- by Pandazhao-->
+        <script type="text/javascript" language="Javascript" >
+            function changebillstatus()
+            {
+                var id=$("#status_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/billstatusinfo/",{id:id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var required = myjson.required;
+                   
+                    $("#description").val(myjson.description);
+                    if(required == 1){
+                        document.getElementById('description').disabled=true;
+                        document.getElementById('update').disabled=true;
+                        document.getElementById('delete').disabled=true;
+                    }else{
+                        document.getElementById('description').disabled=false;
+                        document.getElementById('update').disabled=false;
+                        document.getElementById('delete').disabled=false;
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; Bill Status</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <tr >
+                        <th align="left" colspan="1" >Bill Status</th>
+                        <td  colspan="1" >
+                            <select class="select" name="status_id" style= "width:60% " id="status_id" onchange="javascript:changebillstatus()">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->billstatusList as $row) {
+                                    echo "<option value='" . $row['bid'] . "'>" . $row['bill_status'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+<!--                        <th align="left">Claim Status Display</th>
+                        <td>
+                            <select class="select" name="diagnosis_code" id="diagnosis_code" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->diagnosiscodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->diagnosis_code . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>-->
+                        <th align="right" colspan="1">Bill Status Display</th><td><input type="text" name="description" id="description" size="50"/></td>
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" id="update" value="Update"/></td>
+                        <td colspan="1"><input type="submit" name="submit" id="delete" value="Delete"/></td>
+                        <td colspan="3"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

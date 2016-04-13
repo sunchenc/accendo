@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>biller-Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/datepicker.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.3.2.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <style type="text/css">
+            body {
+                color: #000;
+                background: #f1f1f1 url(images/br.gif) repeat-y right top;
+            }
+        </style>
+        <script type="text/javascript" language="javascript" >
+            $(document).ready(function(){
+                var role="<?php echo $this->role ?>";
+                if(role=='admin'){
+                    //document.getElementById("b2").style.display= "block";
+                    document.getElementById("b2_1").style.display= "block";
+                    //document.getElementById("b3").style.display= "block";
+                    document.getElementById("b3_1").style.display= "block";
+                   // document.getElementById("b4_1").style.display= "block";
+                }
+                if(role=='billingcompany'){
+                    //document.getElementById("b2").style.display= "block";
+                    document.getElementById("b2_1").style.display= "block";
+                    //document.getElementById("b4_1").style.display= "block";
+                }
+                if(role=='biller'){
+                }
+                 if(role=='guest'){
+                     var i=0;
+                     for(i=0;i<12;i++){
+                         document.getElementById("b1_1_"+i+"").style.display= "none";
+                     }
+                     document.getElementById("b2_1").style.display= "block";
+                     for(i=1;i<22;i++){
+                         document.getElementById("b2_1_"+i+"").style.display= "none";
+                     }
+                }
+                if(role=='super_admin'){
+                    document.getElementById("b4_1").style.display= "block";
+                    document.getElementById("b2_1").style.display= "block";
+                    document.getElementById("b3_1").style.display= "block";
+                }
+            }
+        );
+        </script>
+        <script language="JavaScript" type="text/javascript">
+            function show(){
+                if (top.document.getElementById("menu").cols=='7,*')
+                {
+                    top.document.getElementById("menu").cols='180,*';
+                    document.getElementById("showside").className='hidden';
+                }
+                else
+                {
+                    top.document.getElementById("menu").cols='7,*';
+                    document.getElementById("showside").className='show';
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            function click_batch(){
+                var cur_state = $("#batch_select").css("display");
+                if(cur_state == "none"){
+                    $("#batch_select").css("display","");
+                }
+                if(cur_state == "block" || cur_state=="" || cur_state == null){
+                    $("#batch_select").css("display","none");
+                }
+            }
+        </script>
+        <base target="mainFrame">
+    </head>
+
+    <body>
+        <div id="menu">
+            <p><a href="#" onclick="javascript:ShowAll(7)" title="Open All Menu" target="leftFrame">Open All</a> | <a href="#" onclick="javascript:HideAll(7)" title="Close All Menus" target="leftFrame">Close All</a></p>
+            <ul id="a">
+                <li class="a"><a href="#" onclick="javascript:ShowHideDiv('b1')" class="a" title="Click Open/Close" target="leftFrame">Claims Management</a>
+                    <ul id="b1" class="b">
+                        <li id="b1_1_0"><a href="<?php echo $this->baseUrl ?>/biller/claims/assignedclaimslist/" title="Actions">Assigned Claims</a></li>
+                        <li id="b1_1_1"><a href="<?php echo $this->baseUrl ?>/biller/claims/actionlist/" title="Actions">Today's Action Items</a></li>
+                        <li ><a href="<?php echo $this->baseUrl ?>/biller/claims/inquiry/" title="Claims Inquiry">Claims Inquiry</a></li>
+                        <li id="b1_1_2"><a href="<?php echo $this->baseUrl ?>/biller/claims/billlist/" title="Bill Generation">Bills Generation</a></li>
+                        
+                        <!--Add for testing insurance UI -->
+                <!--        <li><a href="<?php echo $this->baseUrl ?>/biller/claims/dbtools/" title="DB  Tools">DB  Tools</a></li> -->
+                        <!--Add for testing insurance UI -->
+                        
+                        
+                        <!--Add the EDI file parse function-->
+          <!--           <li><a href="<?php echo $this->baseUrl ?>/biller/claims/era835process/" title="ERA 835 Processing">ERA 835 Processing</a></li> -->
+                        <li id="b1_1_3" onclick="javascript:click_batch()" ><a>Batch Payment Posting</a></li>
+                        <div id="batch_select" style="display:none;margin-left: 10%;padding-left: 5%;border-style:solid;border-width:1px;border-color: #DEDEDE">
+                            <li style="" ><a href="<?php echo $this->baseUrl ?>/biller/claims/mannualpaymentbatch/" title="Manual Batch">Manual Batch</a></li>
+                            <li style="" ><a href="<?php echo $this->baseUrl ?>/biller/claims/erapaymentbatch/" title="ERA 835 Batch">ERA 835 Batch</a></li>
+                        </div>
+                        <!--Add the EDI file parse function-->
+                        
+                        <li id="b1_1_4"><a href="<?php echo $this->baseUrl ?>/biller/claims/statementslist/" title="Patient Statements">Patient Statements</a></li>
+<!--                        <li><a href="<?php echo $this->baseUrl ?>/biller/data/reports/" title="Reports">Reports</a></li>-->
+<!--                        <li><a href="<?php echo $this->baseUrl ?>/biller/data/statements/" title="Statements">Statements</a></li>-->
+                        <li id="b1_1_4"><a href="<?php echo $this->baseUrl ?>/biller/claims/patientcorrespondencelist/" title="Patient Correspondence">Patient Correspondence</a></li> 
+                        <li id="b1_1_5" style="color:#ffffff"><a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</a></li>
+                        <li id="b1_1_6"><a href="<?php echo $this->baseUrl ?>/biller/data/claiminsurance/" title="Insurance">Insurance</a></li>
+                        <li id="b1_1_7"><a href="<?php echo $this->baseUrl ?>/biller/data/claimfacility/" title="Facility">Facility</a></li>
+                        <li id="b1_1_8"><a href="<?php echo $this->baseUrl ?>/biller/data/claimprovider/" title="Provider">Provider</a></li>
+                        <li id="b1_1_9"><a href="<?php echo $this->baseUrl ?>/biller/data/claimrenderingprovider/" title="Rendering Provider">Rendering Provider</a></li>
+                        <li id="b1_1_10"><a href="<?php echo $this->baseUrl ?>/biller/data/claimreferringprovider/" title="Referring Provider">Referring Provider</a></li>
+                        
+                        <li id="b1_1_11"><a href="<?php echo $this->baseUrl ?>/biller/data/claimbillingcompany/" title="Billing Company">Billing Company</a></li>
+                    </ul>
+                </li>
+                <li class="a" id="b2_1" style="display:none;"><a href="#" onclick="javascript:ShowHideDiv('b2')" class="a" title="Click Open/Close" target="leftFrame">Data Management</a>
+                    <ul id="b2" class="b" style="display:none;">
+                        <li id="b2_1_0"><a href="<?php echo $this->baseUrl ?>/biller/data/reports/" title="Reports">Reports</a></li>
+                        <li id="b2_1_1" style="color:#ffffff"><a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</a></li>
+                        <li id="b2_1_2"><a href="<?php echo $this->baseUrl ?>/biller/data/appealclaim/" title="Appeal Generation">Appeal Generation</a></li>
+                        <li id="b2_1_3"><a href="<?php echo $this->baseUrl ?>/biller/data/turnover/" title="Collection Turnover">Collection Turnover</a></li>                        
+                        <li id="b2_1_4" style="color:#ffffff"><a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</a></li>
+                        <li id="b2_1_5" ><a href="<?php echo $this->baseUrl ?>/biller/data/patient/" title="DeletePatient">Delete Patient</a></li>
+                        <li id="b2_1_6"><a href="<?php echo $this->baseUrl ?>/biller/data/insured/" title="DeleteInsured">Delete Patient Insurance</a></li>    
+                        <li id="b2_1_7"><a href="<?php echo $this->baseUrl ?>/biller/data/statement/" title="DeletePatientStatement">Delete Patient Statement</a></li>    
+                        <li id="b2_1_8" ><a href="<?php echo $this->baseUrl ?>/biller/data/services/" title="DeleteServices">Delete Service</a></li>                        
+                        <li id="b2_1_9"><a href="<?php echo $this->baseUrl ?>/biller/data/patienttomerge/" title="PatientToMerge">Merge Patients</a></li>
+                        <!--<li><a href="<?php echo $this->baseUrl ?>/biller/data/DPatientInsurances/" title="dpatientinsurances">Delete Patient Insurance</a></li>-->
+                         <!--<li><a href="<?php echo $this->baseUrl ?>/biller/data/insured/" title="DeleteInsured">Delete Insured</a></li>--->
+                        <li id="b2_1_10" style="color:#ffffff"><a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</a></li>
+                        <li id="b2_1_11"><a href="<?php echo $this->baseUrl ?>/biller/data/billingcompany/" title="Reports">Billing Company</a></li>                        
+                        <li id="b2_1_12"><a href="<?php echo $this->baseUrl ?>/biller/data/modifier/" title="Modifier">Billing Co-Modifier</a></li>
+                        <li id="b2_1_13"><a href="<?php echo $this->baseUrl ?>/biller/data/insurance/" title="Insurance">Billing Co-Payers</a></li>
+                        <li id="b2_1_14"><a href="<?php echo $this->baseUrl ?>/biller/data/claimstatus/" title="Claim Status">Billing Co-Statuses</a></li>
+                        <li id="b2_1_15" ><a href="<?php echo $this->baseUrl ?>/biller/data/provider/" title="Provider">Provider</a></li>
+                        <li id="b2_1_16"><a href="<?php echo $this->baseUrl ?>/biller/data/anesthesiacode/" title="Anesthesia Code">Provider-Anesthesia code</a></li>
+                        <li id="b2_1_17"><a href="<?php echo $this->baseUrl ?>/biller/data/surgerycode/" title="Anesthesia Crosswalk">Provider-CPT code</a></li>
+                        <li id="b2_1_18"><a href="<?php echo $this->baseUrl ?>/biller/data/diagnosiscode/" title="Diagnosis Codes">Provider-Diagnosis code</a></li>
+                        <li id="b2_1_19" ><a href="<?php echo $this->baseUrl ?>/biller/data/facility/" title="Facility">Provider-Facility</a></li>
+                        <li id="b2_1_20"><a href="<?php echo $this->baseUrl ?>/biller/data/option/" title="Options">Provider-Options</a></li>
+                        <li id="b2_1_21"><a href="<?php echo $this->baseUrl ?>/biller/data/referringprovider/" title="Referring Provider">Provider-Referring</a></li>
+                        <li id="b2_1_22"><a href="<?php echo $this->baseUrl ?>/biller/data/renderingprovider/" title="Rendering Provider">Provider-Rendering</a></li>
+<!--                        <li id="b2_1_20"><a href="<?php echo $this->baseUrl ?>/biller/data/billstatus/" title="Bill Status">Bill Status</a></li>
+                         <li id="b2_1_20"><a href="<?php echo $this->baseUrl ?>/biller/data/statementstatus/" title="Statement Status">Statement Status</a></li>-->
+                        <li id="b2_1_23" style="color:#ffffff"><a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</a></li>
+                        <li id="b2_1_24"><a href="<?php echo $this->baseUrl ?>/biller/data/cmsadjustment/" title="CMS Adjustment">CMS1500 Printing Adjustment</a></li>
+                    </ul>
+                </li>
+                <!--<li class="a" id="b3_1" style="display:none;"><a href="#" onclick="javascript:ShowHideDiv('b3')" class="a" title="Click Open/Close" target="leftFrame">System Management</a>
+                    <ul id="b3" class="b" style="display:none;">
+                        <li><a href="<?php echo $this->baseUrl ?>/biller/data/billingcompany/" title="Reports">Billing Company</a></li>
+                        <li style="color:#ffffff"><a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</a></li>
+                    </ul>
+                </li>-->
+                <li class="a" id="b4_1" style="display:none;"><a href="#" onclick="javascript:ShowHideDiv('b4')" class="a" title="Click Open/Close" target="leftFrame">Administration</a>
+                    <ul id="b4" class="b" style="display:none;">
+                        <li><a href="<?php echo $this->baseUrl ?>/biller/data/providerbillinglist/" title="Provider Billing">Provider Billing</a></li>
+                        <li><a href="<?php echo $this->baseUrl ?>/biller/data/assignment/" title="Rights assignment">User Management</a></li>
+                    </ul>
+                </li>
+
+
+
+            </ul>
+        </div>
+        <a href="javascript:void(0)" id="showside" class="hidden" onclick="javascript:show();" title=""><span>显示/隐藏侧栏</span></a>
+    </body>
+</html>
+<script language="JavaScript" type="text/javascript">
+    <!--
+    function ShowHideDiv(ulId)
+    {
+        var id = document.getElementById(ulId);
+
+        if (id.style.display == "none")
+        {
+            eval("id.style.display = 'block';");
+        }
+        else
+        {
+            eval("id.style.display = 'none';");
+        }
+    }
+    function ShowAll(num)
+    {
+        for (i=1; i<num; i++) {
+            document.getElementById("b"+i).style.display= "block";
+        }
+    }
+    function HideAll(num)
+    {
+        for (i=1; i<num; i++) {
+            document.getElementById("b"+i).style.display= "none";
+        }
+    }
+    //-->
+</script>

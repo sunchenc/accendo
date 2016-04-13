@@ -1,0 +1,633 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link href="<?php echo $this->baseUrl ?>/styles/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/bootstrap.min.js"></script>
+        <script type="text/javascript" language="Javascript">
+            $(document).ready(function()
+            {
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                $('#modifier_1').val('AA');
+                $('#modifier_2').val('AA');
+          
+          
+                $.get("<?php echo $this->baseUrl ?>/biller/data/selectprovider/",function(data){
+                              var myjson='';
+                                  eval("myjson=" + data + ";");
+                                  $("#provider_id").val(myjson.provider_id);
+                                   $("#provider_id").change();  
+                              }
+
+                          );
+                //added by pandazhao 2012/8/13
+            
+                $("#provider_id").change(function(){
+                    //var provider_id = $("#provider_id").val();
+                    var provider_id = $("#provider_id").val();
+                    if(provider_id == 0) {
+                        $('#del_provider_id_span').show();
+                    }
+                    else {
+                        $('#del_provider_id_span').hide();
+                    }
+                    $('#del_provider_id').val(provider_id);
+                    if(provider_id){       
+                       
+                        $('#base_unit').val('');
+                        $('#description').val('');
+                        $('#anesthesia_code_id option').remove();
+                        $('#status').val('active');
+                        $('#anesthesia_code_id').append("<option value=\"\">Select</option>");
+                        //alert(provider_id);
+                        $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesianlist/",{provider_id:provider_id},
+                        function(data){
+                            var myjson='';
+                            eval("myjson=" + data + ";");
+                            //var list = myjson.crosswalkList;
+                            //alert(typeof(list));
+                            //alert(list);
+                            
+                            //alert(list.length);
+                            //alert(myjson.crosswalkList.length);
+                            for(var i = 0;i<myjson.crosswalkList.length;i++){
+                                $("#anesthesia_code_id").append("<option value='"+
+                                    myjson.crosswalkList[i]['id']+
+                                    "'>"+myjson.crosswalkList[i]['anesthesia_code']+
+                                    //                                        " "+myjson.diagnosiscodeList[i]['diagnosis_code']+
+                                "</option>");
+                            }
+                        });
+                    }
+                }
+            );
+            
+            
+            
+//            $("#provider_id_2").change(function(){
+//                    var provider_id = $("#provider_id_2").val();
+//                    if(provider_id){       
+//                       
+////                        $('#base_unit1').val('');
+//                        $('#description_2').val('');
+//                        $('#anesthesia_code_2 option').remove();
+//                        $('#anesthesia_code_2').append("<option value=\"\">Select</option>");
+//                          $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesianlist/",{provider_id:provider_id},
+//                        function(data){
+//                            var myjson='';
+//                            eval("myjson=" + data + ";");
+//                            for(var i = 0;i<myjson.cptcodeList.length;i++){
+//                                $("#cpt_code_2").append("<option value='"+
+//                                    myjson.cptcodeList[i]['CPT_code']+
+//                                    "'>"+myjson.cptcodeList[i]['CPT_code']+
+//                                    //                                        " "+myjson.diagnosiscodeList[i]['diagnosis_code']+
+//                                "</option>");
+//                            }
+//                        });
+//                    }
+//                }
+//            );
+            
+            
+            
+            
+            
+            }
+        );
+        </script>
+        <!-- by Pandazhao-->
+<!--        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var cpt_code=$("#cpt_code").val();
+                var provider_id=$("#provider_id").val();
+                
+                $('#anesthesia_code').val('');
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+                $('#base_unit').val('');
+                $('#description').val('');
+                $('#expected_amount').val('');
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+                $('#charge').val('');
+                $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesiainfo/",{cpt_code:cpt_code,provider_id:provider_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    if(myjson.anesthesia_code!=''&&myjson.anesthesia_code!=null){
+                        $('#anesthesia_code').val(myjson.anesthesia_code);
+                        //                        alert("if");
+                        //                        alert(myjson.anesthesia_code);
+                        $('#base_unit').val(myjson.base_unit);
+                        $('#description').val(myjson.description);
+                    }else{
+                        $('#expected_amount').val(myjson.payment_expected);
+                        $('#description').val(myjson.description);
+                        //                            alert("else");
+                        //                            alert(myjson.payment_expected);
+                        $('#charge').val(myjson.charge_amount);
+                    }
+                  $('#modifier_1').val(myjson.modifier_1);
+                  $('#modifier_2').val(myjson.modifier_2);
+                });
+            }
+        </script>-->
+
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var provider_id=$("#provider_id").val();
+         
+                var anesthesia_code = $('#anesthesia_code_id').val();
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+                $('#base_unit1').val('');
+                $('#description1').val('');
+                //                alert("wwww");
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+                $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesiainfoo/",{anesthesia_code:anesthesia_code,provider_id:provider_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+
+                    //                        $('#anesthesia_code').val(myjson.anesthesia_code);
+                    //                        alert("if");
+                    //                        alert(myjson.anesthesia_code);
+                    $('#base_unit').val(myjson.base_unit);    
+                    $('#description').val(myjson.description);
+                    $('#modifier_1').val(myjson.modifier_1);
+                    $('#modifier_2').val(myjson.modifier_2);
+                    $("#status").val(myjson.status);
+
+                    //                        $('#expected_amount').val(myjson.payment_expected);
+                    //                        $('#description').val(myjson.description);
+                    //                        //                            alert("else");
+                    //                        //                            alert(myjson.payment_expected);
+                    //                        $('#charge').val(myjson.charge_amount);
+                });
+            }
+        </script>
+
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete_2()
+            {
+                var cpt_code=$("#cpt_code_2").val();
+                var provider_id=$("#provider_id_2").val();
+                
+                $('#anesthesia_code_2').val('');
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+//                $('#base_unit').val('');
+                $('#description_2').val('');
+                $('#expected_amount_2').val('');
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+                $('#charge_2').val('');
+                $.post("<?php echo $this->baseUrl ?>/biller/data/anesthesiainfo/",{cpt_code:cpt_code,provider_id:provider_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    if(myjson.anesthesia_code!=''&&myjson.anesthesia_code!=null){
+                        $('#anesthesia_code').val(myjson.anesthesia_code);
+                        //                        alert("if");
+                        //                        alert(myjson.anesthesia_code);
+                        $('#base_unit').val(myjson.base_unit);
+                        $('#description').val(myjson.description);
+                    }else{
+                        $('#expected_amount_2').val(myjson.payment_expected);
+                        $('#description_2').val(myjson.description);
+                        //                            alert("else");
+                        //                            alert(myjson.payment_expected);
+                        $('#charge_2').val(myjson.charge_amount);
+                    }
+ 
+                });
+            }
+        </script>
+
+
+        <script language="javascript" type="text/javascript">
+            function check()
+            {
+                option_name=document.getElementById("option_name").value;
+                if(option_name.length==0)
+                {
+                    alert("Please Select a Exist Option or Create a New One!");
+                    return false;
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Anesthesia Code</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+            
+                     <tr >
+                        <th align="left" colspan="1" >Provider</th>
+                        <td  colspan="1" >
+                            <select class="select" name="provider_id" style= "width:100% " id="provider_id" >
+                                <option value="">Select</option>
+                                <?php
+                               
+                                foreach ($this->providerList as $row) {
+                                     $tempnumber=$row['num']-$this->allNumAne['num'];
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--". $row['street_address'] ."(" . $tempnumber . ")" ."</option>";
+                                }
+                                ?>
+                                 <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumAne['num']; ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Anesthesia Code</th><td colspan="1">
+                            <select class="select" name="anesthesia_code_id" id="anesthesia_code_id" onchange="javascript:auto_complete()" style= "width:100% ">
+                                <option value="">Select</option>
+
+                            </select>
+                        </td>
+                        <th align="left">Description</th><td><input colspan="1" type="text" name="description" id="description" size="62" /></td>
+                        
+                         </tr>
+                    <tr>
+                        <th align="left">Base Unit</th><td><input colspan="1" type="text" name="base_unit" id="base_unit" size="62" /></td>
+                        <th align="left">Modifier1</th><td><input colspan="1" type="text" name="modifier_1" id="modifier_1" size="62" /></td>
+                         
+<!--                        <td><input  colspan="1" type="text" name="modifier_1" id="modifier_1" /> </td>-->
+                         <!--td colspan="1">
+                            <select class="select" name="modifier_1" id="modifier_1" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->modifierList as $row) {
+                                    echo "<option value='" . $row->modifier . "'>" . $row->modifier . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                        <th align="left">Modifier2</th><td><input colspan="1" type="text" name="modifier_2" id="modifier_2" size="62" /></td>
+                    
+<!--                        <td><input  colspan="1" type="text" name="modifier_2" id="modifier_2" /> </td>-->
+                    <!--td colspan="1">
+                            <select class="select" name="modifier_2" id="modifier_2" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->modifierList as $row) {
+                                    echo "<option value='" . $row->modifier . "'>" . $row->modifier . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                    </tr>
+                    <tr>
+                        <th align="left">Status</th>
+                        <td>
+                         <select  class="select"  name="status"  style= "width:100%" id="status">
+                            <option value='active'>active</option>
+                            <option value='inactive'>inactive</option>
+                        </select>
+                        </td>
+                      </tr>
+
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" value="Update"/></td>
+                        <!--<td colspan="1"><input type="submit" name="submit" value="Delete"/></td>--> 
+                        <td colspan="1"><input type="button" name="delete" id="delete" value="Delete" onclick="deleteFac()"/></td>
+                        <div class="modal fade" id="login-modal">
+                            <div class="modal-dialog modal-lg">
+                                 <div class="modal-content">
+                                     <div class="modal-header">
+                                         <button class="close" data-dismiss="modal">&times</button>
+                                         <h4 id="message" style="color:red">This anesthesia code can not be deleted as the claims below are stilling associated with the anesthesia code !</h4>
+                                     </div>
+                                      <div class="modal-body">
+                                           <div class="container-fluid">
+                                               <div class="row">
+                                                   <div class="col-md-3"><strong>Last Name</strong></div>
+                                                   <div class="col-md-3"><strong>First Name</strong></div>
+                                                   <div class="col-md-3"><strong>DOS</strong></div>
+                                                   <div class="col-md-3"><strong>Provider</strong></div>
+                                               </div>
+                                               <div id="detail">
+
+                                               </div>
+
+                                           </div>
+                                          <br>
+                                          <div id="more" style="float:right">More...</div>
+                                      </div>
+                                      <div class="modal-footer">
+                                         <button class="btn btn-default" data-dismiss="modal">
+                                            Close
+                                         </button>
+                                      </div>
+                                 </div>
+                            </div>
+                        </div>
+                        <!--下面是有cpt代码时跳出的模态框-->
+                        <div class="modal fade" id="cpt-modal">
+                            <div class="modal-dialog modal-md">
+                                 <div class="modal-content">
+                                     <div class="modal-header">
+                                         <button class="close" data-dismiss="modal">&times</button>
+                                         <h4 id="message" style="color:red">The following CPT codes crosswalk to the anesthesia code you are about to delete. If you proceed, the CPT code will stay in your system, but it will no longer crosswalk to this anesthesia code about to be deleted, OK to proceed?</h4>
+                                     </div>
+                                      <div class="modal-body">
+                                           <div class="container-fluid">
+                                               <div class="row">
+                                                   <div class="col-md-6"><strong>CPT CODE</strong></div>
+                                                   <div class="col-md-6"><strong>Description</strong></div>
+                                               </div>
+                                               <div id="cpt_detail">
+
+                                               </div>
+                                           </div>
+                                          <br>
+                                          <div id="cpt_more" style="float:right">More...</div>
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button class="btn btn-default" data-dismiss="modal">Close</button>
+                                        <button class="btn btn-primary" id="ok">OK</button> 
+                                      </div>
+                                 </div>
+                            </div>
+                        </div>
+                        <script>
+                            function deleteFac(){
+                               var status = $("#status").val();
+                               //alert(status);
+                               var provider_id = $("#provider_id").val();
+                               //alert(provider_id);
+                               var anesthesia_code_id = $("#anesthesia_code_id").val();
+                               //alert(anesthesia_code_id);
+                               var del_provider_id = $("#del_provider_id").val();
+                               //alert(del_provider_id);
+                                $.ajax({  
+                                        type : "post",  
+                                        url : "<?php echo $this->baseUrl ?>/biller/data/deleteanes/",  
+                                        data : {'provider_id':provider_id,'anesthesia_code_id':anesthesia_code_id,'status':status,'del_provider_id':del_provider_id},  
+                                        async : false,  
+                                        success : function(data){  
+                                            var myjson='';
+                                            eval("myjson=" + data + ";");
+                                            var flag = myjson.flag;
+                                            var status = myjson.status;
+                                            var relat_to_cpt = myjson.relat_to_cpt;
+                                            if(status==1){
+                                                alert('You can not delete an active anesthesia code!');
+                                            }else{
+                                                    if(flag==1){
+                                                        //alert('can not delete');
+                                                        var patientinfoArray = myjson.patientinfoArray;
+                                                        //alert(typeof(patientinfoArray));
+                                                        //showdetail.style.display="";
+
+                                                        $("#login-modal").modal('show');
+                                                        var len = patientinfoArray.length;
+                                                        //alert(len);
+                                                        if(len>10){
+                                                            len = 10;
+                                                        }else{
+                                                            $("#more").hide();
+                                                        }
+                                                        for (var i=0;i<len;i++){
+                                                            //alert(patientinfoArray[i]['last_name']);
+                                                            $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-3\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['providername']+"</div></div>");
+                //                                            $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-2\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-2\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-4\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-4\">"+patientinfoArray[i]['providername']+"</div></div>");
+                                                            //$("#detail").append("<tr><td>"+patientinfoArray[i]['last_name']+"</td><td>"+patientinfoArray[i]['first_name']+"</td><td>"+patientinfoArray[i]['dos']+"</td><td>"+patientinfoArray[i]['providername']+"</td></tr>");
+                                                        }
+                                                        $('#login-modal').on('hide.bs.modal',function(){
+                                                            $("#detail").children().remove(); //删除所有子元素
+                                                        });
+                                                    }else{
+                                                        if(relat_to_cpt){
+                                                            var cpt = myjson.cpt;
+                                                            $("#cpt-modal").modal('show');
+                                                             var len = cpt.length;
+                                                             //alert(len);
+                                                             if(len>10){
+                                                                 len = 10;
+                                                             }else{
+                                                                 $("#cpt_more").hide();
+                                                             }
+                                                             for (var i=0;i<len;i++){
+                                                                 //alert(patientinfoArray[i]['last_name']);
+                                                                 $("#cpt_detail").append("<div class=\"row\">"+"<div class=\"col-md-6\">"+cpt[i]['cpt_code']+"</div>"+"<div class=\"col-md-6\">"+cpt[i]['description']+"</div>"+"</div>");
+                                                             }
+                                                             $('#cpt-modal').on('hide.bs.modal',function(){
+                                                                 $("#cpt_detail").children().remove(); //删除所有子元素
+                                                             });
+                                                            $('#ok').click(function(){
+                                                                 //发送ajax 请求，删除该 cpt 对应的anesthesia
+                                                                $.ajax({  
+                                                                    type : "post",  
+                                                                    url : "<?php echo $this->baseUrl ?>/biller/data/updatecpt/",  
+                                                                    data : {'provider_id':provider_id,'anesthesia_code_id':anesthesia_code_id,'del_provider_id':del_provider_id},  
+                                                                    async : false,  
+                                                                    success : function(data){  
+                                                                        var myjson='';
+                                                                        eval("myjson=" + data + ";");
+                                                                        var success = myjson.success;
+                                                                        if(success){
+                                                                            //alert('删除成功');
+                                                                            $("#cpt-modal").modal('hide');
+                                                                            alert('delete successfully');
+                                                                            window.location.href="<?php echo $this->baseUrl ?>/biller/data/anesthesiacode";
+                                                                        }
+                                                                    }  
+                                                                });  
+
+
+                                                            });
+
+                                                        }else{
+                                                            alert('delete successfully');
+                                                            window.location.href="<?php echo $this->baseUrl ?>/biller/data/anesthesiacode";
+                                                        }
+
+                                                       
+                                                    }
+                                            }
+                                        }  
+                                }); 
+                               
+//                                $.post("<?php echo $this->baseUrl ?>/biller/data/deleteanes/",{'provider_id':provider_id,'anesthesia_code_id':anesthesia_code_id,'status':status},function(data){
+//                                    var myjson='';
+//                                    eval("myjson=" + data + ";");
+//                                    var flag = myjson.flag;
+//                                    var status = myjson.status;
+//                                    var relat_to_cpt = myjson.relat_to_cpt;
+//                                    if(status==1){
+//                                        alert('you can not delete an active anesthesia');
+//                                    }else{
+//                                            if(flag==1){
+//                                                //alert('can not delete');
+//                                                var patientinfoArray = myjson.patientinfoArray;
+//                                                //alert(typeof(patientinfoArray));
+//                                                //showdetail.style.display="";
+//
+//                                                $("#login-modal").modal('show');
+//                                                var len = patientinfoArray.length;
+//                                                //alert(len);
+//                                                if(len>10){
+//                                                    len = 10;
+//                                                }else{
+//                                                    $("#more").hide();
+//                                                }
+//                                                for (var i=0;i<len;i++){
+//                                                    //alert(patientinfoArray[i]['last_name']);
+//                                                    $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-3\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['providername']+"</div></div>");
+//        //                                            $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-2\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-2\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-4\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-4\">"+patientinfoArray[i]['providername']+"</div></div>");
+//                                                    //$("#detail").append("<tr><td>"+patientinfoArray[i]['last_name']+"</td><td>"+patientinfoArray[i]['first_name']+"</td><td>"+patientinfoArray[i]['dos']+"</td><td>"+patientinfoArray[i]['providername']+"</td></tr>");
+//                                                }
+//                                                $('#login-modal').on('hide.bs.modal',function(){
+//                                                    $("#detail").children().remove(); //删除所有子元素
+//                                                });
+//                                            }else{
+//                                                if(relat_to_cpt){
+//                                                    var cpt = myjson.cpt;
+//                                                    $("#cpt-modal").modal('show');
+//                                                     var len = cpt.length;
+//                                                     //alert(len);
+//                                                     if(len>10){
+//                                                         len = 10;
+//                                                     }else{
+//                                                         $("#cpt_more").hide();
+//                                                     }
+//                                                     for (var i=0;i<len;i++){
+//                                                         //alert(patientinfoArray[i]['last_name']);
+//                                                         $("#cpt_detail").append("<div class=\"row\">"+"<div class=\"col-md-6\">"+cpt[i]['cpt_code']+"</div>"+"<div class=\"col-md-6\">"+cpt[i]['description']+"</div>"+"</div>");
+//                                                     }
+//                                                    $('#ok').click(function(){
+//                                                         //发送ajax 请求，删除该 cpt 对应的anesthesia
+//                                                        $.ajax({  
+//                                                            type : "post",  
+//                                                            url : "<?php echo $this->baseUrl ?>/biller/data/updatecpt/",  
+//                                                            data : {'provider_id':provider_id,'anesthesia_code_id':anesthesia_code_id},  
+//                                                            async : false,  
+//                                                            success : function(data){  
+//                                                                var myjson='';
+//                                                                eval("myjson=" + data + ";");
+//                                                                var success = myjson.success;
+//                                                                if(success){
+//                                                                    //alert('删除成功');
+//                                                                    $("#cpt-modal").modal('hide');
+//                                                                }
+//                                                            }  
+//                                                        });  
+//                                                        
+//                                                        
+//                                                    });
+//                                                    $('#login-modal').on('hide.bs.modal',function(){
+//                                                         $("#detail").children().remove(); //删除所有子元素
+//                                                     });
+//                                                    
+//                                                }
+//                                              
+//                                               alert('delete successfully');
+//                                               window.location.href="<?php echo $this->baseUrl ?>/biller/data/anesthesiacode";
+//                                            }
+//                                    }
+//                                });
+                            }
+                        </script>
+                        <td >
+                            <span id='del_provider_id_span' style='display:none'>&nbsp;from&nbsp;
+                                <select class="select"  name="del_provider_id" style= "" id="del_provider_id" >
+                                    <?php
+                                    foreach ($this->providerList as $row) {
+                                        echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "</option>";
+                                    }
+                                    ?>
+                                    <option value="0">ALL</option>
+                                </select>
+                            </span>
+                            
+                        </td>
+                        
+                        <td colspan="6"><input type="submit" name="submit" value="New"/></td>
+                    </tr>
+
+                    <!-- added by Pandazhao  2012/8/13-->
+                    <!-- added by Pandazhao 2012/9/04-->
+<!--                    <tr>
+                        <td></td>
+                    </tr>
+                            <td></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                    </tr>
+                            <td></td>
+                    </tr>
+                     <tr >
+                        <th align="left" colspan="1" >Provider</th>
+                        <td  colspan="1" >
+                            <select class="select" name="provider_id_2" style= "width:100% " id="provider_id_2" onblur="javascript:changeprovider()">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "</option>";
+                                }
+                                ?>
+                                <option value="0">ALL</option>
+                            </select>
+                        </td>
+
+
+                        <th align="left">Surgery Code</th>
+                        <td colspan="1">
+                            <select class="select" name="cpt_code_2" id="cpt_code_2" onchange="javascript:auto_complete_2()" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->cptcodeList as $row) {
+                                    echo "<option value='" . $row->id . "'>" . $row->CPT_code . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th align="left">Anesthesia Code</th><td >
+                            <input class="select" colspan="1" type ="text" name="anesthesia_code" id="anesthesia_code" onchange="javascript:auto_complete()"/>
+                        </td>
+                        <th align="left">Description</th><td><input colspan="1" type="text" name="description_2" id="description_2" /></td>
+                        <th align="left">Base Unit</th><td><input colspan="1" type="text" name="base_unit" id="base_unit" /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Charge</th><td><input  colspan="1" type="text" name="charge_2" id="charge_2" /> </td>
+                        <th align="left">Expected Amount</th><td><input  colspan="2" type="text" name="expected_amount_2" id="expected_amount_2" /></td>
+                    </tr>
+                    <tr >
+                        <td colspan="1"><input type="submit" name="submit" value="Update_CPT"/></td>
+                        <td colspan="1"><input type="submit" name="submit" value="Delete_CPT"/></td>
+                        <td colspan="6"><input type="submit" name="submit" value="New"/></td>
+                    </tr>-->
+                    
+                    <!-- added by Pandazhao 2012/9/04-->
+                    
+                    
+                    
+                    
+
+                </table>
+            </form>
+
+        </div>
+    </body>
+</html>

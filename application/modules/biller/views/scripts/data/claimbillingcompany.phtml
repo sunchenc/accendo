@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/navigation.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/datepicker.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.3.2.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script type="text/javascript" language="javascript" >
+            $(document).ready(function(){
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                
+                $.get("<?php echo $this->baseUrl ?>/biller/data/billingcompanyinfo/",function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    if(myjson.billingcompany_name!=null)
+                        $("#billingcompany_name").val(myjson.billingcompany_name);
+                    if(myjson.default_provider!=null)
+                        $("#default_provider").val(myjson.default_provider);
+                    if(myjson.street_address!=null)
+                        $("#street_address").val(myjson.street_address);
+                    if(myjson.zip!=null)
+                        $("#zip").val(myjson.zip);
+                    if(myjson.state!=null)
+                        $("#state").val(myjson.state);
+                    if(myjson.city!=null)
+                        $("#city").val(myjson.city);
+                    if(myjson.phone_number!=null)
+                        $("#phone_number").val(myjson.phone_number);
+                    if(myjson.fax_number!=null)
+                        $("#fax_number").val(myjson.fax_number);
+                    if(myjson.notes!=null)
+                        $("#notes").val(myjson.notes);
+                });
+            }
+        );
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Claim Management</a> &gt; Billing Company</p>
+        </div>
+        <div class="table-div" >
+            <form  method="post" action="" onsubmit="javascript:return check();">
+                <table width="100%">
+                    <tr>
+                        <th align="left">Company Name</th><td><input type="text" name="	billingcompany_name" id="billingcompany_name" readonly= "true"/></td>
+                        <th align="left">Phone Number</th><td ><input type="text" name="phone_number" id="phone_number" readonly= "true"/></td>
+                        <th align="left">Fax Number</th><td><input type="text" name="fax_number" id="fax_number" readonly= "true "/></td>
+                        <th align="left">Default Provider</th><td><input type="text" name="default_provider" id="default_provider" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">Street Address</th><td><input type="text" name="street_address" id="street_address" readonly= "true "/></td>
+                        <th align="left">City</th><td><input type="text" name="city" id="city"  readonly= "true "/></td>
+                        <th align="left">State</th><td><input type="text" name="state" id="state"  readonly= "true "/></td>
+                        <th align="left">Zip Code</th><td><input type="text" name="zip" id="zip"  readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th >Notes</th><td colspan="7"><textarea style= "width:100%" rows="4"  name="notes" id="notes" readonly= "true "></textarea></td>
+                    </tr>
+                </table>
+                <br></br>
+                <br></br>   
+                <table>
+                    <tr>
+                        <th colspan="3"><p  style="text-align: center;font-size: 16px;">Documents</p></th>
+                    </tr>
+                    <tr>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Data and Time</th>
+                        <th width="33%" style="background:#eeeeee;text-align: center">Description</th>
+                        <th width="34%" style="background:#eeeeee;text-align: center">User</th>
+                    </tr>
+                    <?php
+                    $i = 0;
+                    foreach($this->billingcompany_doc_list as $rows)
+                    {
+                        if ($i%2 == 0)  
+                        {echo"<tr id=\"billingcompany_doc_" . $i . "\" style=\"background:#FF0000\">";
+                        echo "<td width='33%' style='text-align: center' > <a href = \"/accendo/public/" . $rows['url'] . " \" target = \" _blank \">" . $rows['date'] . "</a></td>";
+                        echo "<td width='33%' style='text-align: center'>" . $rows['desc'] . "</td>";
+                        echo "<th width='34%' style='text-align: center'>" . $rows['user'] . "</th>";
+                        }
+                        if ($i%2 == 1)
+                        {echo "<tr id=\"billingcompany_doc_" . $i . "\" style=\"background:#00FF00\">";
+                        echo "<td width='33%' style='background:#eeeeee;text-align: center' > <a href = \"/accendo/public/" . $rows['url'] . " \" target = \" _blank \">" . $rows['date'] . "</a></td>";
+                        echo "<td width='33%' style='background:#eeeeee;text-align: center'>" . $rows['desc'] . "</td>";
+                        echo "<th width='34%' style='background:#eeeeee;text-align: center'>" . $rows['user'] . "</th>";
+                        }
+                          
+                        echo "</tr>";
+                        $i = $i + 1; 
+                    }
+                    ?>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

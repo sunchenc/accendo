@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+    </head>
+
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a href="main.html" title="">First page</a> &gt; x12_partner</p>
+        </div>
+        <div class="table-div">
+            <form method="post">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="title" colspan="2"><i>X12 partner</i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th style="width:25%;">Partner Name</th>
+                            <td>
+                                <input type="text" name="partner_name" />
+                                <label name="name_info"  style="color:red"><?php echo $this->name_info;?></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>ID Number(ETIN)</th>
+                            <td><input type="text" name="id_number" /></td>
+                        </tr>
+                        <tr>
+                            <th>Receiver ID Qualifier (ISA07)</th>
+                            <td><select name="ISA07" >
+                                    <option value="Duns(Dun & Bradstreet)">Duns(Dun & Bradstreet</option>
+                                    <option value="Duns Plus Suffix">Duns Plus Suffix</option>
+                                    <option value="Health Industry Number">Health Industry Number</option>
+                                    <option value="Carrier ID from HCFA">Carrier ID from HCFA</option>
+                                    <option value="Fiscal Intermediary ID from HCFA">Fiscal Intermediary ID from HCFA</option>
+                                    <option value="Medicare ID from HCFA)">Medicare ID from HCFA</option>
+                                    <option value="U.S.Federal Tax ID Number">U.S.Federal Tax ID Number</option>
+                                    <option value="NAIC Company Code">NAIC Company Code</option>
+                                    <option value="Mutually Defined" selected="selected">Mutually Defined</option>
+                                </select></td>
+
+                        </tr>
+                        <tr>
+                            <th>Receiver ID (ISA08)</th>
+                            <td><input type="text" name="receiver_id" /></td>
+
+                        </tr>
+                        <tr>
+                            <th>Sender ID Qualifier (ISA05)</th>
+                            <td>
+                                <select name="ISA05" >
+                                    <option value="Duns(Dun & Bradstreet)">Duns(Dun & Bradstreet</option>
+                                    <option value="Duns Plus Suffix">Duns Plus Suffix</option>
+                                    <option value="Health Industry Number">Health Industry Number</option>
+                                    <option value="Carrier ID from HCFA">Carrier ID from HCFA</option>
+                                    <option value="Fiscal Intermediary ID from HCFA">Fiscal Intermediary ID from HCFA</option>
+                                    <option value="Medicare ID from HCFA)">Medicare ID from HCFA</option>
+                                    <option value="U.S.Federal Tax ID Number">U.S.Federal Tax ID Number</option>
+                                    <option value="NAIC Company Code">NAIC Company Code</option>
+                                    <option value="Mutually Defined" selected="selected">Mutually Defined</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Sender ID (ISA06)</th>
+                            <td><input type="text" name="sender_id" /></td>
+                        </tr>
+                        <tr>
+                            <th>Acknowledgment Requested (ISA14)</th>
+                            <td><select name="ISA14" >
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <th>Usage Indicator (ISA15)</th>
+                            <td><select name="ISA15" >
+                                    <option value="Production" selected="selected">Production</option>
+                                    <option value="Testing">Testing</option>
+                                </select></td>
+                        </tr>
+                        <tr>
+                            <th>Aplication Sender Code (GS02)</th>
+                            <td><input type="test" name="App_sender_code" /></td>
+                        </tr>
+                        <tr>
+                            <th>Submitter EDI Access Number (PER06)</th>
+                            <td><input type="text" name="submitter_EDI" /></td>
+                        </tr>
+                        <tr>
+                            <th>Version</th>
+                            <td><input type="text" name="version" value="004010X098A1" /></td>
+                        </tr>
+                        <tr>
+                            <th>Processing Format</th>
+                            <td><select name="processing_format" >
+                                    <option value="standard" selected="selected">standard</option>
+                                    <option value="medi-cal">medi-cal</option>
+                                    <option value="cms">cms</option>
+                                    <option value="proxymed">proxymed</option>
+                                </select></td>
+                        </tr>
+
+
+                    </tbody>
+                </table><!--
+
+<!--                <iframe   name= "billingcompany "   marginwidth=0   marginheight=0   width=100%   height="100%"   src= "<?php echo $this->baseUrl ?>/admin/user/billingcompany/ "   frameborder=0> </iframe>-->
+
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="save" class="cmd" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="reset" value="cancel" class="cmd" />
+
+            </form>
+
+        </div>
+    </body>
+</html>

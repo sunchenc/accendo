@@ -1,0 +1,1403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://fileserver/" />
+<title>AddTest10</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">AddTest10</td></tr>
+</thead><tbody>
+<!---->
+<!--Parameters-->
+<!---->
+<tr>
+	<td>store</td>
+	<td>C:\Automated\Service_0319S_001.pdf</td>
+	<td>ServiceDoc</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>Test110</td>
+	<td>FirstUser</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>Test120</td>
+	<td>SecondUser</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>Test130</td>
+	<td>ThirdUser</td>
+</tr>
+<!---->
+<!--Add first test user-->
+<!---->
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${FirstUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=first_name</td>
+	<td>Tom</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=DOB</td>
+	<td>02/02/2000</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=sex</td>
+	<td>label=Male</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=street_address</td>
+	<td>87 Main St</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=zip</td>
+	<td>07960</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=zip</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=SSN</td>
+	<td>987-65-4898</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=phone_number</td>
+	<td>(987)654-7878</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=second_phone_number</td>
+	<td>(987)654-7898</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=status</td>
+	<td>label=Married</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=ID_number</td>
+	<td>re3455423</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=insurance_id</td>
+	<td>label=Farmers</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=insurance_id</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=provider_id</td>
+	<td>label=Middletown Anesthesia</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=renderingprovider_id</td>
+	<td>label=Logan, James</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=referringprovider_id</td>
+	<td>label=Dover, John</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=facility_id</td>
+	<td>label=Old Bridge Surgery Center</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=diagnosis_code1</td>
+	<td>label=715.11 123</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=diagnosis_code1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=CPT_code_1</td>
+	<td>label=62318 62318</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=secondary_CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_date_1</td>
+	<td>02/03/2012</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=start_date_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_time_1</td>
+	<td>09:00</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=end_time_1</td>
+	<td>09:30</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=end_time_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//input[@name='submit'])[7]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/biller/claims/upload/pageno/3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=file_type</td>
+	<td>label=Facility Sheet</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=uploadedfile</td>
+	<td>${ServiceDoc}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=upload</td>
+	<td></td>
+</tr>
+<!---->
+<!--Add second test user-->
+<!---->
+<tr>
+	<td>selectFrame</td>
+	<td>relative=parent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${SecondUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=first_name</td>
+	<td>Mary</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=DOB</td>
+	<td>12/20/1994</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=sex</td>
+	<td>label=Female</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=street_address</td>
+	<td>87 Main St</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=zip</td>
+	<td>07960</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=zip</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=SSN</td>
+	<td>988-56-4321</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=phone_number</td>
+	<td>(987)614-7878</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=second_phone_number</td>
+	<td>(987)654-7118</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=status</td>
+	<td>label=Married</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=ID_number</td>
+	<td>re3455423</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=insurance_id</td>
+	<td>label=Cigna</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=insurance_id</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=provider_id</td>
+	<td>Middletown Anesthesia</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=renderingprovider_id</td>
+	<td>Logan, James</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=referringprovider_id</td>
+	<td>Dover, John</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=facility_id</td>
+	<td>Old Bridge Surgery Center</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=renderingprovider_id</td>
+	<td>label=Andrews, Tim</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=referringprovider_id</td>
+	<td>label=Chase, Claire</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=facility_id</td>
+	<td>label=Red Bank Community Hospital</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=diagnosis_code1</td>
+	<td>label=715.11 123</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=diagnosis_code1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=CPT_code_1</td>
+	<td>label=62318 62318</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=secondary_CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_date_1</td>
+	<td>02/03/2012</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=start_date_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_time_1</td>
+	<td>09:00</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=end_time_1</td>
+	<td>09:30</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=end_time_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//input[@name='submit'])[7]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/biller/claims/upload/pageno/3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=file_type</td>
+	<td>label=Facility Sheet</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=uploadedfile</td>
+	<td>${ServiceDoc}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=upload</td>
+	<td></td>
+</tr>
+<!---->
+<!--Add third test user-->
+<!---->
+<tr>
+	<td>selectFrame</td>
+	<td>relative=parent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${ThirdUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=first_name</td>
+	<td>Mia</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=DOB</td>
+	<td>12/20/1994</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=sex</td>
+	<td>label=Female</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=street_address</td>
+	<td>87 Main St</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=zip</td>
+	<td>07960</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=zip</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=SSN</td>
+	<td>988-56-4321</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=phone_number</td>
+	<td>(987)614-7878</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=second_phone_number</td>
+	<td>(987)654-7118</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=ID_number</td>
+	<td>re3455423</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=insurance_id</td>
+	<td>label=Aetna</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=insurance_id</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=provider_id</td>
+	<td>Middletown Anesthesia</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=renderingprovider_id</td>
+	<td>Andrews, Tim</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=referringprovider_id</td>
+	<td>Chase, Claire</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=facility_id</td>
+	<td>Red Bank Community Hospital</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=provider_id</td>
+	<td>Broadway Medical Service</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=renderingprovider_id</td>
+	<td>label=Wang, Ted</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=referringprovider_id</td>
+	<td>label=Cooper, Laura</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=facility_id</td>
+	<td>label=Little Silver Surgery Center</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=diagnosis_code1</td>
+	<td>label=715.11 123</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=diagnosis_code1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=CPT_code_1</td>
+	<td>label=62318 62318</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=secondary_CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_date_1</td>
+	<td>02/03/2012</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=start_date_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_time_1</td>
+	<td>09:00</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=end_time_1</td>
+	<td>09:30</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=end_time_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//input[@name='submit'])[7]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/biller/claims/upload/pageno/3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=file_type</td>
+	<td>label=Combo Sheets</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=uploadedfile</td>
+	<td>${ServiceDoc}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=upload</td>
+	<td></td>
+</tr>
+<!---->
+<!--Add new service to first test user-->
+<!---->
+<tr>
+	<td>selectFrame</td>
+	<td>relative=parent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${FirstUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=New Service</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=provider_id</td>
+	<td>Middletown Anesthesia</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=renderingprovider_id</td>
+	<td>Logan, James</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=referringprovider_id</td>
+	<td>Dover, John</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=facility_id</td>
+	<td>Old Bridge Surgery Center</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=diagnosis_code1</td>
+	<td>label=715.16 Osteoarthritis, Knee/Low Leg</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=diagnosis_code2</td>
+	<td>label=716.18 Osteoarthritis, Other Spec Site</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=diagnosis_code3</td>
+	<td>label=721.0 Cer Spond w/o Myelopathy</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=diagnosis_code4</td>
+	<td>label=721.10 Cer Spond w Myelopathy</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=diagnosis_code1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=CPT_code_1</td>
+	<td>label=63030 63030</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=secondary_CPT_code_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_date_1</td>
+	<td>02/06/2012</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=start_date_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=start_time_1</td>
+	<td>09:47</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=end_time_1</td>
+	<td>10:55</td>
+</tr>
+<tr>
+	<td>fireEvent</td>
+	<td>id=end_time_1</td>
+	<td>blur</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//input[@name='submit'])[7]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/biller/claims/upload/pageno/3</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=file_type</td>
+	<td>label=Combo Sheets</td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=uploadedfile</td>
+	<td>${ServiceDoc}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=upload</td>
+	<td></td>
+</tr>
+<!---->
+<!--Verify first test user-->
+<!---->
+<tr>
+	<td>selectFrame</td>
+	<td>relative=parent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${FirstUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Service</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>id=accept_assignment</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=provider_id</td>
+	<td>Middletown Anesthesia</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=renderingprovider_id</td>
+	<td>Logan, James</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=referringprovider_id</td>
+	<td>Dover, John</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=facility_id</td>
+	<td>Old Bridge Surgery Center</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=charges_1</td>
+	<td>1500.00</td>
+</tr>
+<!---->
+<!--Verify second user-->
+<!---->
+<tr>
+	<td>selectFrame</td>
+	<td>relative=parent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${SecondUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Service</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>id=accept_assignment</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=provider_id</td>
+	<td>Middletown Anesthesia</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=renderingprovider_id</td>
+	<td>Andrews, Tim</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=referringprovider_id</td>
+	<td>Chase, Claire</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=facility_id</td>
+	<td>Red Bank Community Hospital</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=charges_1</td>
+	<td>500.00</td>
+</tr>
+<!---->
+<!--Verify third test user-->
+<!---->
+<tr>
+	<td>selectFrame</td>
+	<td>relative=parent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${ThirdUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=View</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Service</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>id=accept_assignment</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=provider_id</td>
+	<td>Broadway Medical Service</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=renderingprovider_id</td>
+	<td>Wang, Ted</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=referringprovider_id</td>
+	<td>Cooper, Laura</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=facility_id</td>
+	<td>Little Silver Surgery Center</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=charges_1</td>
+	<td>1500.00</td>
+</tr>
+<!---->
+<!--Verify first test user new service-->
+<!---->
+<tr>
+	<td>selectFrame</td>
+	<td>relative=parent</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>/billingsystem/public/Auth/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=name</td>
+	<td>hmb-admin</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=psw</td>
+	<td>hmb</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Login']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>leftFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Claims Inquiry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>relative=up</td>
+	<td></td>
+</tr>
+<tr>
+	<td>selectFrame</td>
+	<td>mainFrame</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=last_name</td>
+	<td>${FirstUser}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>name=next</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>xpath=(//a[contains(text(),'View')])[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=Service</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>2000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyChecked</td>
+	<td>id=accept_assignment</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=provider_id</td>
+	<td>Middletown Anesthesia</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=renderingprovider_id</td>
+	<td>Logan, James</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=referringprovider_id</td>
+	<td>Dover, John</td>
+</tr>
+<tr>
+	<td>verifySelectedLabel</td>
+	<td>id=facility_id</td>
+	<td>Old Bridge Surgery Center</td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>id=charges_1</td>
+	<td>3900.00</td>
+</tr>
+</tbody></table>
+</body>
+</html>

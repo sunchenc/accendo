@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            $(document).ready(function()
+            { 
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }    
+                }
+            );
+                var role ="<?php echo $this->role ?>";
+                if(role=="guest"){
+                    var inputList = document.getElementsByTagName("input");
+                    for(var i = 0;i<inputList.length;i++){
+                        if(inputList[i].type=="submit"&&(inputList[i].value=="Collection Turnover")){
+                            inputList[i].disabled="true";
+                        }
+                    }
+                }
+                
+                
+                $.post("<?php echo $this->baseUrl ?>/biller/data/download/",
+                function(data)
+                {
+                    
+                    if(data!=''&&data!=null){
+                        window.open(data);
+                    }
+                }
+            );
+            
+        
+            })
+        </script>
+        
+        <!-- for testing now -->
+        <script type="text/javascript" language="Javascript" >
+            function getVal(type){
+                            
+                var allCheck = document.getElementsByTagName("input");
+                var tempid, arr, patientid,encounterid,checkid,claimid;
+                var patient_ids=new Array();
+                var encounter_ids=new Array();
+                var claim_ids=new Array();
+                      
+                 
+                for(var i=0; i < allCheck.length; i++){
+                     if(allCheck[i].type=="checkbox" && allCheck[i].checked == true)
+                     {  
+                        tempid = allCheck[i].id;                           
+                        arr = tempid.split( '_');
+                        patientid = "Patientid_" + arr[1];
+                        encounterid = "Encounterid_" + arr[1];
+                        claimid =  "Claimid_" + arr[1];
+                         commentid = "Comment_" + arr[1];
+                        checkid = arr[1]-1;
+                        bill_comment = document.getElementById(commentid).innerHTML;
+
+                        var patient_id=document.getElementById(patientid).innerHTML;                
+                        var encounter_id=document.getElementById(encounterid).innerHTML;
+                        var claim_id=document.getElementById(claimid).innerHTML;
+                        //checkedids.push(checkedid*13);
+                        patient_ids.push(patient_id);
+                        encounter_ids.push(encounter_id);
+                        claim_ids.push(claim_id);
+                    }
+                    $("#patient_id").val(patient_ids);
+                    $("#encounter_id").val(encounter_ids);
+                   //$("#checkboxid").val(checkedids);
+                    $("#claim_id").val(claim_ids);
+                   
+                }           
+                // var f = window.document.getElementById('form1');
+                //f.method = "post";              
+                //f.submit();
+            }
+        </script>
+        
+        <script type="text/javascript" language="Javascript" >     
+
+         /***********************check for the print second insurance button <By YuLang>***********************************/
+            function checkNumber(){
+                var allCheck = document.getElementsByTagName("input");              
+                //var val = document.getElementById("printsecond");
+                var tempid, arr;
+                var edi_sum = 0, sel_edi_sum = 0;
+                var val_edi = document.getElementById("turnover");
+               
+                for(var i=0; i < allCheck.length; i++){
+                     if(allCheck[i].type=="checkbox")
+                     {
+                        tempid = allCheck[i].id; 
+                        arr = tempid.split( '_');
+                        commentid = "Comment_" + arr[1];                        
+                        edi_sum++;
+                        if( allCheck[i].checked == true){
+                            sel_edi_sum++;
+                        }
+                        
+                     }
+                  }     
+                   val_edi.value = "Collection Turnover ("+ sel_edi_sum + " / "+ edi_sum + ") ";
+                   
+                }
+                
+                function check(){
+                 
+                var allCheck = document.getElementsByTagName("input");
+                
+                
+                for(var i=0; i < allCheck.length; i++){
+                  
+                     if(allCheck[i].type=="checkbox")
+                     {
+                         if (allCheck[i].checked == true)
+                            allCheck[i].checked = false;
+                        else allCheck[i].checked = true;
+                     }
+                }
+             
+              } 
+            function fun()
+            {
+              check();
+              checkNumber(); 
+            }
+            
+            /***********************check for the print second insurance button <By YuLang>***********************************/
+         </script>
+        <script type="text/javascript" language="Javascript" >
+            
+            function getClaim(index){             
+                var encountID = document.getElementById('Encounterid_'+index).innerHTML;
+                var claimID = document.getElementById('Claimid_'+index).innerHTML;
+                //alert(encountID);
+                //alert(claimID);
+                $("#id").val(encountID);
+                document.getElementById("form1").submit();
+            }
+           
+            /*
+             function getClaim(index){
+                var table = document.getElementsByTagName("table")[0];
+                var  td1 = table.getElementsByTagName('td');
+                $("#id").val(td1[(index-1)*13+11].innerHTML);
+                document.getElementById("form1").submit();
+            }
+            */
+        </script>
+    </head>
+    <body onload="checkNumber();">
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Collection Turnover</p>
+        </div>
+        <div class="table-div">
+            <form name="form1" method="post" id="form1">
+                <table id="table1">
+                    <tr>
+                        <th align="center" colspan="14" style="background:#eeeeee">
+                            <p align="center"><b><big>Bill Search Results</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="2%" style="text-align: center;background:#eeeeee"><b onclick="javascript:fun();">Sel</b></th>
+<!--                        <th width="10%" style="text-align: center;background:#eeeeee"><b>Name</b></th>-->
+                       <!-- <th width="10%" style="background:#eeeeee;text-align: center"><b>Name</b></th>-->
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Name"/></th>
+<!--                        <th width="6%" style="background:#eeeeee;text-align: center"><b>MRN</b></th>-->
+                        
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOB"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="MRN"/></th>
+                        
+                        <!-- <th width="6%" style="background:#eeeeee;text-align: center"><b>DOS</b></th>-->
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th>
+<!--                        <th  style="background:#eeeeee;text-align: center"><b>Issue</b></th>-->
+                        <th style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Charge"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Paid"/></th>
+                        
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Insurance"/></th>
+<!--                        <th width="17%" style="background:#eeeeee;text-align: center"><b>Facility</b></th>-->
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Rendering Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Referring Provider"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th>
+                                          
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Last"/></th>
+<!--                        <th  style="text-align: center;background:#eeeeee"><b>Comment</b></th>-->
+                        <th width="15%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Comment"/></th>
+                    </tr>
+                    <?php
+                    $count = 1;
+                    foreach ($this->patientList as $row) {
+                        if ($count % 2 == 0) {
+                            echo "<tr><td width= '2%' style=\"background:#eeeeee;text-align:center;\"><input type=checkbox id= 'check_" . $count . "' checked=true onclick=\"checkNumber()\"></td>";
+                            echo "<td width= '10%' id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal' onclick=\"javascript:getClaim($count)\">" . "<a>" . substr($row['name'],0,20) . "</a>" . "</td>";
+                            echo "<td width= '5%' id='DOS' style=\"background:#eeeeee;font-weight:normal\">" . $row['DOB'] . "</td>";
+                            echo "<td width= '5%' id='' style=\"background:#eeeeee;font-weight:normal\">" . $row['MRN'] . "</td>";
+                            // move the DOS between the insurance and MRN
+                            echo "<td width= '5%' id='DOS' style=\"background:#eeeeee;font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                            // move the DOS between the insurance and MRN
+                            
+                            echo "<td  style=\"background:#eeeeee;font-weight:normal\">" . $row['total_charge'] . "</td>"; 
+                            echo "<td width='5%' style=\"background:#eeeeee;font-weight:normal\">" . $row['amount_paid'] . "</td>"; 
+                            
+                            echo "<td width= '10%' id='insurance_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['insurance_display'],0,15) . "</td>";
+                      
+                            echo "<td width= '10%' id='' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" .   $row['provider_short_name'] . "</td>";
+                            echo "<td width= '10%' id='renderingprovider_last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['renderingprovider_name'],0,15) . "</td>";
+                            echo "<td width= '10%' style='text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . substr($row['referringprovider_name'],0,15) . "</td>" ;
+                            echo "<td width= '5%' id='' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'>" . $row['facility_short_name'] . "</td>";
+                           // echo "<td id='DOS' style=\"background:#eeeeee;font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                            echo "<td width= '5%' id='last' style=\"background:#eeeeee;font-weight:normal\"><span id= 'Last_" . $count . "'>" . $row['last'] . "</span></td>";
+                            echo "<td width= '15%' id='Comment' name= 'Comment' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; background:#eeeeee;font-weight:normal'><span id= 'Comment_" . $count . "'>" . substr($row['Comment'],0,30) . "</span></td>";
+                            echo "<td  style=\"display:none\"><span id= 'Patientid_" . $count . "'>" . $row['patient_id'] ."</span></td>";
+                            echo "<td  style=\"display:none\"><span id= 'Encounterid_" . $count . "'>" . $row['encounter_id'] ."</span></td>";
+                            echo "<td  style=\"display:none\"><span id= 'Claimid_" . $count . "'>" . $row['claim_id'] . "</span></td></tr>";
+                            $count = $count + 1;
+                        } else {
+                            echo "<tr><td width= '2%' style=\"background:#eeeeee;text-align:center;\"><input type=checkbox checked=true id= 'check_" . $count . "' onclick=\"checkNumber()\"></td>";
+                            echo "<td width= '10%'id='last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal' onclick=\"javascript:getClaim($count)\">" . "<a>" . substr($row['name'],0,20) . "</a>" . "</td>";
+                            
+                            echo "<td width= '5%' id='' style=\"font-weight:normal\">" . $row['DOB'] . "</td>";
+                            echo "<td width= '5%' id='' style=\"font-weight:normal\">" . $row['MRN'] . "</td>";
+                            // move the DOS between the MRN and Insurance
+                            echo "<td width= '5%' id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                            //  move the DOS between the MRN and Insurance
+                            echo "<td style=\"font-weight:normal\">" . $row['total_charge'] . "</td>";
+                            echo "<td width='5%' style=\"font-weight:normal\">" . $row['amount_paid'] . "</td>";
+                            
+                            echo "<td  width= '10%' id='insurance_display' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['insurance_display'],0,15) . "</td>";
+ 
+                            echo "<td  width= '10%' id='' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . $row['provider_short_name'] . "</td>";
+                            echo "<td  width= '10%' id='renderingprovider_last_name' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['renderingprovider_name'],0,15) . "</td>";
+                            echo "<td  width= '10%' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['referringprovider_name'],0,15) . "</td>" ;
+                                                       echo "<td  width= '5%' id='DOB' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . $row['facility_short_name']  . "</td>";
+                          //  echo "<td id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";
+                            echo "<td  width= '5%' id='last' style=\"font-weight:normal\"><span id= 'Last_" . $count . "'>" . $row['last'] . "</span></td>";
+                            echo "<td  width= '15%' id='Comment' name= 'Comment' style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; font-weight:normal'><span id= 'Comment_" . $count . "'>" . substr($row['Comment'],0,30) . "</span></td>";
+                            echo "<td  style=\"display:none\"><span id= 'Patientid_" . $count . "'>". $row['patient_id'] . "</span></td>";
+                            echo "<td style=\"display:none\"><span id= 'Encounterid_" . $count . "'>" . $row['encounter_id'] . "</span></td>";
+                            echo "<td style=\"display:none\"><span id= 'Claimid_" . $count . "'>" . $row['claim_id'] . "</span></td></tr>";
+                            $count = $count + 1;
+                        }
+                    }
+                    ?>
+                    <tr>
+                        <td colspan="3"><input type ="submit"  name="collection" id="turnover" align="center" value="Collection Turnover" onclick="javascript:getVal(1)" /></td>                       
+                      
+                        <td><input type="text" name="patient_id"  id="patient_id"size="20" style= "display:none"/></td>
+                        <td><input type="text" name="encounter_id"  id="encounter_id"size="20" style= "display:none"/></td>
+                         <th><input type="text" name="id"  id="id" style= "display:none"/></th>
+                        <td><input type="text" name="claim_id"  id="claim_id"size="20" style= "display:none"/></td>
+                        <td><input type="text" name="checkboxid"  id="checkboxid"size="20" value="10000" style= "display:none"/></td>
+                    </tr>
+                    
+                      <!--Add button for the bill log -->
+                      <tr>
+                          <td colspan="3"><input type ="submit"  name="collection_log" id="billEDI_log" align="center" value="Check Collection Turnover LOG" onclick="javascript:" /></td>
+                          
+                      </tr>
+                      <!--Add button for the bill log -->
+                </table>
+                <!--history-->
+                    <table>
+                        <tr>
+                            <th width="25%" align="left" style="background:#eeeeee">Collection Turnover</th>
+                            <td width="40%" style="background:#eeeeee">
+                                <select class="select" name="coll_dir" id="coll_dir"  style="width: 100%" >
+                                    <option value="-1">Select</option>
+                                    <?php
+                                    $collList = $this->collList;
+                                    $i = 0;
+                                    foreach ($collList as $row) {
+
+                                        $i++;
+                                        echo "<option value='" . $row['path'] . "'>" . $i . ") " . $row['display'] . "</option>";
+                                    }
+                                    ?>
+                                </select>
+
+                            </td>
+                            <th width="35%" size="100" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Open Turnover"/></th>                     
+                        </tr>
+                    </table>
+            </form>
+        </div>
+    </body>
+</html>

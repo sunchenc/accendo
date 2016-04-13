@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+        $(document).ready(function(){
+               $("#POS").change(function(){
+                 var POS = $("#POS").val();
+                 if(POS){
+                      $.post("<?php echo $this->baseUrl ?>/biller/data/facilityposinfo/",{POS:POS},
+                        function(data){
+                            var myjson='';
+                            eval("myjson=" + data + ";");
+                            if(myjson.description!=null){
+                                $("#description").val(myjson.description);
+                            }
+                                
+                        });
+                    }
+                    }
+            );
+            $("#provider_id").change(function(){
+                $('#import_or_new').val('new');
+                $('#import_or_new').change();
+                var provider_id = $("#provider_id").val();
+                if(provider_id){
+                    $("#add_facility_id option").remove();
+                    $("#add_facility_id").append("<option value=\"\">Select</option>");
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/facilityaddlist/",{provider_id:provider_id},function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        for(var i = 0;i<myjson.exist_data.length;i++){
+                        $("#add_facility_id").append("<option value='"+myjson.exist_data[i]['id']+"'>"+myjson.exist_data[i]['facility_display']
+                            +"</option>");
+                        }
+                    });
+                }
+                auto_complete();
+            });
+            $('#import_or_new').change(function (e){
+                var import_or_new = $("#import_or_new").val();
+                if(import_or_new == 'new') {
+                    $('#add_facility_id').hide();
+                    $('#facility_display').show();
+                }
+                else {
+                    $('#add_facility_id').show();
+                    $('#facility_display').hide();
+                }
+            });
+        });
+        </script>
+          <script type="text/javascript" language="javascript" >
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function fillfacilityname()
+            { 
+                if (!$('#facility_name').val())
+                {
+                    $('#facility_name').val($('#facility_display').val());
+                }
+                isexisting();
+            }
+        
+            function zip2citystate(name)
+            {
+                var zip=$(name).val();
+                var tp = name.split('_');
+                ti = tp[1];
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#state" ).val(myjson.state);
+                    }
+                );
+                }
+            }
+        </script>
+         <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                var facility_id=$("#add_facility_id").val();
+                if(facility_id!=null)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/facilityinfo/",{facility_id:facility_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        $("#fax_number").val(myjson.fax_number);
+                       
+                        $("#street_address").val(myjson.street_address);
+                        $("#zip").val(myjson.zip);
+                        $("#state").val(myjson.state);
+                        $("#city").val(myjson.city);
+                        $("#phone_number").val(myjson.phone_number);  
+                        $("#description").val(myjson.description);
+                        if(myjson.POS!=''&&myjson.POS!=null){
+                            $("#POS").val(myjson.POS);
+                        }
+//                        $("#provider_id").val(myjson.provider_id);
+                        $("#service_doc_first_page").val(myjson.service_doc_first_page);
+                        $("#service_doc_second_page").val(myjson.service_doc_second_page);
+                        $("#service_doc_third_page").val(myjson.service_doc_third_page);
+                        $("#service_doc_forth_page").val(myjson.service_doc_forth_page);
+                        $("#notes").val(myjson.notes);
+                        $("#short_name").val(myjson.short_name);
+                        $("#NPI").val(myjson.NPI);
+                        $("#facility_name").val(myjson.facility_name);
+                    });
+                }
+                else
+                {
+                    $("#fax_number").val('');
+                    $("#street_address").val('');
+                    $("#zip").val('');
+                    $("#state").val('');
+                    $("#city").val('');
+                    $("#phone_number").val('');
+                    $("#service_doc_first_page").val('');
+                    $("#service_doc_second_page").val('');
+                    $("#service_doc_third_page").val('');
+                    $("#service_doc_forth_page").val('');
+                    $("#notes").val('');
+                    $("#short_name").val('');
+                    $("#NPI").val('');
+                }
+            }
+                     
+             function isexisting()
+            {
+                
+                var provider_id=$("#provider_id").val();
+              
+                var facility_display=$("#facility_display").val();
+                
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+             
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/facilityexisting/",{provider_id:provider_id,facility_name:facility_display},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var facility_display = document.getElementById("facility_display");
+                    facility_display.style.borderColor="#ffffff";
+                        $("#existing").hide();
+                        var myexist=myjson.existing;
+                        if(myexist)
+                        {
+                          facility_display.style.borderColor="#ff0000";
+                          $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+        </script>
+
+
+    </head>
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; New Facility</p>
+        </div>
+        <div class="table-div" >
+            <form method="post">
+                <table>
+                    <tr >
+                           <th align="left">Provider</th>
+                        <td >
+                            <select class="select"  name="provider_id" style= "width:100%" id="provider_id">
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    $tempnumber=$row['num']-$this->allNumFac['num'];
+                                    $selectedStr = '';
+                                    if($row['id'] == $this->initProvider_id)$selectedStr = ' selected=\'selected\' ';
+                                    echo "<option value='" . $row['id'] .'\''.$selectedStr. ">" . $row['provider_name']  ."--". $row['street_address'] ."(" . $tempnumber . ")" . "</option>";
+                                }
+                                ?>
+                                <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumFac['num']; ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Facility Display Name<font color="#FF0000">*</font></th><td>
+                            <select  class="select"  name="import_or_new" style="width: 99%" id="import_or_new">
+                            <option value='new'>New</option>
+                            <option value='import'>Import</option>
+                        </select>
+                        <select class="select" style= "width:99%;display:none"  name="add_facility_id" style= "" id="add_facility_id"  onchange="javascript:auto_complete()"  >
+                        </select>
+                        <input type="text" name="facility_display" size="55" id="facility_display" onblur="javascript:fillfacilityname()"/>
+                        <a name="existing" id="existing"  style='color:red;display:none' >existing</a>
+                        </td>
+                        <th align="left">Facility Name</th><td><input type="text" size="55" name="facility_name" id="facility_name" /></td>
+                        
+                    </tr>
+                    <tr>
+                        <th align="left">Phone Number</th><td><input type="text" size="55" name="phone_number" id="phone_number" onkeyup="javascript:phone('#phone_number')"/></td>
+                        <th align="left">Street Address</th><td><input type="text" name="street_address" size="55" id="street_address" /></td>
+                         <th align="left">Zip</th><td><input type="text" size="55" name="zip" id="zip" onblur="javascript:zip2citystate('#zip')"/></td>
+                        
+                        
+                    </tr>
+                    <tr>
+                        <th  align="left">City</th><td><input type="text" size="55" name="city" id="city" /></td>
+                        <th align="left">State</th><td><input type="text" size="55" name="state" id="state" /></td>
+                        <th  align="left">Fax Number</th><td><input type="text" size="55" name="fax_number" id="fax_number" onkeyup="javascript:phone('#fax_number')"/></td>
+                       
+                    </tr>
+                    <tr>
+                         <th  align="left">Service Doc First Page</th><td><input type="text" size="55" name="service_doc_first_page" id="service_doc_first_page" /></td>
+                        <th  align="left">Service Doc Second Page</th><td><input type="text" size="55" name="service_doc_second_page" id="service_doc_second_page" /></td>
+                        <th  align="left">Service Doc Third Page</th><td><input type="text" size="55" name="service_doc_third_page" id="service_doc_third_page" /></td>
+                       
+                    </tr>
+                     <tr>
+                          <th  align="left">Service Doc Forth Page</th><td><input type="text" size="55" name="service_doc_forth_page" id="service_doc_forth_page" r/></td>
+                         <th  align="left">Short Name</th><td><input type="text" size="55" name="short_name" id="short_name" /></td>
+                        <th  align="left">NPI</th><td><input type="text" size="55" name="NPI" id="NPI" /></td>
+                        
+                    </tr>
+                    <tr>
+                        <th align="left">Status<font color="#FF0000">*</font></th>
+                        <td>
+                         <select  class="select"  name="status"  style= "width:100%" id="status">
+                            <option value='active'>active</option>
+                            <option value='inactive'>inactive</option>
+                        </select>
+                        </td>
+                        <th align="left">POS</th>
+                        <td >
+                            <select class="select"  name="POS"  id="POS" style= "width:100%">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->DOSlist as $row) {
+                                    echo "<option value='" . $row['pos'] . "'>" . $row['pos']."-".$row['description']."</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th  align="left">Description</th><td><input type="text" size="55" name="description" id="description" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th>Notes</th><td colspan="5" ><textarea style= "width:100%" rows="4" name="notes" id="notes"  ></textarea></td>
+                    </tr>
+                   
+                    <tr>
+                        <td width="15%"><input type="submit" name="next" value="Save" /></td>
+                        <td colspan="5"></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>
+
+

@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript">
+            $(document).ready(function(){
+                 $("#existing").hide();
+                  
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+                
+                $('#import_or_new').change(function (e){
+                var import_or_new = $("#import_or_new").val();
+                if(import_or_new == 'new') {
+                    $('#add_surgery_code').hide();
+                    $('#add_anesthesia_code_id').hide();
+                    $('#add_modifier_1').hide();
+                    $('#add_modifier_2').hide();
+                    $('#add_charge').hide();
+                    $('#add_expected_amount').hide();
+                     $('#add_description_CPT').hide();
+                                         
+
+                    $('#surgery_code').show();
+                    $('#anesthesia_code_id').show();
+                    $('#modifier_1').show();
+                    $('#modifier_2').show();
+                    $('#charge').show();
+                    $('#expected_amount').show();
+                    $('#description_CPT').show();
+                    
+                }
+                else {
+                   
+                    $('#add_surgery_code').show();
+                    $('#add_anesthesia_code_id').show();
+                    $('#add_modifier_1').show();
+                    $('#add_modifier_2').show();
+                    $('#add_charge').show();
+                    $('#add_expected_amount').show();
+                     $('#add_description_CPT').show();
+                                    
+
+                    $('#surgery_code').hide();
+                    $('#anesthesia_code_id').hide();
+                    $('#modifier_1').hide();
+                    $('#modifier_2').hide();
+                    $('#charge').hide();
+                    $('#expected_amount').hide();
+                    $('#description_CPT').hide();
+                   
+                }
+            });
+                 $("#provider_id").change(function(){
+                    var provider_id = $("#provider_id").val();
+                    if(provider_id){       
+                        $('#anesthesia_code_id').val('');
+                        $('#base_unit').val('');
+                        $('#description_CPT').val('');
+                        $("#add_surgery_code option").remove();
+                        $("#add_surgery_code").append("<option value=\"\">Select</option>");
+                        $('#anesthesia_code_id option').remove();
+                        $('#anesthesia_code_id').append("<option value=\"\">Select</option>");
+                         $('#add_anesthesia_code_id option').remove();
+                        $('#add_anesthesia_code_id').append("<option value=\"\">Select</option>");
+                        $.post("<?php echo $this->baseUrl ?>/biller/data/newanesthesianlist/",{provider_id:provider_id},
+                        function(data){
+                            var myjson='';
+                            //$("#description").val("1");
+                            eval("myjson=" + data + ";");
+                             for(var i = 0;i<myjson.crosswalkList.length;i++){
+                                $("#anesthesia_code_id").append("<option value='"+
+                                    myjson.crosswalkList[i]['id']+
+                                    "'>"+myjson.crosswalkList[i]['anesthesia_code']+
+                                    //                                        " "+myjson.diagnosiscodeList[i]['diagnosis_code']+
+                                "</option>");
+                            }
+                           
+                            for(var i = 0;i<myjson.cptcodeList.length;i++){
+                            $("#add_surgery_code").append("<option value='"+myjson.cptcodeList[i]['id']+"'>"+myjson.cptcodeList[i]['CPT_code']+"-"+myjson.cptcodeList[i]['provider_name']
+                            +"</option>");
+                            }
+                              for(var i = 0;i<myjson.addcrosswalkList.length;i++){
+                                $("#add_anesthesia_code_id").append("<option value='"+
+                                    myjson.addcrosswalkList[i]['id']+
+                                    "'>"+myjson.addcrosswalkList[i]['anesthesia_code']+
+                                    //                                        " "+myjson.diagnosiscodeList[i]['diagnosis_code']+
+                                "</option>");
+                            }
+                        });
+                    }
+                   
+                }
+            );
+            });
+   
+         function add_auto_complete()
+         {
+                var cpt_code_id=$("#add_surgery_code").val();
+              
+                var provider_id=$("#provider_id").val();
+               
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+                  //$('#add_surgery_code').val('');
+                  $('#add_anesthesia_code_id').val('');
+                  $('#add_modifier_1').val('');
+                  $('#add_modifier_2').val('');
+                  $('#add_charge').val('');
+                  $('#add_expected_amount').val('');
+                  $('#add_description_CPT').val('');
+                  
+                  $('#anesthesia_code_id').val('');
+                  $('#modifier_1').val('');
+                  $('#modifier_2').val('');
+                  $('#charge').val('');
+                  $('#expected_amount').val('');
+                  $('#description_CPT').val('');
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/newsurgeryaddinfo/",{cpt_code_id:cpt_code_id,provider_id:provider_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                        //  $('#add_surgery_code').val(myjson.surgery_code);
+                          $('#add_anesthesia_code_id').val(myjson.anesthesiacode_id);
+                          $('#add_modifier_1').val(myjson.default_modifier_1);
+                          $('#add_modifier_2').val(myjson.default_modifier_2);
+                          $('#add_charge').val(myjson.charge_amount);
+                          $('#add_expected_amount').val(myjson.payment_expected);
+                          $('#add_description_CPT').val(myjson.description);
+                          
+                          $('#anesthesia_code_id').val(myjson.anesthesiacode_id);
+                          $('#modifier_1').val(myjson.default_modifier_1);
+                          $('#modifier_2').val(myjson.default_modifier_2);
+                          $('#charge').val(myjson.charge_amount);
+                          $('#expected_amount').val(myjson.payment_expected);
+                          $('#description_CPT').val(myjson.description);
+                          auto_complete();
+                          
+//                        $('#base_unit').val(myjson.base_unit);
+//                        $('#description').val(myjson.description);
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });   
+         }
+         function auto_complete()
+            {
+                var import_or_new = $("#import_or_new").val();
+                if(import_or_new == 'new') {
+                    var anesthesia_code_id=$("#anesthesia_code_id").val();
+                }else{
+                   var anesthesia_code_id=$("#add_anesthesia_code_id").val();
+                }
+              
+                
+               
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+                $('#base_unit').val('');
+                $('#description').val('');
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/newsurgeryinfo/",{anesthesia_code_id:anesthesia_code_id},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                  
+                        $('#base_unit').val(myjson.base_unit);
+                        $('#description').val(myjson.description);
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+          
+                 function isexisting()
+            {
+                var provider_id=$("#provider_id").val();
+              
+                var surgery_code=$("#surgery_code").val();
+                
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+             
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/surgeryexisting/",{provider_id:provider_id,cpt_code:surgery_code},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var surgery_code = document.getElementById("surgery_code");
+                    surgery_code.style.borderColor="#ffffff";
+                        $("#existing").hide();
+                        var myexist=myjson.existing;
+                        if(myexist)
+                        {
+                          surgery_code.style.borderColor="#ff0000";
+                          $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+            </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; Surgery Code</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" name="Option">
+                <table>
+                    <tr >
+                        <th align="left" colspan="1" >Provider</th>
+                        <td  colspan="1" >
+                            <select class="select" name="provider_id" style= "width:100% " id="provider_id" >
+                                <option value="">Select</option>
+                                 <?php
+                             
+                               
+                                foreach ($this->providerList as $row) {
+                                     $tempnumber=$row['num']-$this->allNumSur['num'];
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "--". $row['street_address'] ."(" . $tempnumber . ")" ."</option>";
+                                }
+                                ?>
+                                 <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumSur['num']; ?>)</option>
+                                
+                            </select>
+                        </td>
+                        
+                        <th align="left">Surgery Code<font color="#FF0000">*</font></th>
+                        <td>
+                        <select  class="select"  name="import_or_new" style= "width:100%" id="import_or_new">
+                            <option value='new'>New</option>
+                            <option value='import'>Import</option>
+                        </select>
+                            <select class="select" style= "width:100%;display:none"  name="add_surgery_code"  id="add_surgery_code" onchange="javascript:add_auto_complete()" >
+                        </select>
+                        <!--input type="text" name="facility_name" style= "width:69%" id="facility_name"/-->
+                        <!--input type="text" name="surgery_code" id="surgery_code" size="10"/-->
+                        <input type="text" name="surgery_code" id="surgery_code" onblur="javascript:isexisting()" style= "" size="58" />
+                         <a name="existing" id="existing"  style='color:red;' >existing</a></td>
+                        <th align="left">Surgery Description<font color="#FF0000">*</font></th><td><input size="58"  type="text" name="description_CPT" id="description_CPT" size="58" /><input type="text" name="add_description_CPT" id="add_description_CPT"  style="display: none" disabled="false"/></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Charge</th><td><input  size="58"  colspan="1" type="text" name="charge" id="charge" /><input  colspan="1" type="text" name="add_charge" id="add_charge"  style="display: none" disabled="false" size="58"  /> </td>
+                        <th align="left">Expected Amount</th><td><input  size="58"  colspan="2" type="text" name="expected_amount" id="expected_amount" /><input  colspan="2" type="text" name="add_expected_amount" id="add_expected_amount"  style="display: none" disabled="false" size="58"  /></td>
+                        <th align="left">Modifier1</th><td><input  size="58"  colspan="2" type="text" name="modifier_1" id="modifier_1" /><input  colspan="2" type="text" name="add_modifier_1" id="add_modifier_1"   style="display: none" disabled="false" size="58" /></td>
+<!--                        <td><input  colspan="1" type="text" name="modifier_1" id="modifier_1" /> </td>-->
+                          <!--td colspan="1">
+                            <select class="select" name="modifier_1" id="modifier_1" style= "width:100% ">
+                                <option value="">select</option>
+                                <?php
+                                foreach ($this->modifierList as $row) {
+                                    echo "<option value='" . $row->modifier . "'>" . $row->modifier . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                        
+<!--                        <td><input  colspan="1" type="text" name="modifier_2" id="modifier_2" /> </td>-->
+                      <!--td colspan="1">
+                            <select class="select" name="modifier_2" id="modifier_2" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->modifierList as $row) {
+                                    echo "<option value='" . $row->modifier . "'>" . $row->modifier . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td-->
+                      <tr>
+                          <th align="left">Modifier2</th><td><input  colspan="2" type="text" name="modifier_2" id="modifier_2" size="58" /><input  colspan="2" type="text" name="add_modifier_2" id="add_modifier_2"  style="display: none" disabled="false" size="58" /></td>
+                             <th align="left">Anesthesia Code</th><!--td >
+                            <input class="select" colspan="1" type ="text" name="anesthesia_code" id="anesthesia_code" onchange="javascript:auto_complete()"/>
+                        </td-->
+                        <td colspan="1">
+                            <select class="select" name="anesthesia_code_id" id="anesthesia_code_id" onchange="javascript:auto_complete()" style= "width:100% ">
+                             <option value="">Select</option>
+                            </select>
+                      
+                            <select class="select" name="add_anesthesia_code_id" id="add_anesthesia_code_id" onchange="javascript:auto_complete()" style= "width:100%;display: none;"  disabled="false" >
+                             <option value="">Select</option>
+                            </select>
+                        </td>
+                  
+                        <th align="left">Anesthesia Description</th><td><input type="text" name="description" id="description" size="58"  disabled="true" style="background:white"/></td>
+                      </tr>
+                      <tr>
+                        <th align="left">Base Unit</th><td><input type="text" name="base_unit" id="base_unit" size="58"  disabled="true" style="background:white"/></td>
+                      </tr>
+                    <tr >
+                        <td colspan="8"><input type="submit" name="next" value="Save"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+    </head>
+
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a href="main.html" title="">First page</a> &gt; create biller</p>
+        </div>
+        <div class="table-div">
+            <form method="post">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="title" colspan="2"><i>biller information</i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th style="width:15%;">user name</th>
+                            <td><input type="text" name="user_name" /></td>
+                        </tr>
+                        <tr>
+                            <th>password</th>
+                            <td><input type="password" name="password" /></td>
+                        </tr>
+                        <tr>
+                            <th>password(confirm)</th>
+                            <td><input type="password" name="pwd_confirm" /></td>
+                        </tr>
+                        <tr>
+                            <th >real name</th>
+                            <td><input type="text" name="biller_name" id="biller_name" /></td>
+                        </tr>
+                        <tr>
+                            <th>notes</th>
+                            <td colspan="3"><textarea rows="2" cols="50"  name="notes"></textarea></td>
+                        </tr>
+
+                        <th class="title" colspan="2">   <input type="submit" value="create" class="cmd" /></th>
+
+                    </tbody>
+                </table>
+
+            </form>
+
+        </div>
+    </body>
+</html>

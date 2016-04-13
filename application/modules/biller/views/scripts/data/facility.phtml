@@ -1,0 +1,619 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link href="<?php echo $this->baseUrl ?>/styles/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/bootstrap.min.js"></script>
+        <script type="text/javascript" language="Javascript" >
+        $(document).ready(function(){
+            //控制provider是select状态下不能delete， 也不能update
+            var provider_id = $("#provider_id").val();
+            if(provider_id==-1){
+                document.getElementById('myupdate').disabled = true;
+                document.getElementById('delete').disabled = true;
+            }
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            );
+           
+            $.post("<?php echo $this->baseUrl ?>/biller/data/facilitylist/", {provider_id: 0},
+                        function (data) {});
+            $.get("<?php echo $this->baseUrl ?>/biller/data/selectprovider/",function(data){
+                var myjson='';
+                    eval("myjson=" + data + ";");
+                    $("#provider_id").val(myjson.provider_id);
+                     $("#provider_id").change();  
+                }
+                     
+            );
+                 $("#POS").change(function(){
+                 var POS = $("#POS").val();
+                 if(POS){
+                      $.post("<?php echo $this->baseUrl ?>/biller/data/facilityposinfo/",{POS:POS},
+                        function(data){
+                            var myjson='';
+                            eval("myjson=" + data + ";");
+                            if(myjson.description!=null){
+                                $("#description").val(myjson.description);
+                            }
+                                
+                        });
+                    }
+                    }
+            );
+            $("#provider_id").change(function(){
+            
+            var provider_id = $("#provider_id").val();
+            if(provider_id==-1){
+                document.getElementById('myupdate').disabled = true;
+                document.getElementById('delete').disabled = true;
+//                $("#myupdate").attr('disable','disable');
+//                $("#delete").attr('disable','disable');
+            }else{
+                document.getElementById('myupdate').disabled = false;
+                document.getElementById('delete').disabled = false;
+            }
+            $(".doc_line").remove();
+            if(provider_id == 0) {
+                $('#del_provider_id_span').show();
+            }
+            else {
+                $('#del_provider_id_span').hide();
+            }
+            $('#del_provider_id').val(provider_id);
+            $("#facility_display").val("");
+            if(provider_id){
+                
+                $("#facility_id option").remove();
+                $("#facility_id").append("<option value=\"\">Select</option>");
+                $.post("<?php echo $this->baseUrl ?>/biller/data/facilitylist/",{provider_id:provider_id},function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    for(var i = 0;i<myjson.facilityList.length;i++){
+                    $("#facility_id").append("<option value='"+myjson.facilityList[i]['id']+"'>"+myjson.facilityList[i]['facility_display']
+                        +"</option>")
+                    }
+                    
+                });
+               // facilityAddlistAction
+            }
+            
+            auto_complete();
+        });
+        var name = $('#facility_display');
+            var id = $('#facility_id');
+            name.blur(nameBlur);
+            name.hide();
+        }
+    );
+    function displaycheck(name){
+                var value=$(name).val();
+         
+                 for(var index=0;index<value.length;index++){
+                      var cur=value.charAt(index) ;
+                      if((cur<='9'&&cur>='0')||cur==' '||(cur<='z'&&cur>='a')||(cur<='Z'&&cur>='A')||cur=='-'||cur=='_'){
+                      }
+                      else{
+                          value=value.substr(0,index)+value.substr(index+1,value.length-index-1);
+                           $(name).val(value);
+                          var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                           setCaretPosition(document.getElementById(tempname),index);
+    
+                                        
+                      }
+                  }
+             }
+            function selectChange() {
+                var name = $('#facility_display')[0];
+                var id = $('#facility_id')[0];
+                if(id.value != '-1'){
+                    name.width = id.width;
+                    name.height = id.height;
+                    name.value = id.options[id.selectedIndex].text;
+                }else{
+                    name.value = '';
+                }
+            }
+            function nameBlur () {
+                  var name = $('#facility_display');
+                  var id = $('#facility_id');
+                  name.hide();
+                  id.show();
+                  if(name[0].value != id[0].options[id[0].selectedIndex].text){
+                      id[0].options[id[0].selectedIndex].text = name[0].value;
+                  }
+              }
+        </script>
+             <script type="text/javascript" language="javascript" >
+               
+            function zip2citystate(name)
+            {
+                var zip=$(name).val();
+                var tp = name.split('_');
+                ti = tp[1];
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#state" ).val(myjson.state);
+                    }
+                );
+                }
+            }
+        </script>
+          <script type="text/javascript" language="javascript" >
+             function editName () {
+                    var name = $('#facility_display');
+                    var id = $('#facility_id');
+                    if(id[0].value != '-1'){
+                        name.show();
+                        id.hide();
+                        name.focus();
+                    }
+                }
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function auto_complete()
+            {
+                selectChange();
+                var facility_id=$("#facility_id").val();
+                var provider_id=$("#provider_id").val();
+                
+                if(facility_id)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/facilityinfo/",{facility_id:facility_id,provider_id:provider_id},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        $("#fax_number").val(myjson.fax_number);
+                        $("#street_address").val(myjson.street_address);
+                        $("#zip").val(myjson.zip);
+                        $("#state").val(myjson.state);
+                        $("#city").val(myjson.city);
+                        $("#phone_number").val(myjson.phone_number);  
+//                        $("#provider_id").val(myjson.provider_id);
+                        $("#service_doc_first_page").val(myjson.service_doc_first_page);
+                        $("#service_doc_second_page").val(myjson.service_doc_second_page);
+                        $("#service_doc_third_page").val(myjson.service_doc_third_page);
+                        $("#service_doc_forth_page").val(myjson.service_doc_forth_page);
+                        $("#notes").val(myjson.notes);
+                        $("#NPI").val(myjson.NPI);
+                        $("#short_name").val(myjson.short_name);
+                        $("#description").val(myjson.description);
+                        $("#status").val(myjson.status);
+                        $(".doc_line").remove();
+                        $("#POS").val(myjson.POS);
+                        $("#facility_name").val(myjson.facility_name);
+                        var i=0;
+                        for(i=0;i<myjson.facility_doc_list.length;i++)
+                        {   
+                            if (i%2 == 0){
+                                $("#doc_table").append("<tr class='doc_line' id='facility_doc_" + i + "' style = 'background:#FF0000'>" +
+                                        "<td width='25%' style='text-align: center' >" + "<a href = \"/accendo/public/" + myjson.facility_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.facility_doc_list[i]['date'] + "</a></td>" +
+                                        "<td width='25%' style='text-align: center'>" + myjson.facility_doc_list[i]['desc'] + "</td>" +
+                                        "<td width='25%' style='text-align: center'>" + myjson.facility_doc_list[i]['user'] + "</td>" +
+                                        "<td width='25%' style='text-align: center'><input id = " + myjson.facility_doc_list[i]['url'] + " style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"button\" name=\"button\" value=\"DELETE\" onclick = \"javascript:onDelete(this" + "," + i + ")\">" + "</input></td>" +
+                                        "</tr>");
+                            }else{
+                                $("#doc_table").append("<tr class='doc_line' id='facility_doc_" + i + "' style = 'background:#FF0000'>" +
+                                        "<td width='25%' style='background:#eeeeee;text-align: center' >" + "<a href = \"/accendo/public/" + myjson.facility_doc_list[i]['url'] + "\" target = \" _blank \">" + myjson.facility_doc_list[i]['date'] + "</a></td>" +
+                                        "<td width='25%' style='background:#eeeeee;text-align: center'>" + myjson.facility_doc_list[i]['desc'] + "</td>" +
+                                        "<td width='25%' style='background:#eeeeee;text-align: center'>" + myjson.facility_doc_list[i]['user'] + "</td>" +
+                                        "<td width='25%' style='background:#eeeeee;text-align: center'><input id = " + myjson.facility_doc_list[i]['url'] + " style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"button\" name=\"button\" value=\"DELETE\" onclick = \"javascript:onDelete(this" + "," + i + ")\">" + "</input></td>" +
+                                        "</tr>");
+                            }
+                        }
+                        if (i%2 == 0){
+                            $("#doc_table").append("<tr class='doc_line'>"+
+                                    "<td width='25%' style='text-align: center' >" + "<input name=\"uploadedfil\" type=\"file\" id=\"uploadedfil\" /></td>" +
+                                    "<td width = '25%' style='text-align: center' id = \"desc\"><input type=\"text\" name=\"desc\"  id=\"desc\" ></input></td>" +
+                                    "<td width='25%' style='text-align: center'>" + myjson.user_name + "</td>"+
+                                    "<td width='25%' style='text-align: center'><input id=\"upload\" style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"submit\" name=\"submit\" value=\"UPLOAD\"></input></td>" +
+                            "</tr>");
+                        }else{
+                            $("#doc_table").append("<tr class='doc_line'>"+
+                                    "<td width='25%' style='background:#eeeeee;text-align: center' >" + "<input name=\"uploadedfil\" type=\"file\" id=\"uploadedfil\" /></td>" +
+                                    "<td width = '25%' style='background:#eeeeee;text-align: center' id = \"desc\"><input type=\"text\" name=\"desc\"  id=\"desc\" ></input></td>" +
+                                    "<td width='25%' style='background:#eeeeee;text-align: center'>" + myjson.user_name + "</td>"+
+                                    "<td width='25%' style='background:#eeeeee;text-align: center'><input id=\"upload\" style=\"color: #000;background: #fff;border: 1px solid black;margin: 0px;padding:0px;height:20px;width:60%;vertical-align:baseline;font: 12px Arial;\" align=\"middle\" type=\"submit\" name=\"submit\" value=\"UPLOAD\"></input></td>" +
+                            "</tr>");
+                        }
+                        
+                    });
+                }
+                else
+                {
+                    $("#fax_number").val('');
+                    $("#street_address").val('');
+                    $("#zip").val('');
+                    $("#state").val('');
+                    $("#city").val('');
+                    $("#phone_number").val('');
+                    $("#service_doc_first_page").val('');
+                    $("#service_doc_second_page").val('');
+                    $("#service_doc_third_page").val('');
+                    $("#service_doc_forth_page").val('');
+                    $("#notes").val('');
+                }
+               
+            }
+        
+         function isexisting()
+            {
+                
+                var provider_id=$("#provider_id").val();
+              
+                var facility_display=$("#facility_display").val();
+                
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+             
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/facilityexisting/",{provider_id:provider_id,facility_name:facility_display},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var facility_display = document.getElementById("facility_display");
+                    facility_display.style.borderColor="#ffffff";
+                        $("#existing").hide();
+                        var myexist=myjson.existing;
+                        if(myexist)
+                        {
+                          facility_display.style.borderColor="#ff0000";
+                          $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+        </script>
+        <script type="text/javascript" language="javascript">
+            
+            function onDelete(id,num)
+            {
+                var provider_id = $("#provider_id").val();
+                var r=confirm("The selected document will be permenantly deleted from Accendo, please confirm");
+                var url = id.id;
+                var sele = "#facility_doc_" + num;
+                if (r == true)
+                {   
+                    if(provider_id !='0'){
+                        $.post("<?php echo $this->baseUrl ?>/biller/data/deletebillingdocs/",{url:url,type:"facility"},
+                        function(data){
+                            var answer='' ;
+                            eval("answer=" + data + ";");
+                            //alert("abc"+answer.result);
+                            if(answer.result=="true"){
+                                $(sele).remove();
+                            }else
+                            {
+                                alert("Unalbe to delete");
+                            }
+                        });
+                    }else{
+                        $.post("<?php echo $this->baseUrl ?>/biller/data/deletefacilitydocall/",{url:url},
+                        function(data){
+                            var answer='' ;
+                            eval("answer=" + data + ";");
+                            //alert("abc"+answer.result);
+                            if(answer.result=="true"){
+                                $(sele).remove();
+                            }else
+                            {
+                                alert("Unalbe to delete");
+                            }
+                        });
+                    }
+                }else
+                {
+                    //alert("No Doc Exsit!");
+                }
+                //$(sele).remove();
+                //$.post("<?php echo $this->baseUrl ?>/biller/claims/deletedocs/",{url:url},function(data){});
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Data Management</a> &gt; Facility</p>
+        </div>
+        <div class="table-div" >
+            <form enctype="multipart/form-data" method="post"  action="" >
+                <table>
+                    <tr >
+                         <th align="left">Provider</th>
+                        <td >
+                            <select class="select"  name="provider_id" style= "width:100%" id="provider_id">
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                     $tempnumber=$row['num']-$this->allNumFac['num'];
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] ."--". $row['street_address'] ."(" . $tempnumber . ")" . "</option>";
+                                }
+                                ?>
+                                <option value="0">ALL&nbsp;&nbsp;(<?php echo $this->allNumFac['num']; ?>)</option>
+                            </select>
+                        </td>
+                        <th align="left">Facility Display Name</th>
+                        <td >
+                            <select class="select"  name="facility_id" style= "width:100%" id="facility_id" onchange="javascript:auto_complete()" >
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->facilityList as $row) {
+                                    echo "<option value='" . $row['fid'] . "'>" . $row['facility_display_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                               <input type='input' value='' name='facility_display' id='facility_display' size="38"  onkeyup="javascript:displaycheck('#facility_display')" onblur="isexisting()" />
+                                <a name="existing" id="existing"  style='color:red;display:none' >existing</a>
+                               <a title='edit Display Name' href='JavaScript:void(0);' style='display:inline;color:red;' onclick='editName()'>edit</a>                          
+
+                        </td>
+                        
+                      
+                        <th align="left">Facility Name</th><td><input type="text" size="55" name="facility_name" id="facility_name" /></td>
+                      
+                        
+                    </tr>
+                    <tr>
+                        <th align="left">Phone Number</th><td><input type="text" size="55" name="phone_number" id="phone_number" onkeyup="javascript:phone('#phone_number')"  /></td>
+                         <th align="left">Street Address</th><td><input type="text" name="street_address" size="55" id="street_address" /></td>
+                         <th align="left">Zip</th><td><input type="text" size="55" name="zip" id="zip" onblur="javascript:zip2citystate('#zip')"/></td>
+                        
+                       
+                    </tr>
+                    <tr>
+                        <th  align="left">City</th><td><input type="text" size="55" name="city" id="city" /></td>
+                        <th align="left">State</th><td><input type="text" size="55" name="state" id="state" /></td>
+                        <th  align="left">Fax Number</th><td><input type="text" size="55" name="fax_number" id="fax_number" onkeyup="javascript:phone('#fax_number')" /></td>
+                        
+                    </tr>
+                    <tr>
+                        <th  align="left">Service Doc First Page</th><td><input type="text" size="55" name="service_doc_first_page" id="service_doc_first_page" /></td>
+                        <th  align="left">Service Doc Second Page</th><td><input type="text" size="55" name="service_doc_second_page" id="service_doc_second_page" /></td>
+                        <th  align="left">Service Doc Third Page</th><td><input type="text" size="55" name="service_doc_third_page" id="service_doc_third_page" /></td>
+                        
+                    </tr>
+                    <tr>
+                        <th  align="left">Service Doc Forth Page</th><td><input type="text" size="55" name="service_doc_forth_page" id="service_doc_forth_page" /></td>
+                        <th  align="left">Short Name</th><td><input type="text" size="55" name="short_name" id="short_name" /></td>
+                        <th  align="left">NPI</th><td><input type="text" size="55" name="NPI" id="NPI" /></td>
+                     
+                    </tr>
+                    <tr>
+                        <th align="left">Status</th>
+                        <td>
+                         <select  class="select"  name="status"  style= "width:100%" id="status">
+                            <option value='active'>active</option>
+                            <option value='inactive'>inactive</option>
+                        </select>
+                        </td>
+                        <th align="left">POS</th>
+                        <td >
+                            <select class="select"  name="POS"  id="POS" style= "width:100%">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->DOSlist as $row) {
+                                    echo "<option value='" . $row['pos'] . "'>" . $row['pos'] ."-".$row['description']. "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th  align="left">Description</th><td><input type="text" size="55" name="description" id="description" readonly= "true "/></td>
+                    </tr>
+                    <tr>
+                        <th>Notes</th><td colspan="5" ><textarea style= "width:100%" rows="4" name="notes" id="notes"  ></textarea></td>
+                    </tr>
+                     
+                    <tr>
+                        <td ><input type="submit" name="submit" id="myupdate" value="Update" /></td>
+                        <td ><input type="button" name="delete" id="delete" value="Delete" onclick="deleteFac()"/></td>
+                        <div class="modal fade" id="login-modal">
+                            <div class="modal-dialog modal-lg">
+                                 <div class="modal-content">
+                                     <div class="modal-header">
+                                         <button class="close" data-dismiss="modal">&times</button>
+                                         <h4 style="color:red">This facility can not be deleted as the claims below are stilling associated with the facility !</h4>
+                                     </div>
+                                      <div class="modal-body">
+                                           <div class="container-fluid">
+                                               <div class="row">
+                                                   <div class="col-md-3"><strong>Last Name</strong></div>
+                                                   <div class="col-md-3"><strong>First Name</strong></div>
+                                                   <div class="col-md-3"><strong>DOS</strong></div>
+                                                   <div class="col-md-3"><strong>Provider</strong></div>
+                                               </div>
+                                               <div id="detail">
+
+                                               </div>
+
+                                           </div>
+                                          <br>
+                                          <div id="more" style="float:right">More...</div>
+                                      </div>
+                                      <div class="modal-footer">
+                                         <button class="btn btn-default" data-dismiss="modal">
+                                            Close
+                                         </button>
+                                      </div>
+                                 </div>
+                            </div>
+                        </div>
+                        
+<!--                        <td id="showdetail" style="display:none">
+                                <table id="modal-overlay">
+                                    <tr>
+                                    <td class="modal-data">
+                                            <p>你不能删除</p>
+                                            <table id="detail">
+                                                <th>last name</th>
+                                                <th>first name</th>
+                                                <th>DOS</th>
+                                                <th>provider</th>
+                                                <tr>
+                                                    <td>
+                                                        <table id="adddetailmessage">
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr><td>点击<a onclick="overlay()" href="#">这里</a>关闭<td></tr>
+                                            </table>
+
+                                          
+                                    </td>
+                                   </tr>
+                                </table>
+                        </td>-->
+                        
+<!--                        <td>
+                            <div id="showdetail" style="display:none">
+                                    <div id="modal-overlay">
+                                            <div class="modal-data" >
+                                                    <div id="detail">
+                                                            <span>last name</span>
+                                                            <span>first name</span>
+                                                            <span>DOS</span>
+                                                            <span>provider</span>
+                                                            <div id="adddetailmessage">
+                                                            </div>
+                                                    </div>
+                                                    <p>more...</p>
+                                                    <p>点击<a onclick="overlay()" href="#">这里</a>关闭</p>
+                                            </div>
+                                    </div>
+                            </div>
+                        </td>-->
+                        <script>
+//                            function overlay(){
+//                                var e1 = document.getElementById('modal-overlay');
+//                                e1.style.visibility = (e1.style.visibility == "visible")? "hidden" : "visible";
+//                            }
+                            function deleteFac(){
+                               //var showdetail = document.getElementById("showdetail");
+                               var status = $("#status").val();
+                               //alert(status);
+                               var provider_id = $("#provider_id").val();
+                               //alert(provider_id);
+                               var facility_id = $("#facility_id").val();
+                               //alert(facility_id);
+                               var del_provider_id = $("#del_provider_id").val();
+                                $.post("<?php echo $this->baseUrl ?>/biller/data/deleteFac/",{'provider_id':provider_id,'facility_id':facility_id,'status':status,'del_provider_id':del_provider_id},function(data){
+                                    var myjson='';
+                                    eval("myjson=" + data + ";");
+                                    var flag = myjson.flag;
+                                    var status = myjson.status;
+                                    if(status==1){
+                                        alert('you can not delete an active facility');
+                                    }else{
+                                            if(flag==1){
+                                                //alert('can not delete');
+                                                var patientinfoArray = myjson.patientinfoArray;
+                                                //alert(typeof(patientinfoArray));
+                                                //showdetail.style.display="";
+
+                                               
+                                                $("#login-modal").modal('show');
+                                                var len = patientinfoArray.length;
+                                                //alert(len);
+                                                if(len>10){
+                                                    len = 10;
+                                                }else{
+                                                    $("#more").hide();
+                                                }
+                                                for (var i=0;i<len;i++){
+                                                    //alert(patientinfoArray[i]['last_name']);
+                                                    $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-3\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-3\">"+patientinfoArray[i]['providername']+"</div></div>");
+        //                                            $("#detail").append("<div class=\"row\">"+"<div class=\"col-md-2\">"+patientinfoArray[i]['last_name']+"</div>"+"<div class=\"col-md-2\">"+patientinfoArray[i]['first_name']+"</div>"+"<div class=\"col-md-4\">"+patientinfoArray[i]['dos']+"</div>"+"<div class=\"col-md-4\">"+patientinfoArray[i]['providername']+"</div></div>");
+                                                    //$("#detail").append("<tr><td>"+patientinfoArray[i]['last_name']+"</td><td>"+patientinfoArray[i]['first_name']+"</td><td>"+patientinfoArray[i]['dos']+"</td><td>"+patientinfoArray[i]['providername']+"</td></tr>");
+                                                }
+                                                $('#login-modal').on('hide.bs.modal',function(){
+                                                    $("#detail").children().remove(); //删除所有子元素
+                                                });
+                                            }else{
+                                               alert('delete successfully');
+                                               window.location.href="<?php echo $this->baseUrl ?>/biller/data/facility"; 
+                                            }
+                                    }
+                           
+
+                                });
+                            }
+                        </script>
+                        <td >
+                            <span id='del_provider_id_span' style='display:none'>&nbsp;from&nbsp;
+                                <select class="select"  name="del_provider_id" style= "" id="del_provider_id" >
+                                    <?php
+                                    foreach ($this->providerList as $row) {
+                                        echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] . "</option>";
+                                    }
+                                    ?>
+                                    <option value="0">ALL</option>
+                                </select>
+                            </span>
+                            
+                        </td>
+                        <td ><input type="submit" name="submit" value="New" /></td>
+                        <td colspan="3">
+                            
+                        </td>
+                    </tr>
+                </table>
+                <br></br>
+                <br></br>  
+                <table id="doc_table">
+                    <tr>
+                        <th colspan="4"><p  style="text-align: center;font-size: 16px;">Documents</p></th>
+                    </tr>
+                    <tr>
+                        <th width="25%" style="background:#eeeeee;text-align: center">Data and Time</th>
+                        <th width="25%" style="background:#eeeeee;text-align: center">Description</th>
+                        <th width="25%" style="background:#eeeeee;text-align: center">User</th>
+                        <th width="25%" style="background:#eeeeee;text-align: center"></th>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

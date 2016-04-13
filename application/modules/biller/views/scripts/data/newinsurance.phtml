@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Mdedical Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+           $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null)
+                        var a=document.getElementById("relogin");
+                    a.click(); 
+                }
+            ); 
+        });
+        </script>
+        <script type="text/javascript" language="javascript">
+            function fillinsurancename()
+            {
+                if (!$('#insurance_name').val())
+                {
+                    $('#insurance_name').val($('#insurance_display').val());
+                }
+                isexisting();
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function displaycheck(name){
+                var value=$(name).val();
+         
+                 for(var index=0;index<value.length;index++){
+                      var cur=value.charAt(index) ;
+                      if((cur<='9'&&cur>='0')||cur==' '||(cur<='z'&&cur>='a')||(cur<='Z'&&cur>='A'||cur=='-'||cur=='_')){
+                      }
+                      else{
+                          value=value.substr(0,index)+value.substr(index+1,value.length-index-1);
+                           $(name).val(value);
+                          var tempname=name.substr(1,name.length-1);
+                                        //alert(tempname);
+                           setCaretPosition(document.getElementById(tempname),index);
+    
+                                        
+                      }
+                  }
+             }
+              function setCaretPosition(ctrl, pos){//设置光标位置函数
+                    if(ctrl.setSelectionRange)
+                    {
+                            ctrl.focus();
+                            ctrl.setSelectionRange(pos,pos);
+                    }
+                    else if (ctrl.createTextRange) {
+                            var range = ctrl.createTextRange();
+                            range.collapse(true);
+                            range.moveEnd('character', pos);
+                            range.moveStart('character', pos);
+                            range.select();
+                    }
+            }
+            function phone(name)
+            {
+                var phone_number=$(name).val();
+                if(phone_number.length==3)
+                {
+                    phone_number='('+phone_number+')';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length==8)
+                {
+                    phone_number=phone_number+'-';
+                    $(name).val(phone_number);
+                }
+                if(phone_number.length>13)
+                {
+                    phone_number = phone_number.substr(0,13);
+                    $(name).val(phone_number);
+                }
+            }
+             function isexisting()
+            {
+                var provider_id=$("#provider_id").val();
+              
+                var insurance_display=$("#insurance_display").val();
+                
+                //                        alert("if");
+                //                        alert(myjson.anesthesia_code);
+             
+                
+                //                            alert("else");
+                //                            alert(myjson.payment_expected);
+               
+                $.post("<?php echo $this->baseUrl ?>/biller/data/insuranceexisting/",{provider_id:provider_id,insurance_display:insurance_display},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var insurance_display = document.getElementById("insurance_display");
+                    insurance_display.style.borderColor="#ffffff";
+                        $("#existing").hide();
+                        var myexist=myjson.existing;
+                        if(myexist)
+                        {
+                          insurance_display.style.borderColor="#ff0000";
+                          $("#existing").show();
+                        }
+                        //$('#modifier_1').val(myjson.modifier_1);
+                        //$('#modifier_2').val(myjson.modifier_2);
+                    
+                 
+                });
+            }
+        </script>
+        
+      <script type="text/javascript" language="javascript" >
+         function zip2citystate(name)
+            {
+                var zip=$(name).val();
+                var tp = name.split('_');
+                ti = tp[1];
+                if(zip.length>0)
+                {
+                    $.post("<?php echo $this->baseUrl ?>/biller/data/zip2citystate/",{zip:zip},
+                    function(data){
+                        var myjson='';
+                        eval("myjson=" + data + ";");
+                        if(myjson.city!=null)
+                            $("#insurance_city").val(myjson.city);
+                        if(myjson.state!=null)
+                            $("#insurance_state" ).val(myjson.state);
+                    }
+                );
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function date(name)
+            {
+                var DOB=$(name).val();
+                if(DOB.length==2)
+                {
+                    DOB=DOB+'/';
+                    $(name).val(DOB);
+                }
+                if(DOB.length==5)
+                {
+                    DOB=DOB+'/';
+                    $(name).val(DOB);
+                }
+                if(DOB.length>10)
+                {
+                    DOB = DOB.substr(0,10);
+                    $(name).val(DOB);
+                }
+            }
+        </script>
+
+        <script type="text/javascript" language="javascript" >
+            function zipcode(name)
+            {
+                var zip=$(name).val();
+                if(zip.length==5)
+                {
+                    $(name).val(zip);
+                }
+                if(zip.length==6)
+                {
+                    zip = zip.substr(0,5)+'-'+zip.substr(5,5);
+                    $(name).val(zip);
+                }
+                if(zip.length>10)
+                {
+                    zip = zip.substr(0,10);
+                    $(name).val(zip);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function ssn(name)
+            {
+                var SSN=$(name).val();
+                if(SSN.length==3)
+                {
+                    SSN=SSN+'-';
+                    $(name).val(SSN);
+                }
+                if(SSN.length==6)
+                {
+                    SSN=SSN+'-';
+                    $(name).val(SSN);
+                }
+                if(SSN.length>11)
+                {
+                    SSN = SSN.substr(0,11);
+                    $(name).val(SSN);
+                }
+            }
+            function Isillage(name)
+            {
+                 var nameill=$(name).val();
+                 var namelenght=nameill.length;
+                 var temp=nameill.charAt(namelenght-1);
+                
+                // $(name).val('nameill');
+                 if(temp=="/"|| temp=="\\")
+                 {
+                    nameill=nameill.substr(0,namelenght-1);
+                    $(name).val(nameill);
+                 }
+            }    
+            </script>
+            
+            <script type="text/javascript" language="javascript" >
+                function showoptionfield(){
+//                    alert("start");
+                    var option = $("#tags_select").val();
+//                    alert(option);
+                    var type_id = "#"+option+"_type";
+//                    alert(type_id);
+                    var type = $(type_id).val();
+//                    alert(type);
+                    var option_value = $("#"+option).val();
+                    if(type == 'binary'){
+//                      alert("a checkbox");
+//                      alert(option_value);
+                      $("#tags_input").css("display","none");
+                      $("#tags_checkbox").css("display","");
+                      if(option_value == "yes"){
+//                          alert(option_value);
+                         document.getElementById("tags_checkbox").checked = true;
+                      }else{
+//                         alert(option_value);
+                         document.getElementById("tags_checkbox").checked = false;
+                      }
+                     }else if(type == 'other'){
+//                      alert("an input field");
+//                      alert(option_value);
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","");
+                      $("#tags_input").val(option_value);
+                     }
+                     if(option == "-1"){
+                      $("#tags_checkbox").css("display","none");
+                      $("#tags_input").css("display","none");
+                     }
+                }
+            </script>
+            <script type="text/javascript" language="javascript" >
+                function setvalue(type){
+                    var option = $("#tags_select").val();
+                    if(type == "checkbox"){
+//                        alert("should be checkbox");
+//                        var value = $("#tags_checkbox").val();
+//                        alert(value);
+                        if(document.getElementById("tags_checkbox").checked){
+                            $("#"+option).val("yes");
+//                            alert($("#"+option).val());
+                        }else{
+                            $("#"+option).val("no");
+//                            alert($("#"+option).val());
+                        }
+//                        alert($("#"+option).val());
+                    }else if(type == "input"){
+//                        alert("should be inputfield");
+                        var value = $("#tags_input").val();
+//                        alert(value);
+                        $("#"+option).val(value);  
+//                        alert($("#"+option).val());
+                    }
+                }
+            </script>
+    </head>
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a  title="">Claims Management</a> &gt; Insurance Information</p>
+        </div>
+        <div class="table-div" >
+            <form  method="post" action="" onsubmit="javascript:return check();">
+                <table width="100%">
+                    <tr>
+                        
+                        <th align="left">Company Display Name<font color="#FF0000">*</font></th><td><input type="text" name="insurance_display" id="insurance_display" size="41" onkeyup="javascript:displaycheck('#insurance_display')" onblur="javascript:fillinsurancename()" /> <a name="existing" id="existing"  style='color:red;display:none' >existing</a></td>
+                        <th align="left">Company Name<font color="#FF0000">*</font></th><td ><input type="text" name="insurance_name" id="insurance_name" onkeyup="javascript:Isillage('#insurance_name')" size="38"/></td>
+                        <th align="left">Phone Number<font color="#FF0000">*</font></th><td ><input type="text" name="insurance_phone_number" id="insurance_phone_number" onkeyup="javascript:phone('#insurance_phone_number')" size="38"/></td>
+                        <th align="left">Fax Number</th><td><input type="text" name="fax_number" id="fax_number" onkeyup="javascript:phone('#fax_number')" size="38"/></td>
+                     
+                    </tr>
+                    <tr>
+                        <th  align="left">Street Address</th><td><input type="text" name="insurance_street_address" id="insurance_street_address" size="41" /></td>
+                        <th align="left">Zip Code</th><td><input type="text" name="insurance_zip" id="insurance_zip"  size="38" onblur="javascript:zip2citystate('#insurance_zip')"/></td>
+                        <th align="left">City</th><td><input type="text" name="insurance_city" id="insurance_city" size="38" /></td>
+                        <th align="left">State</th><td><input type="text" name="insurance_state" id="insurance_state" size="38" /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Payer Type</th><!--td><input type="text" name="payer_type" id="payer_type" /></td>-->
+                        <td ><select name="payer_type" id="payer_type" style= "width:100% " >
+                                <option value="-1">Select</option>
+                                <option value="PI">PI</option>
+                                <option value="MM">MM</option>
+                                <option value="ME">ME</option>
+                                <option value="WC">WC</option>
+                                <option value="LI">LI</option>
+                        </select>
+                        </td>
+                        <th align="left">EDI Number</th><td><input type="text" name="EDI_number" id="EDI_number" size="38" /></td>
+                        <th align="left">Submisson Method</th>
+                        <td ><select name="claim_submission_preference" id="claim_submission_preference" style= "width:100% " >
+                                <option value="Mail">Mail</option>
+                                <option value="EDI">EDI</option>
+                                <option value="Fax">Fax</option>
+                            </select>
+                        </td>
+                        <th  align="left">Bill Rate</th><td><input type="text" name="anesthesia_bill_rate" id="anesthesia_bill_rate" size="38"  /></td>
+                    </tr>
+                    <tr>
+                        <th align="left">Insurance Type</th>
+                        <td ><select name="insurance_type" id="insurance_type" style= "width:100% ">
+                                <option value="OTHER">OTHER</option>
+                                <option value="MEDICARE">MEDICARE</option>
+                                <option value="MEDICAID">MEDICAID</option>
+                                <option value="TRICARE">TRICARE</option>
+                                <option value="CHAMPVA">CHAMPVA</option>
+                                <option value="GROUP">GROUP</option>
+                                <option value="FECA">FECA</option>
+                                
+                            </select>
+                        </td>
+                        <th align="left">Tags</th><td>
+                            
+                            
+                            <!--<input type="text" name="tags" id="tags" size="38"  />-->
+                        <select class="select" name="tags_select" id="tags_select"  style="width: 50%" onchange="javascript:showoptionfield();" >
+                                <option value="-1">Select</option>
+                                <?php
+                                foreach ($this->tagList as $row) {
+                                    echo "<option value='" . $row['tag_name'] . "'>" . $row['tag_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        <?php
+                                foreach ($this->tagList as $row) {
+                                    if($row['tag_type'] == "binary"){
+                                        echo "<input type='text' style='display:none' id='" . $row['tag_name'] . "_type' value='".$row['tag_type']."'>";
+//                                        echo "<input type='checkbox' style='display:none' id='" . $row['tag_name'] . "'value='no'>";
+                                    }else if($row['tag_type'] == "other"){
+                                        echo "<input type='text' style='display:none' id='" . $row['tag_name'] . "_type' value='".$row['tag_type']."'>";
+//                                        echo "<input type='text' style='display:none' style='display:none' id='" . $row['tag_name'] . "'>";
+                                    }
+                                }
+                        ?>
+                            <input type ="checkbox"  style="display:none" name="tags_checkbox" id="tags_checkbox" onchange="javascript:setvalue('checkbox');">
+                            <input type ="text"  style="display:none" name="tags_input" id="tags_input" size="15" onchange="javascript:setvalue('input');">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="8">&nbsp</th>
+                    </tr>
+                    <tr>
+                        <th  align="left">Benefit Lookup</th><td><input type="text" name="benefit_lookup" id="benefit_lookup" size="41" /></td>
+                        <th align="left">Claim Lookup</th><td><input type="text" name="claim_status_lookup" id="claim_status_lookup" size="38" /></td>
+                        <th align="left">EFT Lookup</th><td><input type="text" name="EFT" id="EFT"size="38" /></td>
+                        <th align="left">Claim Filing Deadline</th><td><input type="text" name="claim_filing_deadline" id="claim_filing_deadline" size="38" /></td>
+                    </tr>
+                    <tr>
+                        <th  align="left">Reconsideration</th><td><input type="text" name="reconsideration" id="reconsideration" size="41"/></td>
+                        <th align="left">Appeal</th><td><input type="text" name="appeal" id="appeal"  size="38"/></td>
+                        <th align="left">Navinet Support Number</th><td><input type="text" name="navinet_web_support_number" id="navinet_web_support_number"  size="38"/></td>
+                        <th align="left">PID</th><td><input type="text" name="PID_interpretation" id="PID_interpretation" size="38" /></td>
+                    </tr>
+                    <tr>
+                        <th >Notes</th><td colspan="7"><textarea style= "width:100%" rows="4"  name="insurance_notes" id="insurance_notes" ></textarea></td>
+                    </tr>
+                    <tr>
+                     <th></th><td style="display:none">
+                    <?php
+                                foreach ($this->tagList as $row) {
+                                        echo "<input type='text' name='". $row['tag_name']. "' id='" . $row['tag_name'] . "'>";
+                                }
+                        ?>
+                         </td>
+                     </tr>
+                    <tr>
+                        <td colspan="8"><input type="submit" name="next" value="Save" /></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,961 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link href="<?php echo $this->baseUrl ?>/colorselector/lib/bootstrap-3.0.3/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="<?php echo $this->baseUrl ?>/colorselector/lib/bootstrap-colorselector-0.2.0/css/bootstrap-colorselector.css" rel="stylesheet" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl ?>/colorselector/css/docs.css" />
+        <link rel="stylesheet" type="text/css" href="<?php echo $this->baseUrl ?>/colorselector/css/prettify.css" />
+        <!--
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        -->        
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.multiselect.js"></script>       
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <!--                <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/prettify.css" />-->   
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+
+
+        <!-- color scripts -->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/colorselector/lib/jquery-1.10.2/jquery-1.10.2.min.js"></script>       
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/colorselector/lib/bootstrap-3.0.3/js/bootstrap.min.js"></script>
+
+        <!-- end of color scripts -->
+        <!--
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        -->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jshelper.js"></script>
+        <!--Add drop down for mid section-->
+        <!--
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery-1.4.2.min.js" type="text/javascript"></script>
+        -->
+        <script src="<?php echo $this->baseUrl ?>/scripts/jquery.megamenu.js" type="text/javascript"></script>
+        <!--Add drop down for mid section-->
+        <script type="text/javascript" language="JavaScript" src="<?php echo $this->baseUrl ?>/scripts/validation.js"></script>
+
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/colorselector/lib/bootstrap-colorselector-0.2.0/js/bootstrap-colorselector.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/colorselector/lib/google-code-prettify/prettify.js"></script>
+
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery-ui.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/jquery.multiselect.css" />
+
+        <!--<script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.8.js"></script>-->
+        <!--<script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-ui.min.js"></script>-->
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-ui.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.multiselect.js"></script>
+
+
+        <script type="text/javascript" language="javascript" >
+            var id = 0;
+            $(document).ready(function () {
+                $.get("<?php echo $this->baseUrl ?>/biller/claims/claiminput/",
+                        function (data)
+                        {
+                            var myjson = '';
+                            eval("myjson=" + data + ";");
+                            $("#id").val(myjson.id);
+                            if (myjson.color_code != null) {
+                                //alert('color get is ' + myjson.color_code);
+                                $("#colorselector_1").val(myjson.color_code);
+                                //$('#colorselector_1').colorselector();
+                                $("#last_colorselector_1").val(myjson.colorselector_1);
+                                //alert('color set to ' + $("#colorselector_1").val());
+                            }
+                        });
+                $('#colorselector_1').colorselector();
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                        function (data)
+                        {
+                            if (data != 'no' && data != null) {
+                                var a = document.getElementById("relogin");
+                                a.click();
+                            }
+                        }
+                );
+                //$("#phone_number").multiselect();
+                $("#bill_status").multiselect();
+                $("#statement_status").multiselect();
+                /*cici*/
+                $("#diagnosis_id").multiselect();
+                $("#cpt_code").multiselect();
+                $("#provider_id").multiselect();
+                $('#claim_status').multiselect();
+                $('#insurance_id').multiselect();
+                $('#insurance_type').multiselect();
+                $('#anesthesia_id').multiselect();
+                $("#biller").multiselect(); //new 
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/userfocusonprovider/",
+                        function (data) {
+                            var myjson = '';
+                            eval("myjson=" + data + ";");
+                            var userfocusonprovider = myjson.userfocusonprovider;
+                            if (userfocusonprovider != null) {
+                                for (var i = 0; i < userfocusonprovider.length; i++) {
+                                    $("#provider_id").multiselect("widget").find(":checkbox").each(function () {
+                                        if (this.value == userfocusonprovider[i]['provider_id']) {
+                                            this.click();
+                                        }
+                                    });
+                                }
+                            }
+                        });
+//                $("#provider_id").multiselect("widget").find(":checkbox").each(function(){
+//   this.click();
+//   alert(this.value);
+//});           
+                $("#insurance_id").change(function () {
+                    var insurance_id = $("#insurance_id").val();
+                    $("#insurance_id_array").val(insurance_id);
+                });
+                $("#insurance_type").change(function () {
+                    var insurance_type = $("#insurance_type").val();
+                    $("#insurance_type_array").val(insurance_type);
+                });
+                $("#anesthesia_id").change(function () {
+                    var anesthesia_id = $("#anesthesia_id").val();
+                    $("#anesthesia_id_array").val(anesthesia_id);
+                });
+                $("#claim_status").change(function () {
+                    var claim_status = $("#claim_status").val();
+                    $("#claim_status_array").val(claim_status);
+                });
+                $("#bill_status").change(function () {
+                    var claim_status = $("#bill_status").val();
+                    $("#bill_status_array").val(claim_status);
+                });
+                $("#statement_status").change(function () {
+                    var claim_status = $("#statement_status").val();
+                    $("#statement_status_array").val(claim_status);
+                });
+                /*cici*/
+                $("#diagnosis_id").change(function () {
+                    var diagnosisid = $("#diagnosis_id").val();
+                    $("#diagnosisid_array").val(diagnosisid);
+                });
+                //new
+                $("#biller").change(function () {
+                    var biller_name = $("#biller").val();
+                    $("#biller_array").val(biller_name);
+                });
+                $("#cpt_code").change(function () {
+                    var cptcode = $("#cpt_code").val();
+                    $("#cptcode_array").val(cptcode);
+                });
+                $("#provider_id").change(function () {
+                    $("#diagnosis_id").find("option").remove(); /*cici*/
+                    $("#diagnosis_id").multiselect("refresh");
+                    $("#renderingprovider_id option").remove();
+                    $("#facility_id option").remove();
+                    $("#referringprovider_id option").remove();
+                    var provider_id = $("#provider_id").val();
+                    $('#provider_id_array').val(provider_id);
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/multiproviderhas/",
+                            {provider_id: provider_id},
+                    function (data) {
+                        var myjson = '';
+                        eval("myjson=" + data + ";");
+                        $("#diagnosis_id option").remove(); /*cici*/
+                        $("#renderingprovider_id option").remove();
+                        $("#facility_id option").remove();
+                        $("#referringprovider_id option").remove();
+                        /*cici*/
+                        for (var i = 0; i < myjson.diagnosis_codeList.length; i++) {
+                            $("#diagnosis_id").append("<option value='" +
+                                    myjson.diagnosis_codeList[i]['diagnosis_code'] +
+                                    "'>" + myjson.diagnosis_codeList[i]['diagnosis_code']
+                                    + "</option>");
+                            $("#diagnosis_id").multiselect("refresh");
+                        }
+
+                        $("#renderingprovider_id").append("<option value=\"\">Select</option>");
+                        for (var i = 0; i < myjson.renderingproviderList.length; i++) {
+                            $("#renderingprovider_id").append("<option value='" +
+                                    myjson.renderingproviderList[i]['rid'] +
+                                    "'>" + myjson.renderingproviderList[i]['last_name'] + ", " + myjson.renderingproviderList[i]['first_name'] +
+                                    "</option>");
+                        }
+                        $("#facility_id").append("<option value=\"\">Select</option>");
+                        for (var i = 0; i < myjson.facilityList.length; i++) {
+                            $("#facility_id").append("<option value='" +
+                                    myjson.facilityList[i]['fid'] +
+                                    "'>" + myjson.facilityList[i]['facility_display'] +
+                                    "</option>");
+                        }
+                        $("#referringprovider_id").append("<option value=\"\">Select</option>");
+                        for (var i = 0; i < myjson.referringproviderList.length; i++) {
+                            $("#referringprovider_id").append("<option value='" +
+                                    myjson.referringproviderList[i]['rid'] +
+                                    "'>" + myjson.referringproviderList[i]['last_name'] + ", " + myjson.referringproviderList[i]['first_name'] +
+                                    "</option>");
+                        }
+                    });
+                });
+
+                var predefinedName = $("#predefinedInquiries").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/poppredefined/", {predefinedName: predefinedName},
+                function (data) {
+                    //        alert("success");
+                    var myjson = '';
+                    eval("myjson=" + data + ";");
+                    for (var key in myjson) {
+                        //         alert(key);//json对象的key  
+                        //        alert(jb[key]);//json对象的值  
+                        if (myjson[key].indexOf('*') != -1) {  //为多选
+                            s = myjson[key].substring(0, myjson[key].length - 1);
+                            sArray = s.split(",");
+                            if (sArray != null) {
+                                for (var i = 0; i < sArray.length; i++) {
+                                    $("#" + key).multiselect("widget").find(":checkbox").each(function () {
+                                        if (this.value == sArray[i]) {
+                                            this.click();
+                                        }
+                                    });
+                                }
+                            }
+                        } else {
+                            if (key.indexOf('colorselector_1') != -1) {
+                                $("#colorselector_1").colorselector("setValue", myjson[key]);
+                            }
+                            else {
+                                $("#" + key).val(myjson[key]);
+                            }
+                        }
+                    }
+                });
+
+                $("#rreset").click(function () {
+                    $("#form_c")[0].reset();
+                    $("#form3")[0].reset();
+                    $("#predefinedInquiries").prop('selectedIndex', 0);
+                    $("#colorselector_1").colorselector("setValue", "FFFFFF");
+                });
+
+                $("#PreName").focus(function () {
+                    $("#predefinedInquiries").prop('selectedIndex', 0);
+                });
+//                $("#PreName").blur(function () {
+//                    $("#PreName").val("");
+//                    $("#PreName").css("border", " 1px solid #aaa");
+//                });
+                $(document).click(function (e) {
+                    var save = $("#save");
+                    save = $("#save")[0];
+                    var preName=$("#PreName");
+                    preName=$("#PreName")[0];
+                    target = e.target;
+                    if (save !== target && !$.contains(save, target)&&preName !== target && !$.contains(preName, target)) {
+                        $("#PreName").val("");
+                        $("#PreName").css("border", " 1px solid #aaa");
+                    }
+                });
+
+                $("#predefinedInquiries").change(function () {
+                    $("#form_c")[0].reset();
+                    //       $("#form3")[0].reset();
+                    //     $("#Name").empty();
+                    $("#colorselector_1").colorselector("setValue", "FFFFFF");
+                    var predefinedName = $("#predefinedInquiries").val();
+                    $.post("<?php echo $this->baseUrl ?>/biller/claims/predefinedchange/", {predefinedName: predefinedName},
+                    function (data) {
+                        var myjson = '';
+                        eval("myjson=" + data + ";");
+                        for (var key in myjson) {
+                            if (myjson[key].indexOf('*') != -1) {  //为多选
+                                s = myjson[key].substring(0, myjson[key].length - 1);
+                                sArray = s.split(",");
+                                if (sArray != null) {
+                                    for (var i = 0; i < sArray.length; i++) {
+                                        $("#" + key).multiselect("widget").find(":checkbox").each(function () {
+                                            if (this.value == sArray[i]) {
+                                                this.click();
+                                            }
+                                        });
+                                    }
+                                }
+                            } else {
+                                if (key.indexOf('colorselector_1') != -1) {
+                                    $("#colorselector_1").colorselector("setValue", myjson[key]);
+                                }
+                                else {
+                                    $("#" + key).val(myjson[key]);
+                                }
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+        <script type="text/javascript" language="javascript" >
+            function mysubmit()
+            {
+                var name = $('#name').val();
+                var account_number = $('#account_number').val();
+                var phone_num = $('#phone_num').val();
+                var DOB = $('#DOB').val();
+                var renderingprovider_id = $('#renderingprovider_id').val();
+                var referringprovider_id = $('#referringprovider_id').val();
+                var facility_id = $('#facility_id').val();
+                var last_days = $('#last_days').val();
+                var total_charge = $('#total_charge').val();
+                var amount_paid = $('#amount_paid').val();
+                var color_code = $('#colorselector_1').val();
+                var DOS = $('#DOS').val();
+                var provider_id_array = $('#provider_id_array').val();
+                var insurance_id_array = $('#insurance_id_array').val();
+                var anesthesia_id_array = $('#anesthesia_id_array').val();
+                var claim_status_array = $('#claim_status_array').val();
+                var bill_status_array = $('#bill_status_array').val();
+                var statement_status_array = $('#statement_status_array').val();
+                var cptcode_array = $('#cptcode_array').val();
+                /*cc*/ var diagnosisid_array = $('#diagnosisid_array').val();
+                var insurance_type_array = $('#insurance_type_array').val();
+                /*cici*/
+                var DOP = $('#DOP').val();
+                var DONF = $('#DONF').val();
+                var DBC = $('#DBC').val();
+                var date_billed = $('#date_billed').val();
+                var date_closed = $('#date_closed').val();
+                var biller_array = $('#biller_array').val(); //cici
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/existpatient/", {name: name, account_number: account_number, phone_num: phone_num, DOB: DOB, renderingprovider_id: renderingprovider_id, referringprovider_id: referringprovider_id, facility_id: facility_id, last_days: last_days, total_charge: total_charge, amount_paid: amount_paid, DOP: DOP, DONF: DONF, DBC: DBC, date_billed: date_billed, date_closed: date_closed, color_code: color_code, anesthesia_id_array: anesthesia_id_array, claim_status_array: claim_status_array, statement_status_array: statement_status_array, cptcode_array: cptcode_array, diagnosisid_array: diagnosisid_array, bill_status_array: bill_status_array, insurance_id_array: insurance_id_array, DOS: DOS, provider_id_array: provider_id_array, insurance_type_array: insurance_type_array, biller_array: biller_array},
+                function (data) {
+                    if (data != 1) {
+                        var reason = confirm('No patient in Accendo meet the search criteria you just entered, do you want to enter a new patient? ');
+                        if (reason)
+//                 
+                        {
+                            $('#my_submit').val('is');
+//                      document.getElementById("form_c").name = 'post';
+//                     document.getElementById("form_c").action.value = 'Submit';
+                            document.getElementById("form_c").submit();
+                        } else
+                        {
+                            return false;
+                            // location.href='". $this->view->baseUrl ."/biller/claims/inquiry/';
+                        }
+
+                    } else {
+                        $('#my_submit').val('is');
+                        document.getElementById("form_c").submit();
+                    }
+
+                });
+            }
+
+            function phone(name)
+            {
+                var phone_number = $(name).val();
+                if (phone_number.length == 3)
+                {
+                    phone_number = '(' + phone_number + ')';
+                    $(name).val(phone_number);
+                }
+                if (phone_number.length == 8)
+                {
+                    phone_number = phone_number + '-';
+                    $(name).val(phone_number);
+                }
+                if (phone_number.length > 13)
+                {
+                    phone_number = phone_number.substr(0, 13);
+                    $(name).val(phone_number);
+                }
+            }
+        </script>
+        <script type="text/javascript" language="Javascript" >
+            function getVal(index) {
+                //alert("clicked");
+                var table = document.getElementsByTagName("table")[1];
+                var td1 = table.getElementsByTagName('td');
+                var patient_id = td1[(index - 1) * 22 + 20].innerHTML;
+                var encounter_id = td1[(index - 1) * 22 + 21].innerHTML;
+                $("#patient_id").val(patient_id);
+                $("#encounter_id").val(encounter_id);
+                $("#submit_by").val('exist');
+                document.getElementById("form2").submit();
+            }
+
+            function getCal(patient_id, encounter_id) {
+
+                //var val = document.getElementById(index).innerHTML;
+                //alert(val);
+                $("#patient_id").val(patient_id);
+                $("#encounter_id").val(encounter_id);
+                $("#submit_by").val('new');
+                document.getElementById("form2").submit();
+            }
+
+        </script>
+        <script>
+            function saveSubmit() {
+                var Name = $.trim($('#PreName').val());
+                if (Name == "") {
+                    $("#PreName").css("border", "4px solid red");
+                    $("#PreName").focus();
+                    return;
+                }
+                var flag = true;
+                $("#predefinedInquiries option").each(function () {
+                    if ($(this).val() == Name) {
+                        $("#PreName").css("border", "4px solid red");
+                        $("#PreName").focus();
+                        flag = false;
+                        return false;
+                    }
+                });
+                if (!flag)
+                    return;
+         //       $("#PreName").css("border", " 1px solid #aaa");
+                var name = $('#name').val();
+                var account_number = $('#account_number').val();
+                var phone_num = $('#phone_num').val();
+                var DOB = $('#DOB').val();
+                var renderingprovider_id = $('#renderingprovider_id').val();
+                var referringprovider_id = $('#referringprovider_id').val();
+                var facility_id = $('#facility_id').val();
+                var last_days = $('#last_days').val();
+                var total_charge = $('#total_charge').val();
+                var amount_paid = $('#amount_paid').val();
+                var color_code = $('#colorselector_1').val();
+                var DOS = $('#DOS').val();
+                var provider_id_array = $('#provider_id_array').val();
+                var insurance_id_array = $('#insurance_id_array').val();
+                var anesthesia_id_array = $('#anesthesia_id_array').val();
+                var claim_status_array = $('#claim_status_array').val();
+                var bill_status_array = $('#bill_status_array').val();
+                var statement_status_array = $('#statement_status_array').val();
+                var cptcode_array = $('#cptcode_array').val();
+                /*cc*/ var diagnosisid_array = $('#diagnosisid_array').val();
+                var insurance_type_array = $('#insurance_type_array').val();
+                /*cici*/
+                var DOP = $('#DOP').val();
+                var DONF = $('#DONF').val();
+                var DBC = $('#DBC').val();
+                var date_billed = $('#date_billed').val();
+                var date_closed = $('#date_closed').val();
+                var biller_array = $('#biller_array').val(); //cici
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/predefined/", {Name: Name, name: name, account_number: account_number, phone_num: phone_num, DOB: DOB, renderingprovider_id: renderingprovider_id, referringprovider_id: referringprovider_id, facility_id: facility_id, last_days: last_days, total_charge: total_charge, amount_paid: amount_paid, DOP: DOP, DONF: DONF, DBC: DBC, date_billed: date_billed, date_closed: date_closed, color_code: color_code, anesthesia_id_array: anesthesia_id_array, claim_status_array: claim_status_array, statement_status_array: statement_status_array, cptcode_array: cptcode_array, diagnosisid_array: diagnosisid_array, bill_status_array: bill_status_array, insurance_id_array: insurance_id_array, DOS: DOS, provider_id_array: provider_id_array, insurance_type_array: insurance_type_array, biller_array: biller_array},
+                function (data) {
+                    $("#form_c")[0].reset();
+                    $("#form3")[0].reset();
+                    $("#colorselector_1").colorselector("setValue", "FFFFFF");
+                    // $('#predefinedInquiries').val(data);
+                    var myjson = '';
+                    eval("myjson=" + data + ";");
+                    $("#predefinedInquiries option").remove();
+                    $("#predefinedInquiries").append("<option value=\"\">Select</option>");
+                    for (var i = 0; i < myjson.length; i++) {
+                        $("#predefinedInquiries")
+                                .append("<option value='" + myjson[i] + "'>" + myjson[i] + "</option>");
+                    }
+
+                    //parent.location.reload();
+                    // }
+                });
+            }
+        </script>
+        <script>
+            function setDefault() {
+                var predefinedName = $('#predefinedInquiries').val();
+                //      alert(""+predefinedName);
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/predefineddefault/", {predefinedName: predefinedName},
+                function (data) {
+                    if (data != 1) {
+                        //  alert("error");
+                    } else {
+                        //   alert("success");
+                    }
+                });
+            }
+        </script>
+        <script>
+            function predelete() {
+                var predefinedName = $('#predefinedInquiries').val(); //cici
+                $.post("<?php echo $this->baseUrl ?>/biller/claims/predefineddelete/", {predefinedName: predefinedName},
+                function (data) {
+                    $("#form_c")[0].reset();
+                    $("#form3")[0].reset();
+                    $("#colorselector_1").colorselector("setValue", "FFFFFF");
+                    var myjson = '';
+                    eval("myjson=" + data + ";");
+                    $("#predefinedInquiries option").remove();
+                    $("#predefinedInquiries").append("<option value=''>Select</option>");
+                    for (var i = 0; i < myjson.length; i++) {
+                        $("#predefinedInquiries")
+                                .append("<option value='" + myjson[i] + "'>" + myjson[i] + "</option>");
+                    }
+                    //           }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none;" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Claims Management</a> &gt; Claims Inquiry</p>
+        </div>
+        <div class="table-div" >
+            <form action="" method="post" id="form_c" name="form_c" onsubmit="mysubmit();
+                    return false">
+                <table>
+                    <tr>
+                        <th align="center" colspan="14" style="background:#eeeeee">
+                            <p align="center"><b><big>Patients and Claims Inquiry</big></b></p>
+                        </th>
+                    </tr>
+
+                    <!-- *************rearrange*******************-->
+                    <tr>
+                        <th  style= "width:10% " align="left">Name</th>
+                        <td  style= "width:15% "><input type="text" name="name" id="name" style= "width:98%"/></td>
+                        <th  style= "width:10% ">MRN</th>
+                        <td style= "width:15% "><input type="text" name="account_number" id="account_number" style= "width:98% "/></td>
+                        <th style= "width:10% " align="left">Phone Number</th>
+                        <td style="width:15%">
+                            <!--<select name="phone_number" id="phone_number" multiple="multiple" style= "width:16.5%">
+                                <option value='002'>002</option>
+                                <option value='003'>003</option>
+                            </select>-->
+                            <input type='text' name='phone_num' id='phone_num' style='width:98%' onkeyup="javascript:phone('#phone_num')" />
+                        </td>
+                        <th style= "width:10% "align="left">Date of Birth</th>
+                        <td style= "width:15% "><input type="text" name="DOB" id="DOB" onkeyup="javascript:datedate('#DOB')" style= "width:98% "/></td>
+                    </tr>
+
+                    <tr>
+                        <th style= "width:10% ">Provider</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="provider_id" id="provider_id" multiple="multiple" style= "width:16.5%;">
+                                <?php
+                                foreach ($this->providerList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+
+                        <th style= "width:10% ">Rendering Provider</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="renderingprovider_id" id="renderingprovider_id" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->renderingproviderList as $row) {
+                                    echo "<option value='" . $row['rid'] . "'>" . $row['last_name'] . ', ' . $row['first_name'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+
+
+                        <th style= "width:10% ">Referring Provider</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="referringprovider_id" id="referringprovider_id" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->referringproviderList as $row) {
+                                    echo "<option value='" . $row['rid'] . "'>" . $row['last_name'] . ', ' . $row['first_name'] .
+                                    "</option>";
+                                }
+                                ?>
+
+                            </select>
+                        </td>
+
+                        <th style= "width:10% ">Facility</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="facility_id" id="facility_id" style= "width:100% ">
+                                <option value="">Select</option>
+                                <?php
+                                foreach ($this->facilityList as $row) {
+                                    echo "<option value='" . $row['fid'] . "'>" . $row['facility_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>                                       
+                    </tr>
+
+                    <tr>
+                        <th style= "width:10% ">Claim Status</th>
+                        <td style= "width:15% "><select name="claim_status" id="claim_status" multiple="multiple" style= "width:16.5%">
+                                <!--                        <option value="all" style="display:none">All</option>-->
+                                <option value="open">Open</option>                            
+                                <option value="closed">Closed</option>
+                                <option value="inactive">Inactive</option>
+                                <?php
+                                foreach ($this->claimstatusList as $row) {
+                                    echo "<option value='" . $row['claim_status'] . "'>" . $row['claim_status_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+                        <th style= "width:10% ">Bill Status</th>
+                        <td style= "width:15% "><select name="bill_status" id="bill_status" multiple="multiple" style= "width:16.5%">
+                                <!--                        <option value="all" style="display:none">All</option>-->
+                                <!--                                <option value="open">Open</option>                            
+                                                                <option value="closed">Closed</option>
+                                                                <option value="inactive">Inactive</option>-->
+                                <?php
+                                foreach ($this->billstatusList as $row) {
+                                    echo "<option value='" . $row['bill_status'] . "'>" . $row['bill_status_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+                        <th style= "width:10% ">Statement Status</th>
+                        <td style= "width:15% "><select name="statement_status" id="statement_status" multiple="multiple" style= "width:16.5%">
+                                <!--                        <option value="all" style="display:none">All</option>-->
+                                <!--                                <option value="open">Open</option>                            
+                                                                <option value="closed">Closed</option>
+                                                                <option value="inactive">Inactive</option>-->
+                                <?php
+                                foreach ($this->statementstatusList as $row) {
+                                    echo "<option value='" . $row['statement_status'] . "'>" . $row['statement_status_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td> 
+                        <th>Color Coding </th> 
+                        <td style="background:#EEEEEE">       
+                            <select name="colorselector_1" id="colorselector_1">                               
+                                <?php
+                                foreach ($this->colorAlertList as $row) {
+                                    if ($row['select'] == 1)
+                                        echo "<option value='" . $row['RGB'] . "' data-color='#" . $row['RGB'] . "' selected='selected'>" . $row['alert'] . "</option>";
+                                    else
+                                        echo "<option value='" . $row['RGB'] . "' data-color='#" . $row['RGB'] . "'>" . $row['alert'] . "</option>";
+                                }
+                                ?>            
+                            </select> 
+                        </td>     
+
+                    </tr>
+                    <tr>
+                        <th style= "width:10% ">Insurance</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="insurance_id" id="insurance_id" multiple="multiple" style= "width:16.5%">
+                                <!--                                <option value="">Select</option>-->
+                                <?php
+                                foreach ($this->insuranceList as $row) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['insurance_display'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+                            <select class="select" name="insurance_type" id="insurance_type" multiple="multiple" style= "width:16.5% ">
+                                <option value='primary'>Primary</option>
+                                <option value='secondary'>Secondary</option>
+                    <!--            <option value='tertiary'>Tertiary</option>  -->
+                                <option value='other'>Other</option>
+                            </select>
+                        </td>
+                        <th style= "width:10% ">Diagnosis Code</th>
+                        <td style= "width:15% ">
+                            <select class='select' name='diagnosis_id' id ='diagnosis_id'  multiple="multiple" style='width:16.5%'>
+                                <?php
+                                foreach ($this->diagnosis_codeList as $diagnosiscode) {
+                                    echo "<option value = " . $diagnosiscode['diagnosis_code'] . ">" . $diagnosiscode['diagnosis_code'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+
+                        <th style= "width:10% ">CPT Code</th>
+                        <td style= "width:15% ">
+                            <select class='select' name='cpt_code' id ='cpt_code' multiple='multiple' style='width:16.5%'>
+                                <?php
+                                foreach ($this->cptcodelist as $cptcode) {
+                                    echo "<option value = " . $cptcode['CPT_code'] . ">" . $cptcode['CPT_code'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <th style= "width:10% ">Anesthesia Code</th>
+                        <td style= "width:15% ">
+                            <select class="select" name="anesthesia_id" id="anesthesia_id" multiple="multiple" style= "width:16.5%;">
+                                <?php
+                                foreach ($this->anesthesiaList as $row) {
+                                    echo "<option value='" . $row['anesthesia_id'] . "'>" . $row['anesthesia_id'] .
+                                    "</option>";
+                                }
+                                ?>
+                            </select>
+
+                        </td> 
+                    </tr>
+                    <tr>
+                        <th style= "width:10% "align="left">Total Charge</th>
+                        <td style= "width:15% "><input type="text" name="total_charge" id="total_charge" style= "width:98% "/></td>    
+                        <th style= "width:10% "align="left">Amount Paid</th><td style= "width:15% ">
+                            <input type="text" name="amount_paid" id="amount_paid" style= "width:98% "/></td> 
+                        <th style= "width:10% "align="left">Date of Payment</th><td style= "width:15% ">
+                            <input type="text" name="DOP" id="DOP" onkeyup="javascript:datedate('#DOP')" style= "width:98% "/>
+                        </td>
+
+                        <th style= "width:10% "align="left">Next Follow-up Date</th><td style= "width:15% ">
+                            <input type="text" name="DONF" id="DONF" onkeyup="javascript:datedate('#DONF')" style= "width:98% "/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style= "width:10% "align="left">Date of Service</th><td style= "width:15% ">
+                            <input type="text" name="DOS" id="DOS" onkeyup="javascript:datedate('#DOS')" style= "width:98% "/>
+                        </td>
+                        <th style= "width:10% "align="left">Date Bill Created</th><td style= "width:15% ">
+                            <input type="text" name="DBC" id="DBC" onkeyup="javascript:datedate('#DBC')" style= "width:98% "/>
+                        </td>
+                        <th style= "width:10% "align="left">Date Billed</th><td style= "width:15% ">
+                            <input type="text" name="date_billed" id="date_billed" onkeyup="javascript:datedate('#date_billed')" style= "width:98% "/>
+                        </td>
+                        <th style= "width:10% "align="left">Date Closed</th><td style= "width:15% ">
+                            <input type="text" name="date_closed" id="date_closed" onkeyup="javascript:datedate('#date_closed')" style= "width:98% "/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th style= "width:10% "align="left">Last Days</th>
+                        <td style= "width:15% "><input type="text" name="last_days" id="last_days"  style= "width:98% "/></td>
+                        <th style= "width:10% "align="left">Biller</th><td style= "width:15% ">
+                            <select class='select' name='biller' id ='biller'  multiple="multiple" style='width:16.5%'>
+                                <?php
+                                foreach ($this->billernameList as $biller) {
+                                    echo "<option value = " . $biller['biller_name'] . ">" . $biller['biller_name'] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <!--     
+                         <th style= "width:10% "align="left">Charge (min)</th><td style= "width:15% "><input type="text" name="min_charge" id="min_charge" style= "width:98% "/></td>    
+                         <th style= "width:10% "align="left">Charge (max)</th><td style= "width:15% "><input type="text" name="max_charge" id="max_charge" style= "width:98% "/></td>
+                         <th style= "width:10% "align="left">Paid (min)</th><td style= "width:15% "><input type="text" name="min_paid" id="min_paid" style= "width:98% "/></td> 
+                         <th style= "width:10% "align="left">Paid (max)</th><td style= "width:15% "><input type="text" name="max_paid" id="max_paid" style= "width:98% "/></td>
+                    -->
+                    <!-- *************rearrange*******************-->
+             <!-- <tr>
+                  <th style= "width:10% "align="left">Start Date</th>
+                  <td style= "width:15% "><input type="text" name="start_date" id="start_date" onkeyup="javascript:date('#start_date')" style= "width:98% "/></td>
+
+                  <th style= "width:10% "align="left">End Date</th>
+                  <td style= "width:15% "><input type="text" name="end_date" id="end_date" onkeyup="javascript:date('#end_date')" style= "width:98% "/></td>
+
+              </tr>
+                    -->       
+                    <tr>
+                        <td colspan="1"><input type="submit" id="post" name="post" value="Submit"/></td>     
+                        <td colspan="1"><input type="button" id="rreset" name="rreset" value="Reset"/></td>  
+                    </tr>
+                    <td><input  type="text" name="my_submit"  id="my_submit" style= "display:none"   /></td>
+                    <input type="text" name="provider_id_array" id="provider_id_array" style= "display: none "/>
+                    <input type="text" name="insurance_id_array" id="insurance_id_array" style= "display: none "/>
+                    <input type="text" name="anesthesia_id_array" id="anesthesia_id_array" style= "display: none "/>
+                    <input type="text" name="claim_status_array" id="claim_status_array" style= "display: none "/>
+                    <input type="text" name="bill_status_array" id="bill_status_array" style= "display: none "/>
+                    <input type="text" name="statement_status_array" id="statement_status_array" style= "display: none "/>
+                    <input type="text" name="cptcode_array" id="cptcode_array" style= "display: none "/>
+                    <input type="text" name="diagnosisid_array" id="diagnosisid_array" style= "display: none "/>  <!--cici-->
+                    <input type="text" name="insurance_type_array" id="insurance_type_array" style= "display: none "/>
+                    <input type="text" name="biller_array" id="biller_array" style= "display: none "/>  <!--cici-->
+                </table>
+            </form>
+            <br/>
+
+            <form action="" method="post" id='form2'>
+                <table >
+                    <tr>
+                        <th align="center" colspan="20" style="background:#eeeeee">
+                            <p align="center"><b><big>Recently Updated Claims</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Name"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOB"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="MRN"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="DOS"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Charge"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Paid"/></th>
+                        <th width="3%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="%"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Due"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="P_Insurance"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="S_Insurance"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="CPT"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="A"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Provider"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Rendering P"/></th>
+                        <th width="5%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Referring P"/></th>
+                        <th width="8%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Facility"/></th>
+                        <th width="3%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="L"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="Claim Status"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="B S"/></th>
+                        <th width="10%" style="background:#eeeeee;text-align: center"><input type="submit" name="post" value="S S"/></th>
+                    </tr>
+                    <?php
+                    $count = 1;
+                    foreach ($this->claim_recent_list as $row) {
+                        if ($count % 2 == 1) {
+                            //echo "<tr style=\"background-color:red;\">";
+                            echo "<tr background-color=\"#FF0000\">";
+                            //echo "<tr bgcolor=\"#" . $row['color_code'] . "\">";
+                            echo "<td title='" . $row['alert'] . "' style='background-color:#" . $row['color_code'] . "; ' width='9%' id='last_name' style=\"font-weight:normal;\"><a>
+                                    <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; ' onclick=\"javascript:getVal($count)\">" . substr($row['name'], 0, 20) . "</span></a>";
+                            echo "<span  onclick=\"javascript:getCal(" . $row['patient_id'] . "," . $row['encounter_id'] . ");\" style=\"color:#FF0000;\">" . '&nbsp;&nbsp;+' . "</span>" . "</td>";
+
+                            echo "<td width= '5%' id='DOB' style=\"font-weight:normal\">" . $row['DOB'] . "</td>";
+
+                            echo "<td width='5%' id='MRN' style=\"font-weight:normal\">" . $row['account_number'] . "</td>";
+
+                            echo "<td width='5%'id='DOS' style=\"font-weight:normal\">" . $row['start_date_1'] . "</td>";
+
+                            echo "<td width='5%' id='Charge' style=\"font-weight:normal\">" . substr($row['total_charge'], 0, 8) . "</td>";
+
+                            echo "<td width='5%' id='amount_paid' style=\"font-weight:normal\">" . substr($row['amount_paid'], 0, 8) . "</td>";
+
+                            echo "<td width='2%' id='amount_paid' style=\"font-weight:normal\">" . $row['percentage'] . "</td>";
+
+                            echo "<td width='5%' id='amount_paid' style=\"font-weight:normal\">" . $row['due'] . "</td>";
+
+                            echo "<td width='5%' id='insurance_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; word-wrap: break-word; font-weight:normal'>" . substr($row['insurance_display'], 0, 17) . "</td>";
+
+                            echo "<td width='5%' id='insurance_s_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['insurance_s_display'], 0, 17) . "</td>";
+
+                            echo "<td width='5%' id='cpt_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . $row['cpt_code'] . "</td>";
+
+                            echo "<td width='5%' id='anes_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . $row['anes_code'] . "</td>";
+
+                            echo "<td width='5%' id='provider_name' style=\"font-weight:normal\">" . $row['provider_short_name'] . "</td>";
+
+                            echo "<td width='8%' id='renderingprovider_last_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['renderingprovider_last_name'], 0, 15) . "</td>";
+
+                            echo "<td width='5%' id='referringprovider_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal'>" . substr($row['referringprovider_name'], 0, 15) . "</td>";
+
+                            echo "<td width='8%' id='facility_name' style=\"font-weight:normal\">" . $row['facility_short_name'] . "</td>";
+
+                            echo "<td width='2%' id='last' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['last'], 0, 30) . "</td>";
+
+                            echo "<td width='10%' id='claim_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['claim_status_display'], 0, 30) . "</td>";
+
+                            echo "<td width='10%' id='bill_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['bill_status_display'], 5, 30) . "</td>";
+
+                            echo "<td width='10%' id='statement_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal'>" . substr($row['statement_status_display'], 5, 30) . "</td>";
+                        } else {
+                            echo "<tr bgcolor=\"#00FF00\">";
+                            //echo "<tr bgcolor=\"#" . $row['color_code'] . "\">";
+                            echo "<td title='" . $row['alert'] . "' style='background-color:#" . $row['color_code'] . "; ' width='9%' id='last_name' style=\"font-weight:normal;background:#eeeeee;\"><a>
+                                    <span style= 'text-overflow:clip ; overflow:hidden; white-space:nowrap; ' onclick=\"javascript:getVal($count)\">" . substr($row['name'], 0, 20) . "</span></a>";
+                            echo "<span  onclick=\"javascript:getCal(" . $row['patient_id'] . "," . $row['encounter_id'] . ");\" style=\"color:#FF0000;\">" . '&nbsp;&nbsp;+' . "</span>" . "</td>";
+
+                            echo "<td width= '5%' id='DOB' style=\"font-weight:normal;background:#eeeeee;\">" . $row['DOB'] . "</td>";
+
+                            echo "<td width='5%' id='MRN' style=\"font-weight:normal;background:#eeeeee;\">" . $row['account_number'] . "</td>";
+
+                            echo "<td width='5%'id='DOS' style=\"font-weight:normal;background:#eeeeee;\">" . $row['start_date_1'] . "</td>";
+
+                            echo "<td width='5%' id='Charge' style=\"font-weight:normal;background:#eeeeee;\">" . substr($row['total_charge'], 0, 8) . "</td>";
+
+                            echo "<td width='5%' id='amount_paid' style=\"font-weight:normal;background:#eeeeee;\">" . substr($row['amount_paid'], 0, 8) . "</td>";
+
+                            echo "<td width='2%' id='amount_paid' style=\"font-weight:normal;background:#eeeeee;\">" . $row['percentage'] . "</td>";
+
+                            echo "<td width='5%' id='amount_paid' style=\"font-weight:normal;background:#eeeeee;\">" . $row['due'] . "</td>";
+
+                            echo "<td width='5%' id='insurance_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal;background:#eeeeee;'>" . substr($row['insurance_display'], 0, 17) . "</td>";
+
+                            echo "<td width='5%' id='insurance_s_display' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal;background:#eeeeee;'>" . substr($row['insurance_s_display'], 0, 17) . "</td>";
+
+                            echo "<td width='5%' id='cpt_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal;background:#eeeeee;'>" . $row['cpt_code'] . "</td>";
+
+                            echo "<td width='5%' id='anes_code' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal;background:#eeeeee;'>" . $row['anes_code'] . "</td>";
+
+                            echo "<td width='5%' id='provider_name' style=\"font-weight:normal;background:#eeeeee;\">" . $row['provider_short_name'] . "</td>";
+
+                            echo "<td width='8%' id='renderingprovider_last_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal;background:#eeeeee;'>" . substr($row['renderingprovider_last_name'], 0, 15) . "</td>";
+
+                            echo "<td width='5%' id='referringprovider_name' style= 'text-overflow:clip  ; overflow:hidden; white-space:nowrap; font-weight:normal;background:#eeeeee;'>" . substr($row['referringprovider_name'], 0, 15) . "</td>";
+
+                            echo "<td width='8%' id='facility_name' style=\"font-weight:normal;background:#eeeeee;\">" . $row['facility_short_name'] . "</td>";
+
+                            echo "<td width='2%' id='last' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal;background:#eeeeee;'>" . substr($row['last'], 0, 30) . "</td>";
+
+                            echo "<td width='10%' id='claim_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal;background:#eeeeee;'>" . substr($row['claim_status_display'], 0, 30) . "</td>";
+
+                            echo "<td width='10%' id='bill_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal;background:#eeeeee;'>" . substr($row['bill_status_display'], 5, 30) . "</td>";
+
+                            echo "<td width='10%' id='statement_status' style=  'text-overflow:clip  ; overflow:hidden; white-space:nowrap;font-weight:normal;background:#eeeeee;'>" . substr($row['statement_status_display'], 5, 30) . "</td>";
+                        }
+                        echo "<td style=\"display:none\">" . $row['patient_id'] . "</td>";
+                        echo "<td style=\"display:none\">" . $row['encounter_id'] . "</td></tr>";
+                        $count = $count + 1;
+                    }
+                    ?>
+                    <tr>
+                        <td><input type="text" name="patient_id"  id="patient_id" style= "display:none"/></td>
+                        <td><input type="text" name="encounter_id"  id="encounter_id" style= "display:none"/></td>
+                        <td><input type="text" name="submit_by"  id="submit_by" style= "display:none"/></td>
+                        <td><input type="submit" name="post"  id="open_submit" style= "display:none" value='open' /></td>
+
+                        <td colspan="7"><input type="text" name="checkboxid"  id="checkboxid" value="10000" style= "display:none"/></td>
+                        <!-- cici-->
+                        <th></th><td style="display:none"><input type="text" name="last_colorselector_1" id="last_colorselector_1" /></td>
+                    </tr>
+                </table>
+            </form>
+            <br/>
+            <br/>
+            <form action="" method="post" id='form3' onsubmit="saveSubmit();
+                    return false">
+                <table>
+                    <tr>
+                        <th align="center" colspan="20" style="background:#eeeeee">
+                            <p align="center"><b><big>Predefined Inquiry</big></b></p>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td style= "width:300px">
+                            <select class="select" name="predefinedInquiries" id="predefinedInquiries" style= "width:300px">
+                                <?php
+                                if ($this->defaultName == NULL) {
+                                    echo "<option value='' selected='selected'>Select</option>";
+                                } else {
+                                    echo "<option value=''>Select</option>";
+                                }
+                                ?>
+                                <?php
+                                foreach ($this->preInqNameList as $name) {
+                                    if ($this->defaultName == $name) {
+                                        echo "<option value = '" . $name . "' selected='selected'>" . $name . "</option>";
+                                    } else {
+                                        echo "<option value = '" . $name . "'>" . $name . "</option>";
+                                    }
+                                }
+                                ?>
+
+                            </select>
+                        </td>
+                        <td colspan="2" align="center">
+                            <input type="button" name="delete" id="delete" value="Delete" onclick="predelete();
+                                    return false"/>
+
+                            <input type="button" name="default" id="default" value="Default" onclick="setDefault();
+                                    return false"/>
+                        </td>
+                        <td style= "width:10%" align="right">
+                            <input type="submit" name="save" id="save" value="Save Current Claim Inquiry As"/>
+                        </td>
+
+                        <td>
+                            <input style= "width:40%; height:16pt" type='text' name='PreName' id='PreName'/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <br/>
+            <br/>
+        </div>
+    </body>
+
+</html>

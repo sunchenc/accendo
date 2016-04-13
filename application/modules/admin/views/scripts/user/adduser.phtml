@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title> Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+<!--        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" >
+            $(document).ready(function() {
+                var $billingcompany_table = $('table:eq(1)');
+                  $billingcompany_table.hide();
+                $('select:eq(0)').bind('change',function(){
+                    var checkValue=$('select:eq(0)').val();
+                    if('admin'==checkValue){
+                        $billingcompany_table.hide();
+                    }
+                    if('billingcompany'==checkValue){
+                        $billingcompany_table.slideToggle();
+                    }
+                });
+            });
+        </script>-->
+    </head>
+
+    <body>
+        <div id="navbar">
+            <p>Your Location: <a href="main.html" title="">First page</a> &gt; add billingcompany</p>
+        </div>
+        <div class="table-div">
+            <form method="post" name="adduser">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="title" colspan="2"><i>user information</i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th style="width:15%;">user name</th>
+                            <td><input type="text" name="user_name" /></td>
+                        </tr>
+                        <tr>
+                            <th>password</th>
+                            <td><input type="password" name="password" /></td>
+                        </tr>
+                        <tr>
+                            <th>password(confirm)</th>
+                            <td><input type="password" name="pwd_confirm" /></td>
+                        </tr>
+<!--                        <tr>
+                            <th>role</th>
+                            <td><select name="role" >
+                                    <option value="admin">admin</option>
+                                    <option value="billingcompany">billing company</option>
+                                </select>
+                            </td>
+                        </tr>-->
+
+<!--                        <tr>
+                            <th colspan="2"><input type="submit" value="create" class="cmd" /></th>
+                        </tr>-->
+                    </tbody>
+                </table>
+
+<!--                <iframe   name= "billingcompany "   marginwidth=0   marginheight=0   width=100%   height="100%"   src= "<?php echo $this->baseUrl ?>/admin/user/billingcompany/ "   frameborder=0> </iframe>-->
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="title" colspan="4"><i>billing company informatioin</i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th style="width:15%;">company name</th>
+                            <td><input type="text" name="billingcompany_name" /></td>
+                            <th>street address</th>
+                            <td><input type="text" name="street_address" /></td>
+                        </tr>
+                        <tr>
+                            <th>city</th>
+                            <td><input type="text" name="city" /></td>
+                            <th>state</th>
+                            <td><input type="text" name="state" /></td>
+                        </tr>
+                        <tr>
+                            <th>phone number</th>
+                            <td><input type="text" name="phone_number" /></td>
+                            <th>fax number</th>
+                            <td><input type="text" name="fax_number" /></td>
+                        </tr>
+                        <tr>
+                            <th>notes</th>
+                            <td colspan="3"><textarea rows="2" cols="50"  name="notes"></textarea></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+                <input type="submit" value="create" class="cmd" />
+
+            </form>
+
+        </div>
+    </body>
+</html>

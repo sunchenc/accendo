@@ -1,0 +1,6 @@
+body{background-color:#5BB8DA;}
+#login{margin:135px auto;width:500px;height:257px; background:url(../images/admin_login.gif) 0px 0px no-repeat;}
+#username{float:left;margin-top:175px;margin-left:105px;*margin-left:52px !important;*margin-left:35px;width:100px;height:20px;line-height:20px;}
+#password{float:left;margin-top:175px;margin-left:70px;*margin-left:60px !important;*margin-left:32px;width:100px;height:20px;line-height:20px;}
+#submit{float:left;margin-top:170px;margin-left:20px;*margin-left:75px !important;*margin-left:27px;width:68px;height:38px;line-height:36px;}
+.logintext{width:100px;height:20px;line-height:20px;}

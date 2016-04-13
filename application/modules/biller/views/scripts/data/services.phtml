@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Accendo</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/layout1.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="<?php echo $this->baseUrl ?>/styles/datepicker.css" />
+        <link rel="stylesheet" rev="stylesheet" type="text/css" media="screen, projection" href="<?php echo $this->baseUrl ?>/styles/pagenav.css" />
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/datepicker.js"></script>
+        <script type="text/javascript" language="Javascript" src="<?php echo $this->baseUrl ?>/scripts/jquery-1.3.2.js"></script>
+         <script type="text/javascript" language="Javascript">
+        $(document).ready(function(){
+            $.post("<?php echo $this->baseUrl ?>/biller/claims/timeout/",
+                function(data)
+                {
+                    if(data!='no'&&data!=null) {
+                        var a=document.getElementById("relogin");
+                        a.click(); 
+                    }
+                }
+            ); 
+        });
+        </script>
+       <script type="text/javascript" language="Javascript">
+            document.onkeydown=keyListener;
+            
+            function keyListener(e){    
+                e = e ? e : event;   
+                if(e.keyCode == 13){
+                    RefreshRows();    
+                }    
+            }
+   
+        </script>
+        
+        
+        <script type="text/javascript" language="Javascript" >
+            function getVal(){
+                var table = $("#table1");
+                var encounter_ids=new Array();
+                var tableTrElement = $("#table1 tr");
+                var td1 = $("#table1 td");
+                for(var i=0;i<tableTrElement.length-1;i++)
+                {
+                    if(td1[i*9].firstChild.checked)
+                    {    
+                        var encounter_id=td1[i*9+7].innerHTML;
+                        encounter_ids.push(encounter_id);                      
+                    }                                      
+                }
+                $("#encounter_id").val(encounter_ids);
+            }
+        </script>
+        <script type="text/javascript">
+            function RefreshRows(){                 
+                $("#tbody1").empty();
+
+                var provider_id=$("#provider_id").val();
+                var last_name=$("#last_name").val();
+                var first_name=$("#first_name").val();
+                var MRN=$("#MRN").val();
+                var dos=$("#DOS").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/servicessearch/",{provider_id:provider_id,last_name:last_name,first_name:first_name,MRN:MRN,DOS:dos},
+                function(data){
+                    var myjson='';
+                    eval("myjson=" + data + ";");
+                    var tableTrElement = $("#table1 tr");//得到表格所有行
+                    var len = tableTrElement.length;//得到总行数
+                    var tableElement = $("#table1");//得到表格对象
+                    var str="";
+                    for(var i=0;i<myjson.length;i++){                                        
+                        str =str+ '<tr id='+i+'><td><input type="checkbox"/></td>'
+                            + '<td id="name" style=\"font-weight:normal\" >' + myjson[i]["last_name"]+ ","+ myjson[i]["first_name"]+ '</td>'
+                            + '<td id="MRN" style=\"font-weight:normal\">' + myjson[i]["account_number"] + '</td>'
+                           + '<td id="claim_status" style=\"font-weight:normal\">' + myjson[i]["claim_status"] + '</td>'
+                            + '<td id="DOS" style=\"font-weight:normal\">' + myjson[i]["DOS"] + '</td>'
+                            + '<td id="renderingprovider_last_name" style=\"font-weight:normal\">' + myjson[i]["renderingprovider_last_name"] + '</td>'
+                        + '<td id="provider_name" style=\"font-weight:normal\">' + myjson[i]["provider_name"] + '</td>'
+                            + '<td id="id" style=\"font-weight:normal\">' + myjson[i]["encounter_id"] + '</td>'
+                            + '<td id="id" style=\"font-weight:normal\">' + myjson[i]["claim_id"] + '</td>'
+                            + '</tr>';                        
+                    }
+                    tableElement.append(str);
+                });
+            }
+            function DeleteRows(){            
+                getVal();
+                var encounter_id=$("#encounter_id").val();
+                $.post("<?php echo $this->baseUrl ?>/biller/data/servicesdelete/",{encounter_id:encounter_id},
+                function(){
+                    var tableTrElement = $("#table1 tr");
+                    var td1 = $("#table1 td");
+                    for(var i=0;i<tableTrElement.length-1;i++)
+                    {
+                        if(td1[i*9].firstChild.checked)
+                        {
+                            $("tr[id=\'"+i+"\']").remove();
+                        }
+                    }
+                });
+            }
+        </script>
+
+    </head>
+
+    <body>
+        <a href="<?php echo $this->baseUrl ?>" target="_top" id="relogin" style="display: none" >wwwwww</a>
+        <div id="navbar">
+            <p>Your Location: <a title="">Data Management</a> &gt; Delete Service</p>
+        </div>
+        <div class="table-div" >
+
+            <form action="" method="post" name="Service">
+                <table>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr >
+                                    <th align="left">Provider:</th>
+                                    <td>
+                                        <select class="select" name="provider_id" id="provider_id">
+                                            <option value="">Select</option>
+                                            
+<!--                              //              foreach ($this->renderingproviderList as $row) {
+                              //                  echo "<option value='" . $row['id'] . "'>" . $row['last_name'] .
+                                //                "</option>";
+                               //             }-->
+                                            
+                                            
+                                             <?php
+                                            foreach ($this->providerList as $row) {
+                                                echo "<option value='" . $row['id'] . "'>" . $row['provider_name'] .
+                                                "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </td>
+                                    <th align="left">Last Name:</th><td><input type="text" name="last_name" id="last_name"size="10"/></td>
+                                    <th align="left">First Name:</th><td><input type="text" name="first_name" id="first_name" size="10"/></td>
+                                    <th align="left">MRN:</th><td><input type="text" name="MRN" id="MRN"   size="10"/></td>
+                                    <th align="left">DOS:</th><td><input type="text" name="DOS" id="DOS"  size="10"/></td>
+                                    <td><input type="button" name="search" value="Search" onclick="javascript:RefreshRows()" /></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="100%">
+                            <table id="table1">
+                                <thead>
+                                    <th width="4%" style="text-align: center"><b>Choose</b></th>
+                                    <th width="11%" style="text-align: center"><b>Name</b></th>
+<!--                                    <th width="11%" style="text-align: center"><b>First Name</b></th>-->
+                                    <th width="14%" style="text-align: center"><b>MRN</b></th>
+                                    <th width="14%" style="text-align: center"><b>Claim Status</b></th>
+                                    <th width="14%" style="text-align: center"><b>Date Of Service</b></th>
+                                    <th width="14%" style="text-align: center"><b>Rendering Provider</b></th>
+                                    <th width="14%" style="text-align: center"><b>Provider</b></th>
+                                    <th width="5%" style="text-align: center"><b>service-id</b></th>
+                                    <th width="5%" style="text-align: center"><b>claim-id</b></th>
+                                </thead>
+                                <tbody id="tbody1">
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td width="15%"><input type="button" name="delete" value="Delete" onclick="javascript:DeleteRows()" /></td>
+                                    <td><input type="text" name="encounter_id"  id="encounter_id"size="20" style= "display:none"/></td>                                 
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </body>
+</html>
